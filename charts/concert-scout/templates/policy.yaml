@@ -1,0 +1,20 @@
+{{- if .Values.policy.enabled }}
+apiVersion: awp.agenticworkflowprotocol.org/v1alpha2
+kind: Policy
+metadata:
+  name: {{ include "concert-scout.name" . }}-model-providers
+  labels:
+    {{- include "concert-scout.labels" . | nindent 4 }}
+spec:
+  version: {{ .Values.workflow.version }}
+  owner:
+    {{- toYaml .Values.workflow.owner | nindent 4 }}
+  description: Only the listed model providers may be used.
+  rules:
+    - id: allowed-model-providers
+      effect: deny
+      when:
+        model.provider:
+          notIn:
+            {{- toYaml .Values.policy.allowedModelProviders | nindent 12 }}
+{{- end }}

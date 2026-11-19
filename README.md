@@ -11,6 +11,15 @@ The draft itself lives in
 (AEPs 0015 to 0021, `spec/v1alpha2`, the conformance suite). Everything shown here is a draft
 under review; the extension model chapter is a concept that is not applied to the schema.
 
+## Example as a Helm chart
+
+[`charts/concert-scout`](charts/concert-scout) packages a complete `v1alpha2` workflow and the
+CustomResourceDefinitions, published as an OCI artifact:
+
+```sh
+helm install scout oci://ghcr.io/agenticworkflowprotocol/charts/concert-scout -n music --create-namespace
+```
+
 ## Build
 
 ```sh

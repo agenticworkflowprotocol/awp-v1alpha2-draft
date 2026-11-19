@@ -1,0 +1,191 @@
+{{- $name := include "concert-scout.name" . -}}
+{{- $taste := .Values.taste -}}
+# Concert scout: checks venue programs for new concerts every morning, rates them against a
+# music taste and sends a short summary to a webhook.
+# Steps: fetch (command) -> collect (agent) -> diff (command) -> curate (agent) -> notify (command)
+#        -> remember (command)
+apiVersion: awp.agenticworkflowprotocol.org/v1alpha2
+kind: Workflow
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "concert-scout.labels" . | nindent 4 }}
+spec:
+  version: {{ .Values.workflow.version }}
+  description: >-
+    Checks venue programs for newly announced concerts, keeps the ones that match the
+    configured taste and region, and sends a short summary.
+  owner:
+    {{- toYaml .Values.workflow.owner | nindent 4 }}
+  classification: {{ .Values.workflow.classification }}
+  purpose: Personal concert recommendations.
+  risk:
+    level: low
+
+  triggers:
+    - type: manual
+    {{- with .Values.workflow.schedule }}
+    {{- if .enabled }}
+    - type: schedule
+      cron: {{ .cron | quote }}
+      timezone: {{ .timezone }}
+      concurrencyPolicy: {{ .concurrencyPolicy }}
+      startingDeadline: {{ .startingDeadline }}
+    {{- end }}
+    {{- end }}
+
+  inputs:
+    - name: sources
+      type: array
+      description: Venue programs to check, objects with name, url and kind (html, json-ld or json).
+      default:
+        {{- toYaml .Values.sources | nindent 8 }}
+
+  budget:
+    maxCostUsd: {{ .Values.budget.maxCostUsd }}
+    maxDuration: {{ .Values.budget.maxDuration }}
+    resources:
+      maxTokens: {{ int .Values.budget.maxTokens }}
+
+  agents:
+    - id: collector
+      model:
+        {{- toYaml .Values.models.collector | nindent 8 }}
+      instructions: |
+        You read concert listings. The task starts with the fetch date ("Fetched: YYYY-MM-DD"),
+        then one block per venue starting with "== <venue> (<url>)". Extract all upcoming
+        concerts and end the step with complete_step: events is a compact JSON array of objects
+        with artist, date (YYYY-MM-DD), venue and city. If the task contains no venue program,
+        complete immediately with an empty array.
+        - A date without a year is the next occurrence on or after the fetch date.
+        - List every concert once; use the headliner as artist, without tour names.
+        - Leave out parties, DJ nights, readings, comedy, markets, musicals and tribute shows.
+        - Keep sold-out concerts, drop cancelled ones. Do not invent data.
+      budget:
+        maxCostUsd: 0.1
+
+    - id: curator
+      model:
+        {{- toYaml .Values.models.curator | nindent 8 }}
+      instructions: |
+        You recommend concerts.
+        Preferred genres, in this order: {{ join ", " $taste.genres }}.
+        {{- with $taste.weakerGenres }}
+        Weaker matches: {{ join ", " . }}.
+        {{- end }}
+        {{- with $taste.artists }}
+        Always relevant, also as support act: {{ join ", " . }}.
+        {{- end }}
+        The person lives near {{ $taste.region.home }} and travels up to about
+        {{ $taste.region.maxDistanceKm }} km ({{ join ", " $taste.region.cities }}).
+        Rate every new concert in the task, judged by the music of the artist, not by the venue,
+        and keep only concerts inside the region. End the step with complete_step:
+        - relevant: JSON array of the relevant concerts with the original fields plus reason
+          (one short sentence);
+        - digest: a plain-text message in {{ $taste.language }} of at most 10 lines, one
+          concert per line with date, artist, venue and reason, sorted by date; empty if none
+          is relevant.
+
+  secrets:
+    - name: {{ .Values.notification.secretName }}
+      source: {{ .Values.notification.secretSource }}
+      scope:
+        - command
+
+  permissions:
+    default: deny
+    tools:
+      shell.execute:
+        allow: true
+
+  {{- if .Values.policy.enabled }}
+  policies:
+    include:
+      - name: {{ $name }}-model-providers
+        version: {{ .Values.workflow.version }}
+  {{- end }}
+
+  workflow:
+    - id: fetch
+      type: command
+      image: {{ .Values.image }}
+      command: fetch
+      env:
+        SOURCES: {{ include "concert-scout.expr" "inputs.sources" | quote }}
+      timeout: 5m
+      retries: 1
+      outputs:
+        - name: events
+          description: JSON array of the concerts read directly from structured sources.
+        - name: pages
+          description: Fetch date and the text of the sources without structured data.
+        - name: failed
+          description: JSON array of the sources that could not be fetched.
+
+    - id: collect
+      agent: collector
+      task: |
+        Extract the upcoming concerts from these venue programs.
+
+        {{ include "concert-scout.expr" "steps.fetch.outputs.pages" }}
+      timeout: 10m
+      retries: 1
+      dependsOn:
+        - fetch
+      outputs:
+        - name: events
+          description: JSON array of all concerts found on the pages.
+
+    - id: diff
+      type: command
+      image: {{ .Values.image }}
+      command: diff
+      env:
+        STRUCTURED: {{ include "concert-scout.expr" "steps.fetch.outputs.events" | quote }}
+        EVENTS: {{ include "concert-scout.expr" "steps.collect.outputs.events" | quote }}
+      dependsOn:
+        - fetch
+        - collect
+      outputs:
+        - name: new
+          description: JSON array of the concerts not reported before.
+        - name: count
+          description: Number of new concerts.
+
+    - id: curate
+      agent: curator
+      task: |
+        New concerts (JSON): {{ include "concert-scout.expr" "steps.diff.outputs.new" }}
+      timeout: 10m
+      dependsOn:
+        - diff
+      outputs:
+        - name: relevant
+          description: JSON array of the relevant concerts, each with a reason.
+        - name: digest
+          description: Message text, empty if nothing is relevant.
+
+    - id: notify
+      type: command
+      image: {{ .Values.image }}
+      command: notify
+      env:
+        DIGEST: {{ include "concert-scout.expr" "steps.curate.outputs.digest" | quote }}
+        WEBHOOK_URL: {{ .Values.notification.url | quote }}
+      dependsOn:
+        - curate
+      outputs:
+        - name: sent
+          description: Message id, or "none" if nothing was sent.
+
+    - id: remember
+      type: command
+      image: {{ .Values.image }}
+      command: remember
+      env:
+        NEW: {{ include "concert-scout.expr" "steps.diff.outputs.new" | quote }}
+      dependsOn:
+        - notify
+      outputs:
+        - name: known
+          description: Number of concerts remembered in the state.

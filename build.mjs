@@ -113,7 +113,7 @@ function renderNav() {
     const items = examples.filter((e) => e.chapter === chapter.id)
       .map((e) => `<li><a href="#${e.id}"><span class="nav-number">${number++}</span>${inline(e.title)}</a></li>`).join('');
     return `<li class="nav-chapter"><a href="#${chapter.id}">${inline(chapter.title)}</a><ol>${items}</ol></li>`;
-  }).join('');
+  }).join('') + '<li class="nav-chapter"><a href="#try">Try it: Helm chart</a></li>';
 }
 
 function renderOverview() {

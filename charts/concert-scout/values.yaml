@@ -1,0 +1,92 @@
+# Example values. Everything here ends up in plain AWP manifests (Workflow, Policy, optionally
+# WorkflowRun); the chart only transports them. No runtime is installed.
+
+workflow:
+  # Name of the Workflow object; defaults to the release name.
+  name: ""
+  version: 0.1.0
+  owner:
+    team: music-fans
+  classification: internal
+  schedule:
+    enabled: true
+    cron: "0 7 * * *"
+    timezone: Europe/Berlin
+    concurrencyPolicy: forbid
+    startingDeadline: 2h
+
+# What counts as relevant. Rendered into the instructions of the curator agent.
+taste:
+  genres:
+    - Metalcore
+    - Metal
+    - Hardcore
+    - Post-Hardcore
+    - Deathcore
+    - Melodic Death Metal
+  weakerGenres:
+    - Punk
+    - Rock
+  # Artists that are always relevant, also as support act.
+  artists: []
+  region:
+    home: Nuremberg
+    maxDistanceKm: 160
+    cities:
+      - Nuremberg
+      - Erlangen
+      - Fuerth
+      - Bamberg
+      - Wuerzburg
+      - Regensburg
+      - Munich
+  # Language of the summary message.
+  language: English
+
+# Venue programs to check. kind: html (text of the page), json-ld (structured events on the page)
+# or json (a JSON event list). The example URLs do not exist; replace them.
+sources:
+  - name: Venue A
+    url: https://venue-a.example.com/program.html
+    kind: html
+  - name: Venue B
+    url: https://venue-b.example.com/events
+    kind: json-ld
+  - name: Venue C
+    url: https://venue-c.example.com/program.json
+    kind: json
+
+models:
+  collector:
+    provider: anthropic
+    name: claude-haiku-5-5
+  curator:
+    provider: anthropic
+    name: claude-sonnet-5-5
+
+notification:
+  # Webhook that receives the summary as plain text.
+  url: https://notify.example.com/hooks/concerts
+  # Name of the secret with the webhook token; the runtime maps it to its secret store.
+  secretName: NOTIFY_TOKEN
+  secretSource: secret-store
+
+# Image with the command steps (fetch, diff, notify, remember), pinned by digest (security profile).
+# The example image does not exist.
+image: registry.example.com/concert-scout-tools@sha256:4f2a9c0d1e3b5a7c9e1f3b5d7a9c1e3f5b7d9a1c3e5f7b9d1a3c5e7f9b1d3a5c
+
+budget:
+  maxCostUsd: 0.5
+  maxDuration: 30m
+  maxTokens: 400000
+
+# A Policy that the workflow includes: only the listed model providers may be used.
+policy:
+  enabled: true
+  allowedModelProviders:
+    - anthropic
+    - ollama
+
+# Create a WorkflowRun with the release, which starts one execution right away.
+run:
+  enabled: false

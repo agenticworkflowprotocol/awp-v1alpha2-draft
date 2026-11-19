@@ -1,0 +1,35 @@
+name: chart
+
+on:
+  pull_request:
+    paths: ["charts/**"]
+  push:
+    branches: [main]
+    paths: ["charts/**"]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+      - run: helm lint charts/concert-scout
+      - run: helm template demo charts/concert-scout --set run.enabled=true > /dev/null
+
+  publish:
+    # Pushes the chart as an OCI artifact to ghcr.io/agenticworkflowprotocol/charts/concert-scout.
+    if: github.event_name == 'push'
+    needs: lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+      - run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io --username "${{ github.actor }}" --password-stdin
+      - run: helm package charts/concert-scout --destination dist
+      - run: helm push dist/concert-scout-*.tgz oci://ghcr.io/agenticworkflowprotocol/charts

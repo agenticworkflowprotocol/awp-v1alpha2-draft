@@ -1,0 +1,18 @@
+apiVersion: v2
+name: concert-scout
+description: >-
+  Example AWP v1alpha2 workflow packaged as a Helm chart: checks venue programs for new concerts,
+  rates them against a music taste and sends a short summary. Ships the AWP CustomResourceDefinitions.
+type: application
+version: 0.1.0
+appVersion: "v1alpha2-draft"
+keywords:
+  - awp
+  - agentic-workflows
+  - example
+home: https://agenticworkflowprotocol.github.io/awp-v1alpha2-draft/
+sources:
+  - https://github.com/agenticworkflowprotocol/awp-v1alpha2-draft
+  - https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org
+annotations:
+  awp.agenticworkflowprotocol.org/api-version: v1alpha2

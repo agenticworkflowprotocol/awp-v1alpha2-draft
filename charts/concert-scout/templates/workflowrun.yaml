@@ -1,0 +1,14 @@
+{{- if .Values.run.enabled }}
+# One execution per release revision. The workflow version is asserted, so the run is rejected
+# if another version of the workflow is current.
+apiVersion: awp.agenticworkflowprotocol.org/v1alpha2
+kind: WorkflowRun
+metadata:
+  name: {{ include "concert-scout.name" . }}-{{ .Release.Revision }}
+  labels:
+    {{- include "concert-scout.labels" . | nindent 4 }}
+spec:
+  workflowRef:
+    name: {{ include "concert-scout.name" . }}
+    version: {{ .Values.workflow.version }}
+{{- end }}

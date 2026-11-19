@@ -1,0 +1,12 @@
+Installed the AWP example workflow "{{ include "concert-scout.name" . }}" (v1alpha2 draft) in namespace {{ .Release.Namespace }}.
+
+  kubectl get workflows,policies,workflowruns -n {{ .Release.Namespace }}
+
+This chart only transports AWP manifests and the CustomResourceDefinitions. An AWP runtime
+in the cluster validates and executes them; without one, the objects are stored and nothing runs.
+{{- if not .Values.run.enabled }}
+
+Start one execution:
+
+  helm upgrade {{ .Release.Name }} <chart> -n {{ .Release.Namespace }} --reuse-values --set run.enabled=true
+{{- end }}
