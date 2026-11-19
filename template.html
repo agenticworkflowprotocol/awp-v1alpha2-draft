@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AWP v1alpha2 Draft</title>
+<meta name="description" content="What changes from AWP v1alpha1 to the v1alpha2 draft: side-by-side examples with the reason for each change.">
+<style>
+/* Layout: sticky table of contents on the left, one column of examples with two code panes each.
+   Palette follows agenticworkflowprotocol.org: cool neutral greys, teal accent. */
+:root {
+  --bg: #f7f8f9;
+  --surface: #ffffff;
+  --code-bg: #f1f3f5;
+  --fg: #1b1e22;
+  --muted: #5a6068;
+  --hairline: #dde1e5;
+  --accent: #0f8a7d;
+  --accent-soft: #d8f3ef;
+  --del-bg: #fbe9e9;
+  --del-bar: #c94a4a;
+  --add-bg: #e3f5ec;
+  --add-bar: #2b9a62;
+  --concept: #8a5a00;
+  --concept-soft: #fbf0d9;
+  --tok-key: #0b6f65;
+  --tok-comment: #7a8089;
+  --tok-dash: #8a9099;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", "DejaVu Sans Mono", Menlo, Consolas, monospace;
+  --radius: 10px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101214; --surface: #181a1d; --code-bg: #14171a; --fg: #e8eaec; --muted: #9aa0a8;
+    --hairline: #2a2e33; --accent: #5fd6c8; --accent-soft: #0c3a36;
+    --del-bg: #3a1d1f; --del-bar: #e06b6b; --add-bg: #12352a; --add-bar: #4cc38a;
+    --concept: #f0c060; --concept-soft: #3a2e12; --tok-key: #7fdcd0; --tok-comment: #7d848d; --tok-dash: #6a7078;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101214; --surface: #181a1d; --code-bg: #14171a; --fg: #e8eaec; --muted: #9aa0a8;
+  --hairline: #2a2e33; --accent: #5fd6c8; --accent-soft: #0c3a36;
+  --del-bg: #3a1d1f; --del-bar: #e06b6b; --add-bg: #12352a; --add-bar: #4cc38a;
+  --concept: #f0c060; --concept-soft: #3a2e12; --tok-key: #7fdcd0; --tok-comment: #7d848d; --tok-dash: #6a7078;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 var(--font-body);
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+code { font-family: var(--font-mono); font-size: 0.88em; background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; }
+
+.topbar {
+  position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px;
+  background: var(--surface); border-bottom: 1px solid var(--hairline);
+  padding-block: 10px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.brand { font-weight: 650; letter-spacing: 0.01em; color: var(--fg); text-decoration: none; }
+.brand span { color: var(--accent); }
+.topbar .spacer { flex: 1; }
+.topbar a.ext { font-size: 0.9rem; }
+#toc-toggle {
+  display: none; font: inherit; font-size: 0.9rem; color: var(--fg); background: var(--code-bg);
+  border: 1px solid var(--hairline); border-radius: 8px; padding: 6px 12px; cursor: pointer;
+}
+
+.layout { display: grid; grid-template-columns: 290px minmax(0, 1fr); max-width: 1500px; margin: 0 auto; }
+.toc {
+  position: sticky; top: 53px; align-self: start; height: calc(100vh - 53px); overflow-y: auto;
+  padding: 24px 16px 40px 24px; border-right: 1px solid var(--hairline); font-size: 0.9rem;
+}
+.toc ol { list-style: none; margin: 0; padding: 0; }
+.nav-chapter { margin-bottom: 18px; }
+.nav-chapter > a { display: block; font-weight: 650; color: var(--fg); text-decoration: none; margin-bottom: 4px; }
+.nav-chapter li a {
+  display: flex; gap: 8px; padding: 3px 6px; border-radius: 6px; color: var(--muted); text-decoration: none;
+}
+.nav-chapter li a:hover { background: var(--code-bg); color: var(--fg); }
+.nav-number { font-variant-numeric: tabular-nums; min-width: 1.6em; color: var(--tok-dash); }
+
+main {
+  min-width: 0; padding-block: 32px 80px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (min-width: 900px) { main { padding-left: 40px; padding-right: 40px; } }
+
+.intro { max-width: 72ch; margin-bottom: 40px; }
+.intro h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.15; margin: 0 0 12px; text-wrap: balance; }
+.intro .lede { font-size: 1.1rem; color: var(--muted); margin: 0 0 20px; }
+.notice {
+  border: 1px solid var(--hairline); background: var(--surface); border-radius: var(--radius);
+  padding: 14px 16px; font-size: 0.95rem; margin: 0 0 20px;
+}
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 0.88rem; color: var(--muted); margin: 0 0 24px; padding: 0; list-style: none; }
+.legend li { display: flex; align-items: center; gap: 6px; }
+.swatch { width: 14px; height: 14px; border-radius: 3px; border-left: 3px solid; }
+.swatch-del { background: var(--del-bg); border-color: var(--del-bar); }
+.swatch-add { background: var(--add-bg); border-color: var(--add-bar); }
+.overview { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.overview a {
+  display: flex; flex-direction: column; gap: 2px; height: 100%; padding: 12px 14px; border-radius: var(--radius);
+  border: 1px solid var(--hairline); background: var(--surface); color: var(--fg); text-decoration: none;
+}
+.overview a:hover { border-color: var(--accent); }
+.ov-title { font-weight: 600; }
+.ov-meta { font-size: 0.85rem; color: var(--muted); }
+
+.chapter { margin-top: 56px; }
+.chapter-head { max-width: 72ch; margin-bottom: 20px; }
+.chapter-head h2 { font-size: 1.6rem; margin: 4px 0 6px; text-wrap: balance; }
+.chapter-intro { color: var(--muted); margin: 0; }
+.eyebrow { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 0.85rem; }
+.chip {
+  font-size: 0.75rem; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 999px;
+}
+.chip-concept { color: var(--concept); background: var(--concept-soft); }
+
+.example { border-top: 1px solid var(--hairline); padding-top: 22px; margin-top: 28px; }
+.example-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+.example-head h3 { margin: 0; font-size: 1.2rem; text-wrap: balance; }
+.example-number { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 0.95rem; min-width: 1.6em; }
+.panes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 1100px) { .panes { grid-template-columns: minmax(0, 1fr); } }
+.pane { margin: 0; min-width: 0; border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--code-bg); overflow: hidden; }
+.pane figcaption {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  padding: 7px 12px; border-bottom: 1px solid var(--hairline); background: var(--surface); font-size: 0.82rem;
+}
+.pane-label { font-weight: 650; letter-spacing: 0.02em; }
+.pane-left .pane-label { color: var(--muted); }
+.pane-right .pane-label { color: var(--accent); }
+.verified { color: var(--muted); font-size: 0.78rem; }
+.verified::before { content: "✓ "; color: var(--add-bar); }
+.pane pre { margin: 0; overflow-x: auto; padding: 10px 0; font: 13px/1.55 var(--font-mono); }
+.pane pre code { background: none; padding: 0; font-size: inherit; display: block; min-width: max-content; }
+.pane pre code > span { display: block; padding: 0 14px; border-left: 3px solid transparent; white-space: pre; }
+.line-del { background: var(--del-bg); border-left-color: var(--del-bar) !important; }
+.line-add { background: var(--add-bg); border-left-color: var(--add-bar) !important; }
+.tok-key { color: var(--tok-key); }
+.tok-comment { color: var(--tok-comment); font-style: italic; }
+.tok-dash { color: var(--tok-dash); }
+.tok-cmd { color: var(--muted); }
+
+.explain { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 28px; margin-top: 14px; max-width: 1100px; }
+@media (max-width: 700px) { .explain { grid-template-columns: minmax(0, 1fr); } }
+.explain h4 { margin: 0 0 2px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.explain p { margin: 0; }
+.refs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.refs a {
+  font-size: 0.82rem; text-decoration: none; padding: 2px 10px; border-radius: 999px;
+  border: 1px solid var(--hairline); color: var(--accent);
+}
+.refs a:hover { border-color: var(--accent); }
+.page-foot { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--hairline); color: var(--muted); font-size: 0.88rem; max-width: 72ch; }
+
+@media (max-width: 899px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  #toc-toggle { display: inline-block; }
+  .toc {
+    position: fixed; top: 53px; left: 0; right: 0; bottom: 0; height: auto; z-index: 15;
+    background: var(--surface); border-right: none; padding: 20px max(16px, env(safe-area-inset-right, 0px)) calc(40px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  }
+  .topbar a.ext { display: none; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#top">AWP <span>v1alpha2</span> draft</a>
+  <span class="spacer"></span>
+  <a class="ext" href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/pull/16">Pull request</a>
+  <a class="ext" href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/docs/v1alpha2-review-guide.md">Review guide</a>
+  <button id="toc-toggle" type="button" aria-expanded="false" aria-controls="toc">Contents</button>
+</header>
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Contents"><ol>{{nav}}</ol></nav>
+  <main id="top">
+    <section class="intro">
+      <h1>From v1alpha1 to the v1alpha2 draft</h1>
+      <p class="lede">{{count}} examples of what changes in the Agentic Workflow Protocol, each with the old form on the left, the new form on the right, and the reason for the change.</p>
+      <p class="notice">The v1alpha2 draft makes AWP manifests valid Kubernetes resources while keeping them usable by runtimes without Kubernetes, and adds what a first runtime implementation was missing. Everything here is a <strong>Draft</strong> under review; nothing is accepted. The last chapter is a <strong>concept</strong> that is not applied to the schema. Snippets marked <span class="verified">valid</span> or <span class="verified">rejected by checker</span> were run through the reference checker.</p>
+      <ul class="legend">
+        <li><span class="swatch swatch-del"></span>only in the old form</li>
+        <li><span class="swatch swatch-add"></span>new or moved in the new form</li>
+      </ul>
+      <ol class="overview">{{overview}}</ol>
+    </section>
+    {{chapters}}
+    <footer class="page-foot">
+      Source of every example: the AEPs, the specification draft and the conformance suite in
+      <a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/tree/feat/v1alpha2-refactoring">agenticworkflowprotocol.org</a>.
+      This page is generated from <a href="https://github.com/agenticworkflowprotocol/awp-v1alpha2-draft">awp-v1alpha2-draft</a>; corrections are welcome as issues or pull requests.
+    </footer>
+  </main>
+</div>
+<script>
+  // Mobile: the table of contents is an overlay that closes after a jump.
+  const toggle = document.getElementById('toc-toggle');
+  const toc = document.getElementById('toc');
+  const mobile = window.matchMedia('(max-width: 899px)');
+  function setOpen(open) {
+    toggle.setAttribute('aria-expanded', String(open));
+    toc.hidden = mobile.matches && !open;
+    toggle.textContent = open ? 'Close' : 'Contents';
+  }
+  toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+  toc.addEventListener('click', (event) => { if (event.target.closest('a') && mobile.matches) setOpen(false); });
+  mobile.addEventListener('change', () => setOpen(false));
+  setOpen(false);
+</script>
+</body>
+</html>

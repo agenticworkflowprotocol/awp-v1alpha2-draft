@@ -1,0 +1,858 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AWP v1alpha2 Draft</title>
+<meta name="description" content="What changes from AWP v1alpha1 to the v1alpha2 draft: side-by-side examples with the reason for each change.">
+<style>
+/* Layout: sticky table of contents on the left, one column of examples with two code panes each.
+   Palette follows agenticworkflowprotocol.org: cool neutral greys, teal accent. */
+:root {
+  --bg: #f7f8f9;
+  --surface: #ffffff;
+  --code-bg: #f1f3f5;
+  --fg: #1b1e22;
+  --muted: #5a6068;
+  --hairline: #dde1e5;
+  --accent: #0f8a7d;
+  --accent-soft: #d8f3ef;
+  --del-bg: #fbe9e9;
+  --del-bar: #c94a4a;
+  --add-bg: #e3f5ec;
+  --add-bar: #2b9a62;
+  --concept: #8a5a00;
+  --concept-soft: #fbf0d9;
+  --tok-key: #0b6f65;
+  --tok-comment: #7a8089;
+  --tok-dash: #8a9099;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", "DejaVu Sans Mono", Menlo, Consolas, monospace;
+  --radius: 10px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101214; --surface: #181a1d; --code-bg: #14171a; --fg: #e8eaec; --muted: #9aa0a8;
+    --hairline: #2a2e33; --accent: #5fd6c8; --accent-soft: #0c3a36;
+    --del-bg: #3a1d1f; --del-bar: #e06b6b; --add-bg: #12352a; --add-bar: #4cc38a;
+    --concept: #f0c060; --concept-soft: #3a2e12; --tok-key: #7fdcd0; --tok-comment: #7d848d; --tok-dash: #6a7078;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101214; --surface: #181a1d; --code-bg: #14171a; --fg: #e8eaec; --muted: #9aa0a8;
+  --hairline: #2a2e33; --accent: #5fd6c8; --accent-soft: #0c3a36;
+  --del-bg: #3a1d1f; --del-bar: #e06b6b; --add-bg: #12352a; --add-bar: #4cc38a;
+  --concept: #f0c060; --concept-soft: #3a2e12; --tok-key: #7fdcd0; --tok-comment: #7d848d; --tok-dash: #6a7078;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 var(--font-body);
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+code { font-family: var(--font-mono); font-size: 0.88em; background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; }
+
+.topbar {
+  position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px;
+  background: var(--surface); border-bottom: 1px solid var(--hairline);
+  padding-block: 10px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.brand { font-weight: 650; letter-spacing: 0.01em; color: var(--fg); text-decoration: none; }
+.brand span { color: var(--accent); }
+.topbar .spacer { flex: 1; }
+.topbar a.ext { font-size: 0.9rem; }
+#toc-toggle {
+  display: none; font: inherit; font-size: 0.9rem; color: var(--fg); background: var(--code-bg);
+  border: 1px solid var(--hairline); border-radius: 8px; padding: 6px 12px; cursor: pointer;
+}
+
+.layout { display: grid; grid-template-columns: 290px minmax(0, 1fr); max-width: 1500px; margin: 0 auto; }
+.toc {
+  position: sticky; top: 53px; align-self: start; height: calc(100vh - 53px); overflow-y: auto;
+  padding: 24px 16px 40px 24px; border-right: 1px solid var(--hairline); font-size: 0.9rem;
+}
+.toc ol { list-style: none; margin: 0; padding: 0; }
+.nav-chapter { margin-bottom: 18px; }
+.nav-chapter > a { display: block; font-weight: 650; color: var(--fg); text-decoration: none; margin-bottom: 4px; }
+.nav-chapter li a {
+  display: flex; gap: 8px; padding: 3px 6px; border-radius: 6px; color: var(--muted); text-decoration: none;
+}
+.nav-chapter li a:hover { background: var(--code-bg); color: var(--fg); }
+.nav-number { font-variant-numeric: tabular-nums; min-width: 1.6em; color: var(--tok-dash); }
+
+main {
+  min-width: 0; padding-block: 32px 80px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (min-width: 900px) { main { padding-left: 40px; padding-right: 40px; } }
+
+.intro { max-width: 72ch; margin-bottom: 40px; }
+.intro h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.15; margin: 0 0 12px; text-wrap: balance; }
+.intro .lede { font-size: 1.1rem; color: var(--muted); margin: 0 0 20px; }
+.notice {
+  border: 1px solid var(--hairline); background: var(--surface); border-radius: var(--radius);
+  padding: 14px 16px; font-size: 0.95rem; margin: 0 0 20px;
+}
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 0.88rem; color: var(--muted); margin: 0 0 24px; padding: 0; list-style: none; }
+.legend li { display: flex; align-items: center; gap: 6px; }
+.swatch { width: 14px; height: 14px; border-radius: 3px; border-left: 3px solid; }
+.swatch-del { background: var(--del-bg); border-color: var(--del-bar); }
+.swatch-add { background: var(--add-bg); border-color: var(--add-bar); }
+.overview { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.overview a {
+  display: flex; flex-direction: column; gap: 2px; height: 100%; padding: 12px 14px; border-radius: var(--radius);
+  border: 1px solid var(--hairline); background: var(--surface); color: var(--fg); text-decoration: none;
+}
+.overview a:hover { border-color: var(--accent); }
+.ov-title { font-weight: 600; }
+.ov-meta { font-size: 0.85rem; color: var(--muted); }
+
+.chapter { margin-top: 56px; }
+.chapter-head { max-width: 72ch; margin-bottom: 20px; }
+.chapter-head h2 { font-size: 1.6rem; margin: 4px 0 6px; text-wrap: balance; }
+.chapter-intro { color: var(--muted); margin: 0; }
+.eyebrow { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 0.85rem; }
+.chip {
+  font-size: 0.75rem; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 999px;
+}
+.chip-concept { color: var(--concept); background: var(--concept-soft); }
+
+.example { border-top: 1px solid var(--hairline); padding-top: 22px; margin-top: 28px; }
+.example-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+.example-head h3 { margin: 0; font-size: 1.2rem; text-wrap: balance; }
+.example-number { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 0.95rem; min-width: 1.6em; }
+.panes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 1100px) { .panes { grid-template-columns: minmax(0, 1fr); } }
+.pane { margin: 0; min-width: 0; border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--code-bg); overflow: hidden; }
+.pane figcaption {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  padding: 7px 12px; border-bottom: 1px solid var(--hairline); background: var(--surface); font-size: 0.82rem;
+}
+.pane-label { font-weight: 650; letter-spacing: 0.02em; }
+.pane-left .pane-label { color: var(--muted); }
+.pane-right .pane-label { color: var(--accent); }
+.verified { color: var(--muted); font-size: 0.78rem; }
+.verified::before { content: "✓ "; color: var(--add-bar); }
+.pane pre { margin: 0; overflow-x: auto; padding: 10px 0; font: 13px/1.55 var(--font-mono); }
+.pane pre code { background: none; padding: 0; font-size: inherit; display: block; min-width: max-content; }
+.pane pre code > span { display: block; padding: 0 14px; border-left: 3px solid transparent; white-space: pre; }
+.line-del { background: var(--del-bg); border-left-color: var(--del-bar) !important; }
+.line-add { background: var(--add-bg); border-left-color: var(--add-bar) !important; }
+.tok-key { color: var(--tok-key); }
+.tok-comment { color: var(--tok-comment); font-style: italic; }
+.tok-dash { color: var(--tok-dash); }
+.tok-cmd { color: var(--muted); }
+
+.explain { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 28px; margin-top: 14px; max-width: 1100px; }
+@media (max-width: 700px) { .explain { grid-template-columns: minmax(0, 1fr); } }
+.explain h4 { margin: 0 0 2px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.explain p { margin: 0; }
+.refs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.refs a {
+  font-size: 0.82rem; text-decoration: none; padding: 2px 10px; border-radius: 999px;
+  border: 1px solid var(--hairline); color: var(--accent);
+}
+.refs a:hover { border-color: var(--accent); }
+.page-foot { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--hairline); color: var(--muted); font-size: 0.88rem; max-width: 72ch; }
+
+@media (max-width: 899px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  #toc-toggle { display: inline-block; }
+  .toc {
+    position: fixed; top: 53px; left: 0; right: 0; bottom: 0; height: auto; z-index: 15;
+    background: var(--surface); border-right: none; padding: 20px max(16px, env(safe-area-inset-right, 0px)) calc(40px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  }
+  .topbar a.ext { display: none; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#top">AWP <span>v1alpha2</span> draft</a>
+  <span class="spacer"></span>
+  <a class="ext" href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/pull/16">Pull request</a>
+  <a class="ext" href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/docs/v1alpha2-review-guide.md">Review guide</a>
+  <button id="toc-toggle" type="button" aria-expanded="false" aria-controls="toc">Contents</button>
+</header>
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Contents"><ol><li class="nav-chapter"><a href="#model">Document model</a><ol><li><a href="#minimal"><span class="nav-number">1</span>A minimal workflow</a></li><li><a href="#governance-fields"><span class="nav-number">2</span>Governance fields live in spec</a></li><li><a href="#owner"><span class="nav-number">3</span>Owner is always an object</a></li><li><a href="#policy-conditions"><span class="nav-number">4</span>Policy conditions have one form</a></li><li><a href="#agent"><span class="nav-number">5</span>Agent manifests</a></li><li><a href="#store-fields"><span class="nav-number">6</span>Objects read back from a cluster</a></li><li><a href="#digest"><span class="nav-number">7</span>The digest survives deployment</a></li><li><a href="#status"><span class="nav-number">8</span>status is reserved for runtimes</a></li><li><a href="#kubernetes"><span class="nav-number">9</span>Storing a workflow in Kubernetes</a></li><li><a href="#extensions-interim"><span class="nav-number">10</span>x- fields move into extensions</a></li></ol></li><li class="nav-chapter"><a href="#schedule">Schedules</a><ol><li><a href="#concurrency"><span class="nav-number">11</span>Overlapping ticks</a></li><li><a href="#trigger-skipped"><span class="nav-number">12</span>Skipped ticks are audited</a></li></ol></li><li class="nav-chapter"><a href="#input">Human input</a><ol><li><a href="#input-step"><span class="nav-number">13</span>Asking a person during a workflow</a></li><li><a href="#agent-input"><span class="nav-number">14</span>An agent asks a question</a></li></ol></li><li class="nav-chapter"><a href="#outputs">Step outputs</a><ol><li><a href="#command-outputs"><span class="nav-number">15</span>Outputs of a command step</a></li><li><a href="#agent-outputs"><span class="nav-number">16</span>Outputs of an agent step</a></li><li><a href="#reserved-env"><span class="nav-number">17</span>Reserved environment variables</a></li></ol></li><li class="nav-chapter"><a href="#run">WorkflowRun and status</a><ol><li><a href="#start-run"><span class="nav-number">18</span>Starting an execution</a></li><li><a href="#run-status"><span class="nav-number">19</span>Watching an execution</a></li><li><a href="#kubectl"><span class="nav-number">20</span>kubectl shows validity and progress</a></li></ol></li><li class="nav-chapter"><a href="#pinning">Execution pinning</a><ol><li><a href="#pinning"><span class="nav-number">21</span>A GitOps sync during an execution</a></li><li><a href="#started-digest"><span class="nav-number">22</span>The digest is required at start</a></li><li><a href="#assert-version"><span class="nav-number">23</span>Run exactly the reviewed version</a></li></ol></li><li class="nav-chapter"><a href="#extensions">Extension model (concept)</a><ol><li><a href="#extension-step"><span class="nav-number">24</span>A vendor-specific step</a></li><li><a href="#policy-attachment"><span class="nav-number">25</span>Policies attached by the platform team</a></li><li><a href="#binding"><span class="nav-number">26</span>Runtime configuration stays out of the manifest</a></li><li><a href="#domain-values"><span class="nav-number">27</span>Vendor values carry a domain</a></li><li><a href="#strict"><span class="nav-number">28</span>Typos are caught at apply time</a></li></ol></li></ol></nav>
+  <main id="top">
+    <section class="intro">
+      <h1>From v1alpha1 to the v1alpha2 draft</h1>
+      <p class="lede">28 examples of what changes in the Agentic Workflow Protocol, each with the old form on the left, the new form on the right, and the reason for the change.</p>
+      <p class="notice">The v1alpha2 draft makes AWP manifests valid Kubernetes resources while keeping them usable by runtimes without Kubernetes, and adds what a first runtime implementation was missing. Everything here is a <strong>Draft</strong> under review; nothing is accepted. The last chapter is a <strong>concept</strong> that is not applied to the schema. Snippets marked <span class="verified">valid</span> or <span class="verified">rejected by checker</span> were run through the reference checker.</p>
+      <ul class="legend">
+        <li><span class="swatch swatch-del"></span>only in the old form</li>
+        <li><span class="swatch swatch-add"></span>new or moved in the new form</li>
+      </ul>
+      <ol class="overview"><li><a href="#model"><span class="ov-title">Document model</span><span class="ov-meta">AEP-0015 · 10 examples</span></a></li><li><a href="#schedule"><span class="ov-title">Schedules</span><span class="ov-meta">AEP-0016 · 2 examples</span></a></li><li><a href="#input"><span class="ov-title">Human input</span><span class="ov-meta">AEP-0017 · 2 examples</span></a></li><li><a href="#outputs"><span class="ov-title">Step outputs</span><span class="ov-meta">AEP-0018 · 3 examples</span></a></li><li><a href="#run"><span class="ov-title">WorkflowRun and status</span><span class="ov-meta">AEP-0019 · 3 examples</span></a></li><li><a href="#pinning"><span class="ov-title">Execution pinning</span><span class="ov-meta">AEP-0020 · 3 examples</span></a></li><li><a href="#extensions"><span class="ov-title">Extension model (concept)</span><span class="ov-meta">AEP-0021 · 5 examples · concept</span></a></li></ol>
+    </section>
+    <section class="chapter" id="model">
+  <header class="chapter-head">
+    <p class="eyebrow"><span class="chip">Draft</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0015-kubernetes-resource-model.md">AEP-0015</a></p>
+    <h2>Document model</h2>
+    <p class="chapter-intro">Every manifest becomes a valid Kubernetes resource and stays usable without Kubernetes. Most of this is a mechanical move, done by <code>awp-check.mjs migrate</code>.</p>
+  </header>
+  <article class="example" id="minimal">
+  <header class="example-head">
+    <span class="example-number">1</span>
+    <h3>A minimal workflow</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span class="line-del"><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha1</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> hello</span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 0.1.0</span></span><span>  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">team</span>:<span class="tok-value"> platform-team</span></span><span class="line-del"><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> assistant</span></span><span>      <span class="tok-key">model</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">provider</span>:<span class="tok-value"> ollama</span></span><span>        <span class="tok-key">name</span>:<span class="tok-value"> qwen3</span></span><span>  <span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> greet</span></span><span>      <span class="tok-key">agent</span>:<span class="tok-value"> assistant</span></span><span>      <span class="tok-key">task</span>:<span class="tok-value"> Say hello.</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span class="line-add"><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha2</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> hello</span></span><span class="line-add"><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 0.1.0</span></span><span>  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">team</span>:<span class="tok-value"> platform-team</span></span><span>  <span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> assistant</span></span><span>      <span class="tok-key">model</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">provider</span>:<span class="tok-value"> ollama</span></span><span>        <span class="tok-key">name</span>:<span class="tok-value"> qwen3</span></span><span>  <span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> greet</span></span><span>      <span class="tok-key">agent</span>:<span class="tok-value"> assistant</span></span><span>      <span class="tok-key">task</span>:<span class="tok-value"> Say hello.</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p><code>version</code> and <code>owner</code> move from <code>metadata</code> into <code>spec</code>. Nothing else changes.</p></div>
+    <div><h4>Why</h4><p>In Kubernetes, <code>metadata</code> is <code>ObjectMeta</code>. The API server drops every field it does not know, so a stored v1alpha1 workflow would lose its version and owner, and its digest would no longer verify.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0015-kubernetes-resource-model.md">AEP-0015</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#41-metadata">Spec 4.1</a></footer>
+</article>
+<article class="example" id="governance-fields">
+  <header class="example-head">
+    <span class="example-number">2</span>
+    <h3>Governance fields live in spec</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span class="line-del"><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha1</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> invoice-processing</span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 1.2.0</span></span><span>  <span class="tok-key">description</span>:<span class="tok-value"> Extract, check and book invoices.</span></span><span>  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">team</span>:<span class="tok-value"> finance-automation</span></span><span>  <span class="tok-key">classification</span>:<span class="tok-value"> confidential</span></span><span>  <span class="tok-key">purpose</span>:<span class="tok-value"> Accounts payable processing</span></span><span>  <span class="tok-key">risk</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">level</span>:<span class="tok-value"> high</span></span><span class="line-del"><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> extractor</span></span><span>      <span class="tok-key">model</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">provider</span>:<span class="tok-value"> ollama</span></span><span>        <span class="tok-key">name</span>:<span class="tok-value"> qwen3</span></span><span>  <span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> extract</span></span><span>      <span class="tok-key">agent</span>:<span class="tok-value"> extractor</span></span><span>      <span class="tok-key">task</span>:<span class="tok-value"> Extract the invoice fields.</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span class="line-add"><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha2</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> invoice-processing</span></span><span class="line-add"><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 1.2.0</span></span><span>  <span class="tok-key">description</span>:<span class="tok-value"> Extract, check and book invoices.</span></span><span>  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">team</span>:<span class="tok-value"> finance-automation</span></span><span>  <span class="tok-key">classification</span>:<span class="tok-value"> confidential</span></span><span>  <span class="tok-key">purpose</span>:<span class="tok-value"> Accounts payable processing</span></span><span>  <span class="tok-key">risk</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">level</span>:<span class="tok-value"> high</span></span><span>  <span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> extractor</span></span><span>      <span class="tok-key">model</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">provider</span>:<span class="tok-value"> ollama</span></span><span>        <span class="tok-key">name</span>:<span class="tok-value"> qwen3</span></span><span>  <span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> extract</span></span><span>      <span class="tok-key">agent</span>:<span class="tok-value"> extractor</span></span><span>      <span class="tok-key">task</span>:<span class="tok-value"> Extract the invoice fields.</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p><code>description</code>, <code>classification</code>, <code>purpose</code>, <code>risk</code>, <code>integrity</code>, <code>signature</code> and <code>provenance</code> move to <code>spec</code> as well, with unchanged meaning.</p></div>
+    <div><h4>Why</h4><p>They are governed content: covered by the digest, reviewed and signed. Labels and annotations would have been the only other place in <code>metadata</code>, and governance must never depend on labels.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0015-kubernetes-resource-model.md">AEP-0015</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#42-common-spec-fields">Spec 4.2</a></footer>
+</article>
+<article class="example" id="owner">
+  <header class="example-head">
+    <span class="example-number">3</span>
+    <h3>Owner is always an object</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span></figcaption>
+  <pre><code><span class="line-del"><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span class="line-del">  <span class="tok-key">name</span>:<span class="tok-value"> hello</span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 0.1.0</span></span><span class="line-del">  <span class="tok-key">owner</span>:<span class="tok-value"> platform-team</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span></figcaption>
+  <pre><code><span class="line-add"><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 0.1.0</span></span><span class="line-add">  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-key">team</span>:<span class="tok-value"> platform-team</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>The string shorthand for <code>owner</code> is gone. <code>owner</code> always has <code>team</code> (and optionally <code>contact</code>).</p></div>
+    <div><h4>Why</h4><p>A CustomResourceDefinition needs a structural schema: one type per field. &quot;String or object&quot; cannot be expressed. The migration tool expands the shorthand.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0015-kubernetes-resource-model.md">AEP-0015</a></footer>
+</article>
+<article class="example" id="policy-conditions">
+  <header class="example-head">
+    <span class="example-number">4</span>
+    <h3>Policy conditions have one form</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span class="line-del"><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha1</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> Policy</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> production-guard</span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 1.0.0</span></span><span>  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">team</span>:<span class="tok-value"> governance-team</span></span><span class="line-del"><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">rules</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> no-prod-deploys-by-agents</span></span><span>      <span class="tok-key">effect</span>:<span class="tok-value"> deny</span></span><span>      <span class="tok-key">when</span>:<span class="tok-value"></span></span><span class="line-del">        <span class="tok-key">action</span>:<span class="tok-value"> production.deploy</span></span><span class="line-del">        <span class="tok-key">actor.type</span>:<span class="tok-value"> agent</span></span><span>        <span class="tok-key">risk.level</span>:<span class="tok-value"></span></span><span>          <span class="tok-key">gte</span>:<span class="tok-value"> high</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span class="line-add"><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha2</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> Policy</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> production-guard</span></span><span class="line-add"><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 1.0.0</span></span><span>  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">team</span>:<span class="tok-value"> governance-team</span></span><span>  <span class="tok-key">rules</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> no-prod-deploys-by-agents</span></span><span>      <span class="tok-key">effect</span>:<span class="tok-value"> deny</span></span><span>      <span class="tok-key">when</span>:<span class="tok-value"></span></span><span class="line-add">        <span class="tok-key">action</span>:<span class="tok-value"></span></span><span class="line-add">          <span class="tok-key">equals</span>:<span class="tok-value"> production.deploy</span></span><span class="line-add">        <span class="tok-key">actor.type</span>:<span class="tok-value"></span></span><span class="line-add">          <span class="tok-key">equals</span>:<span class="tok-value"> agent</span></span><span>        <span class="tok-key">risk.level</span>:<span class="tok-value"></span></span><span>          <span class="tok-key">gte</span>:<span class="tok-value"> high</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>The plain-value shorthand for <code>equals</code> is removed. Every attribute maps to an operator object.</p></div>
+    <div><h4>Why</h4><p>Same reason as <code>owner</code>: a value that is either a string or an object is not a structural schema.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0015-kubernetes-resource-model.md">AEP-0015</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#83-conditions">Spec 8.3</a></footer>
+</article>
+<article class="example" id="agent">
+  <header class="example-head">
+    <span class="example-number">5</span>
+    <h3>Agent manifests</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span class="line-del"><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha1</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> Agent</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> invoice-extractor</span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 1.0.0</span></span><span>  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">team</span>:<span class="tok-value"> finance-automation</span></span><span>  <span class="tok-key">classification</span>:<span class="tok-value"> confidential</span></span><span class="line-del"><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">model</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">provider</span>:<span class="tok-value"> ollama</span></span><span>    <span class="tok-key">name</span>:<span class="tok-value"> qwen3</span></span><span>  <span class="tok-key">instructions</span>:<span class="tok-value"> |</span></span><span>    Extract invoice number, date,</span><span>    supplier and total.</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span class="line-add"><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha2</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> Agent</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> invoice-extractor</span></span><span class="line-add"><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 1.0.0</span></span><span>  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">team</span>:<span class="tok-value"> finance-automation</span></span><span>  <span class="tok-key">classification</span>:<span class="tok-value"> confidential</span></span><span>  <span class="tok-key">model</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">provider</span>:<span class="tok-value"> ollama</span></span><span>    <span class="tok-key">name</span>:<span class="tok-value"> qwen3</span></span><span>  <span class="tok-key">instructions</span>:<span class="tok-value"> |</span></span><span>    Extract invoice number, date,</span><span>    supplier and total.</span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>The same move applies to every kind: <code>Workflow</code>, <code>Agent</code> and <code>Policy</code>.</p></div>
+    <div><h4>Why</h4><p>One rule for all kinds keeps the migration mechanical and the CRDs uniform.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0015-kubernetes-resource-model.md">AEP-0015</a></footer>
+</article>
+<article class="example" id="store-fields">
+  <header class="example-head">
+    <span class="example-number">6</span>
+    <h3>Objects read back from a cluster</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1: rejected (unknown fields)</span><span class="verified" title="Checked with the reference checker">rejected by checker</span></figcaption>
+  <pre><code><span class="line-del"><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha1</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> hello</span></span><span class="line-del">  <span class="tok-key">version</span>:<span class="tok-value"> 0.1.0</span></span><span class="line-del">  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span class="line-del">    <span class="tok-key">team</span>:<span class="tok-value"> platform-team</span></span><span>  <span class="tok-key">uid</span>:<span class="tok-value"> 2f1c7a52-6a0e-4d55-9b1e-0c2f4b9a7d11</span></span><span>  <span class="tok-key">resourceVersion</span>:<span class="tok-value"> &quot;4711&quot;</span></span><span>  <span class="tok-key">generation</span>:<span class="tok-value"> 3</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> assistant</span></span><span>      <span class="tok-key">model</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">provider</span>:<span class="tok-value"> ollama</span></span><span>        <span class="tok-key">name</span>:<span class="tok-value"> qwen3</span></span><span>  <span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> greet</span></span><span>      <span class="tok-key">agent</span>:<span class="tok-value"> assistant</span></span><span>      <span class="tok-key">task</span>:<span class="tok-value"> Say hello.</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span class="line-add"><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha2</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> hello</span></span><span class="line-add">  <span class="tok-key">namespace</span>:<span class="tok-value"> team-a</span></span><span>  <span class="tok-key">uid</span>:<span class="tok-value"> 2f1c7a52-6a0e-4d55-9b1e-0c2f4b9a7d11</span></span><span>  <span class="tok-key">resourceVersion</span>:<span class="tok-value"> &quot;4711&quot;</span></span><span>  <span class="tok-key">generation</span>:<span class="tok-value"> 3</span></span><span class="line-add">  <span class="tok-key">managedFields</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-dash">- </span><span class="tok-key">manager</span>:<span class="tok-value"> example-controller</span></span><span class="line-add">      <span class="tok-key">operation</span>:<span class="tok-value"> Apply</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span class="line-add">  <span class="tok-key">version</span>:<span class="tok-value"> 0.1.0</span></span><span class="line-add">  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-key">team</span>:<span class="tok-value"> platform-team</span></span><span>  <span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> assistant</span></span><span>      <span class="tok-key">model</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">provider</span>:<span class="tok-value"> ollama</span></span><span>        <span class="tok-key">name</span>:<span class="tok-value"> qwen3</span></span><span>  <span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> greet</span></span><span>      <span class="tok-key">agent</span>:<span class="tok-value"> assistant</span></span><span>      <span class="tok-key">task</span>:<span class="tok-value"> Say hello.</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>Fields that an object store fills in (<code>uid</code>, <code>resourceVersion</code>, <code>generation</code>, <code>managedFields</code>, ...) are accepted and ignored.</p></div>
+    <div><h4>Why</h4><p>Every object read back from a Kubernetes API server carries them. A validator that rejected them could not check what is actually stored in a cluster.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0015-kubernetes-resource-model.md">AEP-0015</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#41-metadata">Spec 4.1</a></footer>
+</article>
+<article class="example" id="digest">
+  <header class="example-head">
+    <span class="example-number">7</span>
+    <h3>The digest survives deployment</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span></figcaption>
+  <pre><code><span>v1alpha1 digest input:</span><span>  the whole document without integrity,</span><span>  signature and provenance</span><span> </span><span>  metadata.name          covered</span><span>  metadata.version       covered</span><span>  metadata.owner         covered</span><span>  metadata.labels        covered</span><span>  metadata.namespace     (not defined)</span><span> </span><span>Kustomize adds a label</span><span>  -&gt; digest changes</span><span>  -&gt; signature no longer verifies</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha2</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> hello</span></span><span>  <span class="tok-key">namespace</span>:<span class="tok-value"> team-b       </span><span class="tok-comment"> # not covered</span></span><span>  <span class="tok-key">labels</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">tier</span>:<span class="tok-value"> gold            </span><span class="tok-comment"> # not covered</span></span><span>  <span class="tok-key">annotations</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">note</span>:<span class="tok-value"> deployed by a tool</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 0.1.0</span></span><span>  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">team</span>:<span class="tok-value"> platform-team</span></span><span>  <span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> assistant</span></span><span>      <span class="tok-key">model</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">provider</span>:<span class="tok-value"> ollama</span></span><span>        <span class="tok-key">name</span>:<span class="tok-value"> qwen3</span></span><span>  <span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> greet</span></span><span>      <span class="tok-key">agent</span>:<span class="tok-value"> assistant</span></span><span>      <span class="tok-key">task</span>:<span class="tok-value"> Say hello.</span></span><span>  <span class="tok-key">integrity</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">digest</span>:<span class="tok-value"> sha256:467f53622bc33e24ae28edac84e6507bd891f00812fe71729f40e28095ac3742</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>The digest covers <code>apiVersion</code>, <code>kind</code>, <code>metadata.name</code> and <code>spec</code> (without <code>integrity</code>, <code>signature</code>, <code>provenance</code>). Namespace, labels, annotations, store fields and <code>status</code> are not covered.</p></div>
+    <div><h4>Why</h4><p>Deployment tools (Argo CD, Flux, Kustomize, Helm) change namespace, labels and annotations. A reviewed and signed manifest must keep its digest through that. This case is in the conformance suite and verifies.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0015-kubernetes-resource-model.md">AEP-0015</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#91-manifest-digest">Spec 9.1</a></footer>
+</article>
+<article class="example" id="status">
+  <header class="example-head">
+    <span class="example-number">8</span>
+    <h3>status is reserved for runtimes</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1: rejected (unknown top-level field)</span><span class="verified" title="Checked with the reference checker">rejected by checker</span></figcaption>
+  <pre><code><span class="line-del"><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha1</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> hello</span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 0.1.0</span></span><span>  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">team</span>:<span class="tok-value"> platform-team</span></span><span class="line-del"><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> assistant</span></span><span>      <span class="tok-key">model</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">provider</span>:<span class="tok-value"> ollama</span></span><span>        <span class="tok-key">name</span>:<span class="tok-value"> qwen3</span></span><span>  <span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> greet</span></span><span>      <span class="tok-key">agent</span>:<span class="tok-value"> assistant</span></span><span>      <span class="tok-key">task</span>:<span class="tok-value"> Say hello.</span></span><span><span class="tok-key">status</span>:<span class="tok-value"></span></span><span class="line-del">  <span class="tok-key">ready</span>:<span class="tok-value"> true</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span class="line-add"><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha2</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> hello</span></span><span class="line-add"><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 0.1.0</span></span><span>  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">team</span>:<span class="tok-value"> platform-team</span></span><span>  <span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> assistant</span></span><span>      <span class="tok-key">model</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">provider</span>:<span class="tok-value"> ollama</span></span><span>        <span class="tok-key">name</span>:<span class="tok-value"> qwen3</span></span><span>  <span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> greet</span></span><span>      <span class="tok-key">agent</span>:<span class="tok-value"> assistant</span></span><span>      <span class="tok-key">task</span>:<span class="tok-value"> Say hello.</span></span><span><span class="tok-key">status</span>:<span class="tok-value"></span></span><span class="line-add">  <span class="tok-key">observedGeneration</span>:<span class="tok-value"> 3</span></span><span class="line-add">  <span class="tok-key">digest</span>:<span class="tok-value"> sha256:467f53622bc33e24ae28edac84e6507bd891f00812fe71729f40e28095ac3742</span></span><span class="line-add">  <span class="tok-key">conditions</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-dash">- </span><span class="tok-key">type</span>:<span class="tok-value"> Valid</span></span><span class="line-add">      <span class="tok-key">status</span>:<span class="tok-value"> &quot;True&quot;</span></span><span class="line-add">      <span class="tok-key">reason</span>:<span class="tok-value"> Validated</span></span><span class="line-add">      <span class="tok-key">message</span>:<span class="tok-value"> &quot;&quot;</span></span><span class="line-add">      <span class="tok-key">lastTransitionTime</span>:<span class="tok-value"> 2026-11-19T08:00:00Z</span></span><span class="line-add">    <span class="tok-dash">- </span><span class="tok-key">type</span>:<span class="tok-value"> Ready</span></span><span class="line-add">      <span class="tok-key">status</span>:<span class="tok-value"> &quot;True&quot;</span></span><span class="line-add">      <span class="tok-key">reason</span>:<span class="tok-value"> Ready</span></span><span class="line-add">      <span class="tok-key">message</span>:<span class="tok-value"> &quot;&quot;</span></span><span class="line-add">      <span class="tok-key">lastTransitionTime</span>:<span class="tok-value"> 2026-11-19T08:00:00Z</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>A manifest may carry <code>status</code>. Validators ignore it, the digest does not cover it, and runtimes never derive governance decisions from a status they did not write.</p></div>
+    <div><h4>Why</h4><p>The runtime reports there whether it accepted the manifest. <code>kubectl get</code> and <code>kubectl wait --for=condition=Valid</code> read it directly.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0015-kubernetes-resource-model.md">AEP-0015</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0019-workflow-run-and-status.md">AEP-0019</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#311-status">Spec 3.11</a></footer>
+</article>
+<article class="example" id="kubernetes">
+  <header class="example-head">
+    <span class="example-number">9</span>
+    <h3>Storing a workflow in Kubernetes</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1: wrapped in a ConfigMap</span></figcaption>
+  <pre><code><span><span class="tok-comment"># Workaround every operator had to invent</span></span><span><span class="tok-key">apiVersion</span>:<span class="tok-value"> v1</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> ConfigMap</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> hello-workflow</span></span><span>  <span class="tok-key">labels</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">runtime.example.com/kind</span>:<span class="tok-value"> awp-workflow</span></span><span><span class="tok-key">data</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">workflow.yaml</span>:<span class="tok-value"> |</span></span><span>    <span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha1</span></span><span>    <span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span>    <span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">name</span>:<span class="tok-value"> hello</span></span><span>      <span class="tok-key">version</span>:<span class="tok-value"> 0.1.0</span></span><span>    ...</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2: a native custom resource</span></figcaption>
+  <pre><code><span><span class="tok-cmd">$ kubectl apply -f schema/crd/</span></span><span><span class="tok-cmd">$ kubectl apply --validate=strict -f hello.yaml</span></span><span>workflow.awp.agenticworkflowprotocol.org/hello created</span><span> </span><span><span class="tok-cmd">$ kubectl get workflows</span></span><span>NAME    VERSION   OWNER           VALID   READY   AGE</span><span>hello   0.1.0     platform-team   True    True    2m</span><span> </span><span><span class="tok-cmd">$ kubectl wait --for=condition=Ready workflow/hello</span></span><span>workflow.awp.agenticworkflowprotocol.org/hello condition met</span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>The repository publishes CustomResourceDefinitions generated from the JSON Schema (<code>schema/crd/</code>), with printer columns and a status subresource.</p></div>
+    <div><h4>Why</h4><p>With a wrapper, the AWP document is invisible to RBAC, <code>kubectl</code>, GitOps health checks and owner references, and every runtime wraps differently. The output on the right was checked on a local k3s cluster.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0015-kubernetes-resource-model.md">AEP-0015</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#310-object-stores-and-kubernetes">Spec 3.10</a></footer>
+</article>
+<article class="example" id="extensions-interim">
+  <header class="example-head">
+    <span class="example-number">10</span>
+    <h3>x- fields move into extensions</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span class="line-del"><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha1</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> hello</span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 0.1.0</span></span><span>  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">team</span>:<span class="tok-value"> platform-team</span></span><span class="line-del"><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> assistant</span></span><span>      <span class="tok-key">model</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">provider</span>:<span class="tok-value"> ollama</span></span><span>        <span class="tok-key">name</span>:<span class="tok-value"> qwen3</span></span><span>  <span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> greet</span></span><span>      <span class="tok-key">agent</span>:<span class="tok-value"> assistant</span></span><span>      <span class="tok-key">task</span>:<span class="tok-value"> Say hello.</span></span><span class="line-del">      <span class="tok-key">x-example-reviewChecklist</span>:<span class="tok-value"> security-v2</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span class="line-add"><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha2</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> hello</span></span><span class="line-add"><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 0.1.0</span></span><span>  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">team</span>:<span class="tok-value"> platform-team</span></span><span>  <span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> assistant</span></span><span>      <span class="tok-key">model</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">provider</span>:<span class="tok-value"> ollama</span></span><span>        <span class="tok-key">name</span>:<span class="tok-value"> qwen3</span></span><span>  <span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> greet</span></span><span>      <span class="tok-key">agent</span>:<span class="tok-value"> assistant</span></span><span>      <span class="tok-key">task</span>:<span class="tok-value"> Say hello.</span></span><span class="line-add">      <span class="tok-key">extensions</span>:<span class="tok-value"></span></span><span class="line-add">        <span class="tok-key">x-example-reviewChecklist</span>:<span class="tok-value"> security-v2</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p><code>x-</code> keys are only allowed inside an <code>extensions</code> object.</p></div>
+    <div><h4>Why</h4><p>A structural schema cannot have free keys next to defined fields. This is an interim step: the last chapter proposes to remove <code>x-</code> fields altogether.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0015-kubernetes-resource-model.md">AEP-0015</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#33-unknown-fields-and-extensions">Spec 3.3</a></footer>
+</article>
+</section>
+<section class="chapter" id="schedule">
+  <header class="chapter-head">
+    <p class="eyebrow"><span class="chip">Draft</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0016-schedule-semantics.md">AEP-0016</a></p>
+    <h2>Schedules</h2>
+    <p class="chapter-intro">What happens when a tick arrives while the previous execution still runs, and when ticks are missed.</p>
+  </header>
+  <article class="example" id="concurrency">
+  <header class="example-head">
+    <span class="example-number">11</span>
+    <h3>Overlapping ticks</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span></figcaption>
+  <pre><code><span><span class="tok-key">triggers</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">type</span>:<span class="tok-value"> schedule</span></span><span>    <span class="tok-key">cron</span>:<span class="tok-value"> &quot;*/30 * * * *&quot;</span></span><span>    <span class="tok-key">timezone</span>:<span class="tok-value"> Europe/Berlin</span></span><span class="line-del"> </span><span class="line-del"><span class="tok-comment"># The previous execution still runs</span></span><span class="line-del"><span class="tok-comment"># when the next tick arrives:</span></span><span class="line-del"><span class="tok-comment"># start a second one? skip? undefined.</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span></figcaption>
+  <pre><code><span><span class="tok-key">triggers</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">type</span>:<span class="tok-value"> schedule</span></span><span>    <span class="tok-key">cron</span>:<span class="tok-value"> &quot;*/30 * * * *&quot;</span></span><span>    <span class="tok-key">timezone</span>:<span class="tok-value"> Europe/Berlin</span></span><span class="line-add">    <span class="tok-key">concurrencyPolicy</span>:<span class="tok-value"> forbid  </span><span class="tok-comment"> # default</span></span><span class="line-add">    <span class="tok-key">startingDeadline</span>:<span class="tok-value"> 15m</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p><code>concurrencyPolicy</code> is <code>allow</code>, <code>forbid</code> (default) or <code>replace</code>, as in Kubernetes CronJobs. <code>startingDeadline</code> allows one late start after missed ticks.</p></div>
+    <div><h4>Why</h4><p>Overlapping agent executions cost money and can act twice on the same data. The safe default is to skip the tick.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0016-schedule-semantics.md">AEP-0016</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#52-triggers">Spec 5.2</a></footer>
+</article>
+<article class="example" id="trigger-skipped">
+  <header class="example-head">
+    <span class="example-number">12</span>
+    <h3>Skipped ticks are audited</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span></figcaption>
+  <pre><code><span>(no event)</span><span> </span><span>A tick that did not start an execution</span><span>left no trace in the audit log.</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span></figcaption>
+  <pre><code><span><span class="tok-key">type</span>:<span class="tok-value"> trigger.skipped</span></span><span><span class="tok-key">time</span>:<span class="tok-value"> &quot;2026-11-19T06:30:00Z&quot;</span></span><span><span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> nightly-triage</span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 1.2.0</span></span><span><span class="tok-key">actor</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">type</span>:<span class="tok-value"> system</span></span><span>  <span class="tok-key">id</span>:<span class="tok-value"> scheduler</span></span><span><span class="tok-key">data</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">trigger</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">index</span>:<span class="tok-value"> 1</span></span><span>    <span class="tok-key">type</span>:<span class="tok-value"> schedule</span></span><span>  <span class="tok-key">scheduledAt</span>:<span class="tok-value"> &quot;2026-11-19T06:30:00Z&quot;</span></span><span>  <span class="tok-key">reason</span>:<span class="tok-value"> concurrencyForbidden</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>Every tick without an execution emits <code>trigger.skipped</code> with the reason (<code>concurrencyForbidden</code>, <code>missed</code>, <code>startingDeadlineExceeded</code>). Missed ticks are not replayed in a burst after an outage.</p></div>
+    <div><h4>Why</h4><p>An auditor must be able to see why a scheduled job did not run.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0016-schedule-semantics.md">AEP-0016</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#104-event-types">Spec 10.4</a></footer>
+</article>
+</section>
+<section class="chapter" id="input">
+  <header class="chapter-head">
+    <p class="eyebrow"><span class="chip">Draft</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0017-human-input.md">AEP-0017</a></p>
+    <h2>Human input</h2>
+    <p class="chapter-intro">A workflow or an agent can ask a named person for an answer. Answers are never approvals.</p>
+  </header>
+  <article class="example" id="input-step">
+  <header class="example-head">
+    <span class="example-number">13</span>
+    <h3>Asking a person during a workflow</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span></figcaption>
+  <pre><code><span class="line-del"><span class="tok-comment"># Only approvals exist: yes or no.</span></span><span class="line-del"><span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> confirm-targets</span></span><span class="line-del">  <span class="tok-key">type</span>:<span class="tok-value"> approval</span></span><span class="line-del">  <span class="tok-key">approval</span>:<span class="tok-value"></span></span><span class="line-del">    <span class="tok-key">approvers</span>:<span class="tok-value"></span></span><span>      <span class="tok-dash">- </span><span class="tok-key">role</span>:<span class="tok-value"> release-manager</span></span><span>    <span class="tok-key">timeout</span>:<span class="tok-value"> 4h</span></span><span class="line-del">  <span class="tok-key">dependsOn</span>:<span class="tok-value"> [analyze]</span></span><span class="line-del"> </span><span class="line-del"><span class="tok-comment"># Which environment? How many hosts?</span></span><span class="line-del"><span class="tok-comment"># There is no way to ask.</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span></figcaption>
+  <pre><code><span class="line-add"><span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> ask-targets</span></span><span class="line-add">  <span class="tok-key">type</span>:<span class="tok-value"> input</span></span><span class="line-add">  <span class="tok-key">dependsOn</span>:<span class="tok-value"> [analyze]</span></span><span class="line-add">  <span class="tok-key">input</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-key">message</span>:<span class="tok-value"> Where should the fix be rolled out?</span></span><span class="line-add">    <span class="tok-key">answerers</span>:<span class="tok-value"></span></span><span>      <span class="tok-dash">- </span><span class="tok-key">role</span>:<span class="tok-value"> release-manager</span></span><span>    <span class="tok-key">timeout</span>:<span class="tok-value"> 4h</span></span><span class="line-add">    <span class="tok-key">answerSchema</span>:<span class="tok-value"></span></span><span class="line-add">      <span class="tok-key">type</span>:<span class="tok-value"> object</span></span><span class="line-add">      <span class="tok-key">properties</span>:<span class="tok-value"></span></span><span class="line-add">        <span class="tok-key">environment</span>:<span class="tok-value"></span></span><span class="line-add">          <span class="tok-key">type</span>:<span class="tok-value"> string</span></span><span class="line-add">          <span class="tok-key">enum</span>:<span class="tok-value"> [staging, production]</span></span><span class="line-add">        <span class="tok-key">maxHosts</span>:<span class="tok-value"></span></span><span class="line-add">          <span class="tok-key">type</span>:<span class="tok-value"> integer</span></span><span class="line-add">          <span class="tok-key">minimum</span>:<span class="tok-value"> 1</span></span><span class="line-add">      <span class="tok-key">required</span>:<span class="tok-value"> [environment]</span></span><span class="line-add">    <span class="tok-key">onTimeout</span>:<span class="tok-value"> useDefault</span></span><span class="line-add">    <span class="tok-key">default</span>:<span class="tok-value"></span></span><span class="line-add">      <span class="tok-key">environment</span>:<span class="tok-value"> staging</span></span><span class="line-add"><span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> apply</span></span><span class="line-add">  <span class="tok-key">agent</span>:<span class="tok-value"> worker</span></span><span class="line-add">  <span class="tok-key">task</span>:<span class="tok-value"> &gt;-</span></span><span class="line-add">    Roll out to</span><span class="line-add">    ${{ steps.ask-targets.outputs.answer }}.</span><span class="line-add">  <span class="tok-key">dependsOn</span>:<span class="tok-value"> [ask-targets]</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>A new step type <code>input</code> asks named answerers for free text or a structured answer (a subset of the MCP elicitation schema), with timeout and fallback.</p></div>
+    <div><h4>Why</h4><p>Workflows misused approvals to collect information. An answer is not an approval: it never counts as one, so a free-text reply cannot bypass a governance gate.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0017-human-input.md">AEP-0017</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#58-human-input">Spec 5.8</a></footer>
+</article>
+<article class="example" id="agent-input">
+  <header class="example-head">
+    <span class="example-number">14</span>
+    <h3>An agent asks a question</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span></figcaption>
+  <pre><code><span><span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> worker</span></span><span>    <span class="tok-key">model</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">provider</span>:<span class="tok-value"> ollama</span></span><span>      <span class="tok-key">name</span>:<span class="tok-value"> qwen3</span></span><span class="line-del"> </span><span class="line-del"><span class="tok-comment"># The agent cannot ask anybody.</span></span><span class="line-del"><span class="tok-comment"># It guesses or fails.</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span></figcaption>
+  <pre><code><span><span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> worker</span></span><span>    <span class="tok-key">model</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">provider</span>:<span class="tok-value"> ollama</span></span><span>      <span class="tok-key">name</span>:<span class="tok-value"> qwen3</span></span><span class="line-add">    <span class="tok-key">humanInput</span>:<span class="tok-value"></span></span><span class="line-add">      <span class="tok-key">answerers</span>:<span class="tok-value"></span></span><span class="line-add">        <span class="tok-dash">- </span><span class="tok-key">role</span>:<span class="tok-value"> maintainer</span></span><span class="line-add">      <span class="tok-key">timeout</span>:<span class="tok-value"> 30m</span></span><span class="line-add">      <span class="tok-key">onTimeout</span>:<span class="tok-value"> return</span></span><span class="line-add">      <span class="tok-key">maxRequests</span>:<span class="tok-value"> 3</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>An agent with <code>humanInput</code> may ask the listed answerers while it works, at most <code>maxRequests</code> times. The request and the answer are audited (<code>input.requested</code>, <code>input.provided</code>).</p></div>
+    <div><h4>Why</h4><p>Agents meet ambiguous situations. Asking a named person is safer than guessing, and the limits keep it from turning into a chat.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0017-human-input.md">AEP-0017</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#58-human-input">Spec 5.8</a></footer>
+</article>
+</section>
+<section class="chapter" id="outputs">
+  <header class="chapter-head">
+    <p class="eyebrow"><span class="chip">Draft</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0018-step-outputs.md">AEP-0018</a></p>
+    <h2>Step outputs</h2>
+    <p class="chapter-intro">How a step actually produces the values of its declared outputs, the largest portability gap found by the runtime proof of concept.</p>
+  </header>
+  <article class="example" id="command-outputs">
+  <header class="example-head">
+    <span class="example-number">15</span>
+    <h3>Outputs of a command step</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span></figcaption>
+  <pre><code><span><span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> diff</span></span><span>  <span class="tok-key">type</span>:<span class="tok-value"> command</span></span><span>  <span class="tok-key">image</span>:<span class="tok-value"> registry.example.com/tools/diff@sha256:...</span></span><span class="line-del">  <span class="tok-key">command</span>:<span class="tok-value"> ./diff.sh</span></span><span>  <span class="tok-key">outputs</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> new</span></span><span>    <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> count</span></span><span class="line-del"> </span><span class="line-del"><span class="tok-comment"># How does ./diff.sh set &quot;new&quot; and &quot;count&quot;?</span></span><span class="line-del"><span class="tok-comment"># Each runtime invented its own convention.</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span></figcaption>
+  <pre><code><span><span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> diff</span></span><span>  <span class="tok-key">type</span>:<span class="tok-value"> command</span></span><span>  <span class="tok-key">image</span>:<span class="tok-value"> registry.example.com/tools/diff@sha256:...</span></span><span class="line-add">  <span class="tok-key">command</span>:<span class="tok-value"> &gt;-</span></span><span class="line-add">    ./diff.sh &gt; &quot;$AWP_OUTPUTS/new&quot; &amp;&amp;</span><span class="line-add">    wc -l &lt; &quot;$AWP_OUTPUTS/new&quot; &gt; &quot;$AWP_OUTPUTS/count&quot;</span><span>  <span class="tok-key">outputs</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> new</span></span><span>    <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> count</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>The runtime creates an empty directory per attempt and passes it in <code>AWP_OUTPUTS</code>. One file per declared output. At least 256 KiB per output and 1 MiB per step are accepted; outputs of failed attempts are discarded.</p></div>
+    <div><h4>Why</h4><p>Without a rule, an image written for one runtime produces no outputs on another. This was the largest gap reported by the runtime proof of concept (G01).</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0018-step-outputs.md">AEP-0018</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#564-step-outputs">Spec 5.6.4</a></footer>
+</article>
+<article class="example" id="agent-outputs">
+  <header class="example-head">
+    <span class="example-number">16</span>
+    <h3>Outputs of an agent step</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span></figcaption>
+  <pre><code><span class="line-del">task: |</span><span class="line-del">  Rate the concerts.</span><span class="line-del">  At the very end, print a line</span><span class="line-del">  RELEVANT=&lt;json array&gt;</span><span class="line-del">  and nothing after it.</span><span> </span><span class="line-del">-&gt; works until the model adds a sentence</span><span class="line-del">   after the line, or wraps it in markdown.</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span></figcaption>
+  <pre><code><span class="line-add">task: Rate the concerts.</span><span class="line-add">outputs:</span><span class="line-add">  - name: relevant</span><span class="line-add">    description: JSON array of relevant concerts.</span><span> </span><span class="line-add">The agent ends the step with the built-in tool:</span><span class="line-add"> </span><span class="line-add">complete_step({</span><span class="line-add">  &quot;relevant&quot;: &quot;[{\&quot;venue\&quot;: \&quot;...\&quot;}]&quot;</span><span class="line-add">})</span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>Agent steps end with a built-in tool <code>complete_step</code> that has one parameter per declared output. An agent step with outputs that never completes fails with <code>notCompleted</code>.</p></div>
+    <div><h4>Why</h4><p>Parsing the last message depends on the model following a format. A tool call is structured and checked by the runtime. <code>complete_step</code> is not an action, so it cannot bypass permissions.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0018-step-outputs.md">AEP-0018</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#564-step-outputs">Spec 5.6.4</a></footer>
+</article>
+<article class="example" id="reserved-env">
+  <header class="example-head">
+    <span class="example-number">17</span>
+    <h3>Reserved environment variables</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha1</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> hello</span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 0.1.0</span></span><span>  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">team</span>:<span class="tok-value"> platform-team</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> build</span></span><span>      <span class="tok-key">type</span>:<span class="tok-value"> command</span></span><span>      <span class="tok-key">image</span>:<span class="tok-value"> registry.example.com/build@sha256:0f1e2d3c4b5a69788796a5b4c3d2e1f00f1e2d3c4b5a69788796a5b4c3d2e1f0</span></span><span>      <span class="tok-key">command</span>:<span class="tok-value"> make</span></span><span>      <span class="tok-key">env</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">AWP_OUTPUTS</span>:<span class="tok-value"> /tmp/out</span></span><span>  <span class="tok-key">agents</span>:<span class="tok-value"> []</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span><span class="verified" title="Checked with the reference checker">rejected by checker</span></figcaption>
+  <pre><code><span><span class="tok-cmd">$ node conformance/awp-check.mjs check build.yaml</span></span><span>build.yaml: invalid</span><span>  step.reserved-env  /spec/workflow/0/env/AWP_OUTPUTS</span><span>  environment variables starting with AWP_ are</span><span>  reserved for the runtime (section 5.6.4)</span><span> </span><span>The runtime sets:</span><span>  AWP_OUTPUTS       directory for output files</span><span>  AWP_EXECUTION_ID  execution identifier</span><span>  AWP_STEP_ID       step id</span><span>  AWP_ATTEMPT       attempt number</span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>The prefix <code>AWP_</code> belongs to the runtime; a manifest must not set such variables.</p></div>
+    <div><h4>Why</h4><p>Otherwise a manifest could redirect where outputs are read from, or fake the execution identity a step sees.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0018-step-outputs.md">AEP-0018</a></footer>
+</article>
+</section>
+<section class="chapter" id="run">
+  <header class="chapter-head">
+    <p class="eyebrow"><span class="chip">Draft</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0019-workflow-run-and-status.md">AEP-0019</a></p>
+    <h2>WorkflowRun and status</h2>
+    <p class="chapter-intro">A new kind for one execution, and a status shape that existing Kubernetes tools understand.</p>
+  </header>
+  <article class="example" id="start-run">
+  <header class="example-head">
+    <span class="example-number">18</span>
+    <h3>Starting an execution</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span></figcaption>
+  <pre><code><span>Every runtime has its own way:</span><span> </span><span><span class="tok-cmd">$ runtime-a run hello --input repo=web-shop</span></span><span> </span><span><span class="tok-cmd">$ curl -X POST https://runtime-b.example.com/api/v1/executions \</span></span><span>    -d '{&quot;workflow&quot;: &quot;hello&quot;, &quot;inputs&quot;: {...}}'</span><span> </span><span>apiVersion: runtime-c.example.com/v1</span><span>kind: HelloRun</span><span>...</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha2</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> WorkflowRun</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">generateName</span>:<span class="tok-value"> vulnerability-fixer-</span></span><span>  <span class="tok-key">namespace</span>:<span class="tok-value"> security</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">workflowRef</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">name</span>:<span class="tok-value"> vulnerability-fixer</span></span><span>    <span class="tok-key">version</span>:<span class="tok-value"> 0.1.0</span></span><span>  <span class="tok-key">inputs</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">cve</span>:<span class="tok-value"> CVE-2026-12345</span></span><span>    <span class="tok-key">repository</span>:<span class="tok-value"> example-org/web-shop</span></span><span>  <span class="tok-key">environment</span>:<span class="tok-value"> staging</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>A new kind <code>WorkflowRun</code>: creating one starts one execution, as a <code>manual</code> trigger with all its rules. <code>spec.cancel: true</code> or deleting it cancels.</p></div>
+    <div><h4>Why</h4><p>Tools (CLIs, dashboards, pipelines, GitOps) can start and watch executions on any runtime. The actor is never read from the object; it comes from an authenticated source.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0019-workflow-run-and-status.md">AEP-0019</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#108-kind-workflowrun">Spec 10.8</a></footer>
+</article>
+<article class="example" id="run-status">
+  <header class="example-head">
+    <span class="example-number">19</span>
+    <h3>Watching an execution</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span></figcaption>
+  <pre><code><span>Only the audit event stream, in a</span><span>runtime-specific store:</span><span> </span><span>workflow.started   ...</span><span>step.started       analyze</span><span>step.completed     analyze</span><span>step.started       apply</span><span>...</span><span> </span><span>No object that says &quot;running, step 2 of 3&quot;.</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha2</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> WorkflowRun</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> vulnerability-fixer-7k2xq</span></span><span>  <span class="tok-key">namespace</span>:<span class="tok-value"> security</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">workflowRef</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">name</span>:<span class="tok-value"> vulnerability-fixer</span></span><span><span class="tok-key">status</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">executionId</span>:<span class="tok-value"> awp-exec-01JD6Q8Z5K3M4N5P6Q7R8S9T0V</span></span><span>  <span class="tok-key">phase</span>:<span class="tok-value"> running</span></span><span>  <span class="tok-key">actor</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">type</span>:<span class="tok-value"> human</span></span><span>    <span class="tok-key">id</span>:<span class="tok-value"> alice@example.com</span></span><span>  <span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">name</span>:<span class="tok-value"> vulnerability-fixer</span></span><span>    <span class="tok-key">version</span>:<span class="tok-value"> 0.1.0</span></span><span>    <span class="tok-key">digest</span>:<span class="tok-value"> sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</span></span><span>  <span class="tok-key">startedAt</span>:<span class="tok-value"> 2026-11-19T08:00:00Z</span></span><span>  <span class="tok-key">steps</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> investigate</span></span><span>      <span class="tok-key">status</span>:<span class="tok-value"> succeeded</span></span><span>      <span class="tok-key">attempts</span>:<span class="tok-value"> 1</span></span><span>    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> fix</span></span><span>      <span class="tok-key">status</span>:<span class="tok-value"> running</span></span><span>      <span class="tok-key">attempts</span>:<span class="tok-value"> 1</span></span><span>  <span class="tok-key">conditions</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">type</span>:<span class="tok-value"> Accepted</span></span><span>      <span class="tok-key">status</span>:<span class="tok-value"> &quot;True&quot;</span></span><span>      <span class="tok-key">reason</span>:<span class="tok-value"> Validated</span></span><span>      <span class="tok-key">message</span>:<span class="tok-value"> &quot;&quot;</span></span><span>      <span class="tok-key">lastTransitionTime</span>:<span class="tok-value"> 2026-11-19T08:00:00Z</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>The runtime reports phase, pinned workflow, per-step status, usage and the conditions <code>Accepted</code> and <code>Succeeded</code>. No secret values and no output content.</p></div>
+    <div><h4>Why</h4><p>Audit events remain the record; status is the current view for people and tools.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0019-workflow-run-and-status.md">AEP-0019</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#108-kind-workflowrun">Spec 10.8</a></footer>
+</article>
+<article class="example" id="kubectl">
+  <header class="example-head">
+    <span class="example-number">20</span>
+    <h3>kubectl shows validity and progress</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span></figcaption>
+  <pre><code><span class="line-del"><span class="tok-cmd">$ kubectl get configmaps -l runtime.example.com/kind=awp-workflow</span></span><span class="line-del">NAME              DATA   AGE</span><span class="line-del">hello-workflow    1      3d</span><span> </span><span class="line-del">(valid? which version? nobody knows</span><span class="line-del"> without asking the runtime)</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span></figcaption>
+  <pre><code><span class="line-add"><span class="tok-cmd">$ kubectl get workflows</span></span><span class="line-add">NAME                  VERSION   OWNER           VALID   READY   AGE</span><span class="line-add">vulnerability-fixer   0.1.0     security-team   True    True    3d</span><span> </span><span class="line-add"><span class="tok-cmd">$ kubectl get workflowruns</span></span><span class="line-add">NAME                        WORKFLOW              PHASE     STARTED   AGE</span><span class="line-add">vulnerability-fixer-7k2xq   vulnerability-fixer   running   5m        5m</span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>The generated CRDs have printer columns for version, owner, the <code>Valid</code> and <code>Ready</code> conditions and the run phase.</p></div>
+    <div><h4>Why</h4><p>Printer columns come from the CRDs, and the CRDs come from this repository. A runtime cannot add them on its own.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0019-workflow-run-and-status.md">AEP-0019</a></footer>
+</article>
+</section>
+<section class="chapter" id="pinning">
+  <header class="chapter-head">
+    <p class="eyebrow"><span class="chip">Draft</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0020-execution-pinning.md">AEP-0020</a></p>
+    <h2>Execution pinning</h2>
+    <p class="chapter-intro">An execution keeps the manifests it started with, even when GitOps changes them halfway.</p>
+  </header>
+  <article class="example" id="pinning">
+  <header class="example-head">
+    <span class="example-number">21</span>
+    <h3>A GitOps sync during an execution</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span></figcaption>
+  <pre><code><span class="line-del">08:00  execution starts with nightly-triage 1.2.0</span><span>08:05  waits for approval of step &quot;deploy&quot;</span><span class="line-del">09:10  Argo CD syncs 1.3.0:</span><span class="line-del">         step &quot;notify&quot; removed,</span><span class="line-del">         policy tightened</span><span class="line-del">09:30  approval arrives</span><span class="line-del"> </span><span class="line-del">Which version runs now? Undefined.</span><span class="line-del">The audit log says 1.2.0.</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span></figcaption>
+  <pre><code><span class="line-add">08:00  execution starts, pins</span><span class="line-add">         workflow  nightly-triage 1.2.0  sha256:5c4b...</span><span class="line-add">         agents    triage-agent    1.0.3  sha256:91aa...</span><span class="line-add">         policies  prod-guard      2.1.0  sha256:07fe...</span><span>08:05  waits for approval of step &quot;deploy&quot;</span><span class="line-add">09:10  Argo CD syncs 1.3.0</span><span class="line-add">09:30  approval arrives -&gt; continues with 1.2.0</span><span class="line-add">       (or the runtime cancels: reason manifestChanged)</span><span class="line-add">10:00  next tick starts 1.3.0</span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>An execution uses exactly the workflow, agent and policy versions it resolved at start, until it ends. Mixing is never allowed; a runtime may cancel instead.</p></div>
+    <div><h4>Why</h4><p>An approver approves the step of the version that runs, and the audit trail names exactly that version.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0020-execution-pinning.md">AEP-0020</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#101-execution-identity">Spec 10.1</a></footer>
+</article>
+<article class="example" id="started-digest">
+  <header class="example-head">
+    <span class="example-number">22</span>
+    <h3>The digest is required at start</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span></figcaption>
+  <pre><code><span><span class="tok-key">type</span>:<span class="tok-value"> workflow.started</span></span><span><span class="tok-key">executionId</span>:<span class="tok-value"> awp-exec-01JABC7Q4M2W9X0Y1Z2A3B4C5D</span></span><span><span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> vulnerability-fixer</span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 0.1.0</span></span><span class="line-del"> <span class="tok-comment"> # digest: only &quot;if known&quot;</span></span><span><span class="tok-key">actor</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">type</span>:<span class="tok-value"> human</span></span><span>  <span class="tok-key">id</span>:<span class="tok-value"> user:alice@example.com</span></span><span><span class="tok-key">environment</span>:<span class="tok-value"> development</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span></figcaption>
+  <pre><code><span><span class="tok-key">type</span>:<span class="tok-value"> workflow.started</span></span><span><span class="tok-key">executionId</span>:<span class="tok-value"> awp-exec-01JABC7Q4M2W9X0Y1Z2A3B4C5D</span></span><span><span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> vulnerability-fixer</span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 0.1.0</span></span><span class="line-add">  <span class="tok-key">digest</span>:<span class="tok-value"> sha256:5c4b3a29180716f5e4d3c2b1a0f9e8d7c6b5a49382716f5e4d3c2b1a0f9e8d7c</span></span><span><span class="tok-key">actor</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">type</span>:<span class="tok-value"> human</span></span><span>  <span class="tok-key">id</span>:<span class="tok-value"> user:alice@example.com</span></span><span><span class="tok-key">environment</span>:<span class="tok-value"> development</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p><code>workflow.digest</code> is REQUIRED in <code>workflow.started</code>.</p></div>
+    <div><h4>Why</h4><p>Name and version can be reused by mistake; the digest identifies the exact content that ran.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0020-execution-pinning.md">AEP-0020</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#103-event-envelope">Spec 10.3</a></footer>
+</article>
+<article class="example" id="assert-version">
+  <header class="example-head">
+    <span class="example-number">23</span>
+    <h3>Run exactly the reviewed version</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span></figcaption>
+  <pre><code><span>(not possible)</span><span> </span><span>A pipeline that reviewed version 0.1.0</span><span>cannot make sure that 0.1.0 runs:</span><span>a sync may have applied 0.2.0 in between.</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha2</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> WorkflowRun</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> fixer-reviewed-run</span></span><span>  <span class="tok-key">namespace</span>:<span class="tok-value"> security</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">workflowRef</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">name</span>:<span class="tok-value"> vulnerability-fixer</span></span><span>    <span class="tok-key">version</span>:<span class="tok-value"> 0.1.0</span></span><span>    <span class="tok-key">digest</span>:<span class="tok-value"> sha256:5c4b3a29180716f5e4d3c2b1a0f9e8d7c6b5a49382716f5e4d3c2b1a0f9e8d7c</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p><code>workflowRef.version</code> and <code>workflowRef.digest</code> are assertions. If the current workflow differs, the run is rejected (<code>versionMismatch</code>, <code>digestMismatch</code>).</p></div>
+    <div><h4>Why</h4><p>A run never selects old versions, so the object store needs no history; the assertion only guarantees that what was reviewed is what runs.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0020-execution-pinning.md">AEP-0020</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0019-workflow-run-and-status.md">AEP-0019</a></footer>
+</article>
+</section>
+<section class="chapter" id="extensions">
+  <header class="chapter-head">
+    <p class="eyebrow"><span class="chip chip-concept">Concept</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0021-extension-model.md">AEP-0021</a></p>
+    <h2>Extension model (concept)</h2>
+    <p class="chapter-intro">A proposal, not applied to the schema: replace <code>x-</code> fields with the extension model of the Kubernetes Gateway API. Left is the current v1alpha2 draft, right the proposal.</p>
+  </header>
+  <article class="example" id="extension-step">
+  <header class="example-head">
+    <span class="example-number">24</span>
+    <h3>A vendor-specific step</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha2 draft</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span class="line-del"><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha2</span></span><span class="line-del"><span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span class="line-del">  <span class="tok-key">name</span>:<span class="tok-value"> web-shop-release</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span class="line-del">  <span class="tok-key">version</span>:<span class="tok-value"> 1.0.0</span></span><span class="line-del">  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span class="line-del">    <span class="tok-key">team</span>:<span class="tok-value"> platform-team</span></span><span class="line-del">  <span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span class="line-del">    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> deploy</span></span><span class="line-del">      <span class="tok-key">agent</span>:<span class="tok-value"> deployer</span></span><span class="line-del">      <span class="tok-key">task</span>:<span class="tok-value"> Deploy the canary.</span></span><span class="line-del">      <span class="tok-key">extensions</span>:<span class="tok-value"></span></span><span class="line-del">        <span class="tok-key">x-example-canary</span>:<span class="tok-value"></span></span><span class="line-del">          <span class="tok-key">weight</span>:<span class="tok-value"> 10</span></span><span class="line-del">  <span class="tok-key">agents</span>:<span class="tok-value"></span></span><span class="line-del">    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> deployer</span></span><span class="line-del">      <span class="tok-key">model</span>:<span class="tok-value"></span></span><span class="line-del">        <span class="tok-key">provider</span>:<span class="tok-value"> ollama</span></span><span class="line-del">        <span class="tok-key">name</span>:<span class="tok-value"> qwen3</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">AEP-0021 proposal</span></figcaption>
+  <pre><code><span class="line-add"><span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span class="line-add">  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> deploy</span></span><span class="line-add">    <span class="tok-key">type</span>:<span class="tok-value"> extension</span></span><span class="line-add">    <span class="tok-key">extensionRef</span>:<span class="tok-value"></span></span><span class="line-add">      <span class="tok-key">group</span>:<span class="tok-value"> runtime.example.com</span></span><span class="line-add">      <span class="tok-key">kind</span>:<span class="tok-value"> CanaryDeployment</span></span><span class="line-add">      <span class="tok-key">name</span>:<span class="tok-value"> web-shop-canary</span></span><span class="line-add">    <span class="tok-key">dependsOn</span>:<span class="tok-value"> [test]</span></span><span class="line-add">---</span><span class="line-add"><span class="tok-key">apiVersion</span>:<span class="tok-value"> runtime.example.com/v1</span></span><span class="line-add"><span class="tok-key">kind</span>:<span class="tok-value"> CanaryDeployment</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span class="line-add">  <span class="tok-key">name</span>:<span class="tok-value"> web-shop-canary</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span class="line-add">  <span class="tok-key">weight</span>:<span class="tok-value"> 10</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>Closed step types plus <code>type: extension</code> with an <code>extensionRef</code> to an object validated by its own CRD. A runtime that does not know the kind refuses the workflow (<code>ResolvedRefs=False</code>); an extension step is never skipped. It is an action under permissions, policies and approvals.</p></div>
+    <div><h4>Why</h4><p>A runtime that ignores an <code>x-</code> field runs the manifest with fewer restrictions. That is why AEP-0011 (<code>requiredExtensions</code>) was needed. A typed reference fails closed by construction. Same pattern as Gateway API <code>ExtensionRef</code> and Tekton <code>CustomRun</code>.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0021-extension-model.md">AEP-0021</a></footer>
+</article>
+<article class="example" id="policy-attachment">
+  <header class="example-head">
+    <span class="example-number">25</span>
+    <h3>Policies attached by the platform team</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha2 draft</span></figcaption>
+  <pre><code><span class="line-del"><span class="tok-comment"># in the workflow, written by its author</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span class="line-del">  <span class="tok-key">policies</span>:<span class="tok-value"></span></span><span class="line-del">    <span class="tok-key">include</span>:<span class="tok-value"></span></span><span class="line-del">      <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> no-production-autonomy</span></span><span class="line-del">        <span class="tok-key">version</span>:<span class="tok-value"> 1.0.0</span></span><span class="line-del"> </span><span class="line-del"><span class="tok-comment"># The platform team cannot enforce a policy</span></span><span class="line-del"><span class="tok-comment"># on a workflow whose author left it out.</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">AEP-0021 proposal</span></figcaption>
+  <pre><code><span class="line-add"><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha2</span></span><span class="line-add"><span class="tok-key">kind</span>:<span class="tok-value"> Policy</span></span><span class="line-add"><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span class="line-add">  <span class="tok-key">name</span>:<span class="tok-value"> no-production-autonomy</span></span><span class="line-add">  <span class="tok-key">namespace</span>:<span class="tok-value"> payments</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span class="line-add">  <span class="tok-key">version</span>:<span class="tok-value"> 1.0.0</span></span><span class="line-add">  <span class="tok-key">owner</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-key">team</span>:<span class="tok-value"> platform-governance</span></span><span class="line-add">  <span class="tok-key">targetRefs</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-dash">- </span><span class="tok-key">group</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org</span></span><span class="line-add">      <span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span class="line-add">      <span class="tok-key">name</span>:<span class="tok-value"> invoice-processing</span></span><span class="line-add">  <span class="tok-key">rules</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> deploy-needs-release-manager</span></span><span class="line-add">      <span class="tok-key">effect</span>:<span class="tok-value"> requireApproval</span></span><span class="line-add">      <span class="tok-key">when</span>:<span class="tok-value"></span></span><span class="line-add">        <span class="tok-key">action</span>:<span class="tok-value"></span></span><span class="line-add">          <span class="tok-key">equals</span>:<span class="tok-value"> production.deploy</span></span><span class="line-add"><span class="tok-key">status</span>:<span class="tok-value"></span></span><span class="line-add">  <span class="tok-key">ancestors</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-dash">- </span><span class="tok-key">ancestorRef</span>:<span class="tok-value"></span></span><span class="line-add">        <span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span class="line-add">        <span class="tok-key">name</span>:<span class="tok-value"> invoice-processing</span></span><span class="line-add">      <span class="tok-key">conditions</span>:<span class="tok-value"></span></span><span class="line-add">        <span class="tok-dash">- </span><span class="tok-key">type</span>:<span class="tok-value"> Accepted</span></span><span class="line-add">          <span class="tok-key">status</span>:<span class="tok-value"> &quot;True&quot;</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p><code>Policy</code> gets <code>targetRefs</code> to workflows (or single steps via <code>sectionName</code>) in the same namespace. <code>include</code> stays for author-chosen policies.</p></div>
+    <div><h4>Why</h4><p>Policy attachment as in the Gateway API (GEP-713). AWP policies only restrict, so all attached policies simply apply together; no conflict rules are needed.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0021-extension-model.md">AEP-0021</a></footer>
+</article>
+<article class="example" id="binding">
+  <header class="example-head">
+    <span class="example-number">26</span>
+    <h3>Runtime configuration stays out of the manifest</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha2 draft</span></figcaption>
+  <pre><code><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span class="line-del">  <span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span class="line-del">    <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> collect</span></span><span class="line-del">      <span class="tok-key">type</span>:<span class="tok-value"> command</span></span><span class="line-del">      <span class="tok-key">command</span>:<span class="tok-value"> ./collect.sh</span></span><span class="line-del">      <span class="tok-key">extensions</span>:<span class="tok-value"></span></span><span class="line-del">        <span class="tok-key">x-example-runnerImage</span>:<span class="tok-value"> registry.example.com/runner:1.4</span></span><span class="line-del">        <span class="tok-key">x-example-nodeSelector</span>:<span class="tok-value"></span></span><span class="line-del">          <span class="tok-key">pool</span>:<span class="tok-value"> agents</span></span><span class="line-del">  <span class="tok-key">extensions</span>:<span class="tok-value"></span></span><span class="line-del">    <span class="tok-key">x-example-modelBaseURL</span>:<span class="tok-value"> https://llm.internal.example.com</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">AEP-0021 proposal</span></figcaption>
+  <pre><code><span class="line-add"><span class="tok-key">apiVersion</span>:<span class="tok-value"> runtime.example.com/v1</span></span><span class="line-add"><span class="tok-key">kind</span>:<span class="tok-value"> WorkflowBinding</span></span><span class="line-add"><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span class="line-add">  <span class="tok-key">name</span>:<span class="tok-value"> venue-watch</span></span><span class="line-add">  <span class="tok-key">namespace</span>:<span class="tok-value"> agents</span></span><span class="line-add">  <span class="tok-key">labels</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-key">awp.agenticworkflowprotocol.org/binding</span>:<span class="tok-value"> &quot;true&quot;</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span class="line-add">  <span class="tok-key">targetRefs</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-dash">- </span><span class="tok-key">group</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org</span></span><span class="line-add">      <span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span class="line-add">      <span class="tok-key">name</span>:<span class="tok-value"> venue-watch</span></span><span class="line-add">  <span class="tok-key">runnerImage</span>:<span class="tok-value"> registry.example.com/runner@sha256:...</span></span><span class="line-add">  <span class="tok-key">nodeSelector</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-key">pool</span>:<span class="tok-value"> agents</span></span><span class="line-add">  <span class="tok-key">models</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-key">baseURL</span>:<span class="tok-value"> https://llm.internal.example.com</span></span><span class="line-add"><span class="tok-key">status</span>:<span class="tok-value"></span></span><span class="line-add">  <span class="tok-key">conditions</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-dash">- </span><span class="tok-key">type</span>:<span class="tok-value"> Accepted</span></span><span class="line-add">      <span class="tok-key">status</span>:<span class="tok-value"> &quot;True&quot;</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>Placement, images, model endpoints and secret mapping live in a runtime-specific binding object that attaches with <code>targetRefs</code>. One accepted binding per workflow and runtime; the oldest wins, others get <code>Conflicted</code>.</p></div>
+    <div><h4>Why</h4><p>The manifest stays portable and its digest unchanged. Fields that decide where credentials, data or network traffic go must be limited by the operator (an allow list), not by the binding author: the proof of concept found a provider key leak through <code>baseURL</code>.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0021-extension-model.md">AEP-0021</a></footer>
+</article>
+<article class="example" id="domain-values">
+  <header class="example-head">
+    <span class="example-number">27</span>
+    <h3>Vendor values carry a domain</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha2 draft</span></figcaption>
+  <pre><code><span><span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> assistant</span></span><span>    <span class="tok-key">model</span>:<span class="tok-value"></span></span><span class="line-del">      <span class="tok-key">provider</span>:<span class="tok-value"> gateway       </span><span class="tok-comment"> # whose gateway?</span></span><span>      <span class="tok-key">name</span>:<span class="tok-value"> qwen3</span></span><span> </span><span><span class="tok-key">secrets</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> TOKEN</span></span><span class="line-del">    <span class="tok-key">source</span>:<span class="tok-value"> vault-ha          </span><span class="tok-comment"> # collides with</span></span><span class="line-del">                              <span class="tok-comment"> # another runtime's name</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">AEP-0021 proposal</span></figcaption>
+  <pre><code><span><span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> assistant</span></span><span>    <span class="tok-key">model</span>:<span class="tok-value"></span></span><span class="line-add">      <span class="tok-key">provider</span>:<span class="tok-value"> models.example.com/gateway</span></span><span>      <span class="tok-key">name</span>:<span class="tok-value"> qwen3</span></span><span> </span><span><span class="tok-key">secrets</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> TOKEN</span></span><span class="line-add">    <span class="tok-key">source</span>:<span class="tok-value"> secrets.example.com/vault-ha</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>Bare values belong to AWP; implementation values use a DNS prefix and are Implementation-specific. Applies to model providers, secret sources, event sources, audit event types and condition types.</p></div>
+    <div><h4>Why</h4><p>Domain names are unique without a registry, so the extension prefix list (D12) is no longer needed. Same rule as the Gateway API and Kubernetes condition types.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0021-extension-model.md">AEP-0021</a></footer>
+</article>
+<article class="example" id="strict">
+  <header class="example-head">
+    <span class="example-number">28</span>
+    <h3>Typos are caught at apply time</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha2 draft</span></figcaption>
+  <pre><code><span class="line-del"><span class="tok-cmd"># typo: &quot;permisions&quot; instead of &quot;permissions&quot;</span></span><span><span class="tok-cmd">$ kubectl apply --validate=strict -f fixer.yaml</span></span><span class="line-del">workflow.awp.agenticworkflowprotocol.org/fixer created</span><span class="line-del"> </span><span class="line-del"><span class="tok-cmd">$ kubectl get workflow fixer</span></span><span class="line-del">NAME    VERSION   OWNER           VALID   READY</span><span class="line-del">fixer   0.1.0     security-team   False   False</span><span> </span><span class="line-del">(CRDs keep unknown fields so that the runtime can</span><span class="line-del"> fail closed; the error shows up only in status,</span><span class="line-del"> and Argo CD reports &quot;Synced&quot;)</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">AEP-0021 proposal</span></figcaption>
+  <pre><code><span><span class="tok-cmd">$ kubectl apply --validate=strict -f fixer.yaml</span></span><span class="line-add">Error from server (BadRequest): error when creating</span><span class="line-add">&quot;fixer.yaml&quot;: Workflow in version &quot;v1alpha2&quot; cannot be</span><span class="line-add">handled as a Workflow: strict decoding error:</span><span class="line-add">unknown field &quot;spec.permisions&quot;</span><span> </span><span class="line-add">(CRDs prune unknown fields and express the</span><span class="line-add"> conditional rules as CEL; the runtime still</span><span class="line-add"> validates every manifest fully)</span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>The CRDs drop <code>x-kubernetes-preserve-unknown-fields</code>, prune unknown fields and get CEL rules (<code>x-kubernetes-validations</code>). No admission webhook is needed.</p></div>
+    <div><h4>Why</h4><p>Fixes G09. The Gateway API removed its webhook in favour of CEL. CRD validation is feedback, not a security boundary (GEP-922), so runtimes keep validating.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0021-extension-model.md">AEP-0021</a></footer>
+</article>
+</section>
+    <footer class="page-foot">
+      Source of every example: the AEPs, the specification draft and the conformance suite in
+      <a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/tree/feat/v1alpha2-refactoring">agenticworkflowprotocol.org</a>.
+      This page is generated from <a href="https://github.com/agenticworkflowprotocol/awp-v1alpha2-draft">awp-v1alpha2-draft</a>; corrections are welcome as issues or pull requests.
+    </footer>
+  </main>
+</div>
+<script>
+  // Mobile: the table of contents is an overlay that closes after a jump.
+  const toggle = document.getElementById('toc-toggle');
+  const toc = document.getElementById('toc');
+  const mobile = window.matchMedia('(max-width: 899px)');
+  function setOpen(open) {
+    toggle.setAttribute('aria-expanded', String(open));
+    toc.hidden = mobile.matches && !open;
+    toggle.textContent = open ? 'Close' : 'Contents';
+  }
+  toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+  toc.addEventListener('click', (event) => { if (event.target.closest('a') && mobile.matches) setOpen(false); });
+  mobile.addEventListener('change', () => setOpen(false));
+  setOpen(false);
+</script>
+</body>
+</html>
