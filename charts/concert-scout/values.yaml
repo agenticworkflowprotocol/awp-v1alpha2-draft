@@ -71,9 +71,11 @@ notification:
   secretName: NOTIFY_TOKEN
   secretSource: secret-store
 
-# Image with the command steps (fetch, diff, notify, remember), pinned by digest (security profile).
+# Image with the command steps (fetch, diff, notify, remember). A tag is enough: the runtime
+# resolves it to a digest when an execution starts and pins it (spec 10.1). Under the security
+# profile, add the digest of the image index: tools:0.1.0@sha256:...
 # The example image does not exist.
-image: registry.example.com/concert-scout-tools@sha256:4f2a9c0d1e3b5a7c9e1f3b5d7a9c1e3f5b7d9a1c3e5f7b9d1a3c5e7f9b1d3a5c
+image: registry.example.com/concert-scout-tools:0.1.0
 
 budget:
   maxCostUsd: 0.5

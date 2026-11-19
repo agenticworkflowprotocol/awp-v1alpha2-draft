@@ -822,6 +822,37 @@ spec:
     refs: [PIN, RUN],
   },
 
+  {
+    id: 'image-pinning', chapter: 'pinning', title: 'Images: tags in the manifest, digests in the record',
+    left: { check: null, code: `- id: fetch
+  type: command
+  image: registry.example.com/tools:1.4
+  command: fetch
+
+# Which image ran? Whatever :1.4 pointed to
+# at that moment. A retry an hour later may
+# pull a different one. Under the security
+# profile a digest is required, which is hard
+# to maintain in Helm charts.`, partial: true },
+    right: { check: null, lang: 'text', code: `manifest:   image: registry.example.com/tools:1.4
+
+execution start: runtime resolves the tag
+  registry.example.com/tools:1.4
+    -> sha256:9c1e...  (image index: amd64, arm64, s390x)
+
+every step and retry of this execution uses sha256:9c1e...
+
+reproducibility record:
+  images:
+    - reference: registry.example.com/tools:1.4
+      digest: sha256:9c1e...
+
+security profile: tools:1.4@sha256:9c1e... (index digest)` },
+    what: 'Tags stay allowed outside the security profile. The runtime resolves every image to a digest when an execution starts, pins it like the manifests and records it. For multi-platform images the digest is that of the image index, which works on every architecture. A runtime that cannot run images rejects a command step with `image`.',
+    why: 'Every execution is traceable without forcing authors and packaging tools to maintain digests. Organisations that need the reviewed image to be the executed one choose the security profile.',
+    refs: [PIN, spec('9.4', '94-dependencies')],
+  },
+
   // ---------------------------------------------------------------- extension model (concept)
   {
     id: 'extension-step', chapter: 'extensions', title: 'A vendor-specific step',

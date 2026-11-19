@@ -183,17 +183,17 @@ main {
   <button id="toc-toggle" type="button" aria-expanded="false" aria-controls="toc">Contents</button>
 </header>
 <div class="layout">
-  <nav class="toc" id="toc" aria-label="Contents"><ol><li class="nav-chapter"><a href="#model">Document model</a><ol><li><a href="#minimal"><span class="nav-number">1</span>A minimal workflow</a></li><li><a href="#governance-fields"><span class="nav-number">2</span>Governance fields live in spec</a></li><li><a href="#owner"><span class="nav-number">3</span>Owner is always an object</a></li><li><a href="#policy-conditions"><span class="nav-number">4</span>Policy conditions have one form</a></li><li><a href="#agent"><span class="nav-number">5</span>Agent manifests</a></li><li><a href="#store-fields"><span class="nav-number">6</span>Objects read back from a cluster</a></li><li><a href="#digest"><span class="nav-number">7</span>The digest survives deployment</a></li><li><a href="#status"><span class="nav-number">8</span>status is reserved for runtimes</a></li><li><a href="#kubernetes"><span class="nav-number">9</span>Storing a workflow in Kubernetes</a></li><li><a href="#extensions-interim"><span class="nav-number">10</span>x- fields move into extensions</a></li></ol></li><li class="nav-chapter"><a href="#schedule">Schedules</a><ol><li><a href="#concurrency"><span class="nav-number">11</span>Overlapping ticks</a></li><li><a href="#trigger-skipped"><span class="nav-number">12</span>Skipped ticks are audited</a></li></ol></li><li class="nav-chapter"><a href="#input">Human input</a><ol><li><a href="#input-step"><span class="nav-number">13</span>Asking a person during a workflow</a></li><li><a href="#agent-input"><span class="nav-number">14</span>An agent asks a question</a></li></ol></li><li class="nav-chapter"><a href="#outputs">Step outputs</a><ol><li><a href="#command-outputs"><span class="nav-number">15</span>Outputs of a command step</a></li><li><a href="#agent-outputs"><span class="nav-number">16</span>Outputs of an agent step</a></li><li><a href="#reserved-env"><span class="nav-number">17</span>Reserved environment variables</a></li></ol></li><li class="nav-chapter"><a href="#run">WorkflowRun and status</a><ol><li><a href="#start-run"><span class="nav-number">18</span>Starting an execution</a></li><li><a href="#run-status"><span class="nav-number">19</span>Watching an execution</a></li><li><a href="#kubectl"><span class="nav-number">20</span>kubectl shows validity and progress</a></li></ol></li><li class="nav-chapter"><a href="#pinning">Execution pinning</a><ol><li><a href="#pinning"><span class="nav-number">21</span>A GitOps sync during an execution</a></li><li><a href="#started-digest"><span class="nav-number">22</span>The digest is required at start</a></li><li><a href="#assert-version"><span class="nav-number">23</span>Run exactly the reviewed version</a></li></ol></li><li class="nav-chapter"><a href="#extensions">Extension model (concept)</a><ol><li><a href="#extension-step"><span class="nav-number">24</span>A vendor-specific step</a></li><li><a href="#policy-attachment"><span class="nav-number">25</span>Policies attached by the platform team</a></li><li><a href="#binding"><span class="nav-number">26</span>Runtime configuration stays out of the manifest</a></li><li><a href="#domain-values"><span class="nav-number">27</span>Vendor values carry a domain</a></li><li><a href="#strict"><span class="nav-number">28</span>Typos are caught at apply time</a></li></ol></li><li class="nav-chapter"><a href="#try">Try it: Helm chart</a></li></ol></nav>
+  <nav class="toc" id="toc" aria-label="Contents"><ol><li class="nav-chapter"><a href="#model">Document model</a><ol><li><a href="#minimal"><span class="nav-number">1</span>A minimal workflow</a></li><li><a href="#governance-fields"><span class="nav-number">2</span>Governance fields live in spec</a></li><li><a href="#owner"><span class="nav-number">3</span>Owner is always an object</a></li><li><a href="#policy-conditions"><span class="nav-number">4</span>Policy conditions have one form</a></li><li><a href="#agent"><span class="nav-number">5</span>Agent manifests</a></li><li><a href="#store-fields"><span class="nav-number">6</span>Objects read back from a cluster</a></li><li><a href="#digest"><span class="nav-number">7</span>The digest survives deployment</a></li><li><a href="#status"><span class="nav-number">8</span>status is reserved for runtimes</a></li><li><a href="#kubernetes"><span class="nav-number">9</span>Storing a workflow in Kubernetes</a></li><li><a href="#extensions-interim"><span class="nav-number">10</span>x- fields move into extensions</a></li></ol></li><li class="nav-chapter"><a href="#schedule">Schedules</a><ol><li><a href="#concurrency"><span class="nav-number">11</span>Overlapping ticks</a></li><li><a href="#trigger-skipped"><span class="nav-number">12</span>Skipped ticks are audited</a></li></ol></li><li class="nav-chapter"><a href="#input">Human input</a><ol><li><a href="#input-step"><span class="nav-number">13</span>Asking a person during a workflow</a></li><li><a href="#agent-input"><span class="nav-number">14</span>An agent asks a question</a></li></ol></li><li class="nav-chapter"><a href="#outputs">Step outputs</a><ol><li><a href="#command-outputs"><span class="nav-number">15</span>Outputs of a command step</a></li><li><a href="#agent-outputs"><span class="nav-number">16</span>Outputs of an agent step</a></li><li><a href="#reserved-env"><span class="nav-number">17</span>Reserved environment variables</a></li></ol></li><li class="nav-chapter"><a href="#run">WorkflowRun and status</a><ol><li><a href="#start-run"><span class="nav-number">18</span>Starting an execution</a></li><li><a href="#run-status"><span class="nav-number">19</span>Watching an execution</a></li><li><a href="#kubectl"><span class="nav-number">20</span>kubectl shows validity and progress</a></li></ol></li><li class="nav-chapter"><a href="#pinning">Execution pinning</a><ol><li><a href="#pinning"><span class="nav-number">21</span>A GitOps sync during an execution</a></li><li><a href="#started-digest"><span class="nav-number">22</span>The digest is required at start</a></li><li><a href="#assert-version"><span class="nav-number">23</span>Run exactly the reviewed version</a></li><li><a href="#image-pinning"><span class="nav-number">24</span>Images: tags in the manifest, digests in the record</a></li></ol></li><li class="nav-chapter"><a href="#extensions">Extension model (concept)</a><ol><li><a href="#extension-step"><span class="nav-number">25</span>A vendor-specific step</a></li><li><a href="#policy-attachment"><span class="nav-number">26</span>Policies attached by the platform team</a></li><li><a href="#binding"><span class="nav-number">27</span>Runtime configuration stays out of the manifest</a></li><li><a href="#domain-values"><span class="nav-number">28</span>Vendor values carry a domain</a></li><li><a href="#strict"><span class="nav-number">29</span>Typos are caught at apply time</a></li></ol></li><li class="nav-chapter"><a href="#try">Try it: Helm chart</a></li></ol></nav>
   <main id="top">
     <section class="intro">
       <h1>From v1alpha1 to the v1alpha2 draft</h1>
-      <p class="lede">28 examples of what changes in the Agentic Workflow Protocol, each with the old form on the left, the new form on the right, and the reason for the change.</p>
+      <p class="lede">29 examples of what changes in the Agentic Workflow Protocol, each with the old form on the left, the new form on the right, and the reason for the change.</p>
       <p class="notice">The v1alpha2 draft makes AWP manifests valid Kubernetes resources while keeping them usable by runtimes without Kubernetes, and adds what a first runtime implementation was missing. Everything here is a <strong>Draft</strong> under review; nothing is accepted. The last chapter is a <strong>concept</strong> that is not applied to the schema. Snippets marked <span class="verified">valid</span> or <span class="verified">rejected by checker</span> were run through the reference checker.</p>
       <ul class="legend">
         <li><span class="swatch swatch-del"></span>only in the old form</li>
         <li><span class="swatch swatch-add"></span>new or moved in the new form</li>
       </ul>
-      <ol class="overview"><li><a href="#model"><span class="ov-title">Document model</span><span class="ov-meta">AEP-0015 · 10 examples</span></a></li><li><a href="#schedule"><span class="ov-title">Schedules</span><span class="ov-meta">AEP-0016 · 2 examples</span></a></li><li><a href="#input"><span class="ov-title">Human input</span><span class="ov-meta">AEP-0017 · 2 examples</span></a></li><li><a href="#outputs"><span class="ov-title">Step outputs</span><span class="ov-meta">AEP-0018 · 3 examples</span></a></li><li><a href="#run"><span class="ov-title">WorkflowRun and status</span><span class="ov-meta">AEP-0019 · 3 examples</span></a></li><li><a href="#pinning"><span class="ov-title">Execution pinning</span><span class="ov-meta">AEP-0020 · 3 examples</span></a></li><li><a href="#extensions"><span class="ov-title">Extension model (concept)</span><span class="ov-meta">AEP-0021 · 5 examples · concept</span></a></li></ol>
+      <ol class="overview"><li><a href="#model"><span class="ov-title">Document model</span><span class="ov-meta">AEP-0015 · 10 examples</span></a></li><li><a href="#schedule"><span class="ov-title">Schedules</span><span class="ov-meta">AEP-0016 · 2 examples</span></a></li><li><a href="#input"><span class="ov-title">Human input</span><span class="ov-meta">AEP-0017 · 2 examples</span></a></li><li><a href="#outputs"><span class="ov-title">Step outputs</span><span class="ov-meta">AEP-0018 · 3 examples</span></a></li><li><a href="#run"><span class="ov-title">WorkflowRun and status</span><span class="ov-meta">AEP-0019 · 3 examples</span></a></li><li><a href="#pinning"><span class="ov-title">Execution pinning</span><span class="ov-meta">AEP-0020 · 4 examples</span></a></li><li><a href="#extensions"><span class="ov-title">Extension model (concept)</span><span class="ov-meta">AEP-0021 · 5 examples · concept</span></a></li></ol>
     </section>
     <section class="chapter" id="model">
   <header class="chapter-head">
@@ -719,6 +719,27 @@ main {
   </div>
   <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0020-execution-pinning.md">AEP-0020</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0019-workflow-run-and-status.md">AEP-0019</a></footer>
 </article>
+<article class="example" id="image-pinning">
+  <header class="example-head">
+    <span class="example-number">24</span>
+    <h3>Images: tags in the manifest, digests in the record</h3>
+  </header>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha1</span></figcaption>
+  <pre><code><span><span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> fetch</span></span><span>  <span class="tok-key">type</span>:<span class="tok-value"> command</span></span><span>  <span class="tok-key">image</span>:<span class="tok-value"> registry.example.com/tools:1.4</span></span><span>  <span class="tok-key">command</span>:<span class="tok-value"> fetch</span></span><span> </span><span><span class="tok-comment"># Which image ran? Whatever :1.4 pointed to</span></span><span><span class="tok-comment"># at that moment. A retry an hour later may</span></span><span><span class="tok-comment"># pull a different one. Under the security</span></span><span><span class="tok-comment"># profile a digest is required, which is hard</span></span><span><span class="tok-comment"># to maintain in Helm charts.</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">v1alpha2 draft</span></figcaption>
+  <pre><code><span>manifest:   image: registry.example.com/tools:1.4</span><span> </span><span>execution start: runtime resolves the tag</span><span>  registry.example.com/tools:1.4</span><span>    -&gt; sha256:9c1e...  (image index: amd64, arm64, s390x)</span><span> </span><span>every step and retry of this execution uses sha256:9c1e...</span><span> </span><span>reproducibility record:</span><span>  images:</span><span>    - reference: registry.example.com/tools:1.4</span><span>      digest: sha256:9c1e...</span><span> </span><span>security profile: tools:1.4@sha256:9c1e... (index digest)</span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>What changes</h4><p>Tags stay allowed outside the security profile. The runtime resolves every image to a digest when an execution starts, pins it like the manifests and records it. For multi-platform images the digest is that of the image index, which works on every architecture. A runtime that cannot run images rejects a command step with <code>image</code>.</p></div>
+    <div><h4>Why</h4><p>Every execution is traceable without forcing authors and packaging tools to maintain digests. Organisations that need the reviewed image to be the executed one choose the security profile.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0020-execution-pinning.md">AEP-0020</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#94-dependencies">Spec 9.4</a></footer>
+</article>
 </section>
 <section class="chapter" id="extensions">
   <header class="chapter-head">
@@ -728,7 +749,7 @@ main {
   </header>
   <article class="example" id="extension-step">
   <header class="example-head">
-    <span class="example-number">24</span>
+    <span class="example-number">25</span>
     <h3>A vendor-specific step</h3>
   </header>
   <div class="panes">
@@ -749,7 +770,7 @@ main {
 </article>
 <article class="example" id="policy-attachment">
   <header class="example-head">
-    <span class="example-number">25</span>
+    <span class="example-number">26</span>
     <h3>Policies attached by the platform team</h3>
   </header>
   <div class="panes">
@@ -770,7 +791,7 @@ main {
 </article>
 <article class="example" id="binding">
   <header class="example-head">
-    <span class="example-number">26</span>
+    <span class="example-number">27</span>
     <h3>Runtime configuration stays out of the manifest</h3>
   </header>
   <div class="panes">
@@ -791,7 +812,7 @@ main {
 </article>
 <article class="example" id="domain-values">
   <header class="example-head">
-    <span class="example-number">27</span>
+    <span class="example-number">28</span>
     <h3>Vendor values carry a domain</h3>
   </header>
   <div class="panes">
@@ -812,7 +833,7 @@ main {
 </article>
 <article class="example" id="strict">
   <header class="example-head">
-    <span class="example-number">28</span>
+    <span class="example-number">29</span>
     <h3>Typos are caught at apply time</h3>
   </header>
   <div class="panes">

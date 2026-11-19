@@ -4,7 +4,7 @@ description: >-
   Example AWP v1alpha2 workflow packaged as a Helm chart: checks venue programs for new concerts,
   rates them against a music taste and sends a short summary. Ships the AWP CustomResourceDefinitions.
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: "v1alpha2-draft"
 keywords:
   - awp

@@ -30,7 +30,7 @@ image of the command steps are placeholders.
 | `sources` | venue programs (`name`, `url`, `kind`: `html`, `json-ld`, `json`) |
 | `models.collector`, `models.curator` | model provider and name of the two agents |
 | `notification.*` | webhook URL and the secret that holds its token |
-| `image` | image of the command steps, pinned by digest |
+| `image` | image of the command steps; a tag is enough, the runtime pins the digest at start (add a digest for the security profile) |
 | `budget.*` | cost, duration and token limits of an execution |
 | `policy.*` | the included Policy: allowed model providers |
 | `run.enabled` | create a `WorkflowRun` per release revision, which starts one execution |
@@ -41,5 +41,7 @@ image of the command steps are placeholders.
   them through the helper `concert-scout.expr`.
 - Helm labels and the release namespace are not covered by the AWP digest (spec 9.1), so they do not
   change the identity of the workflow.
-- Rendered manifests pass the AWP reference checker under all profiles, and an object read back
-  from a cluster validates as well.
+- Images can stay tags: the runtime resolves them to digests when an execution starts, so the
+  chart needs no digest maintenance. Only the security profile requires digests.
+- Rendered manifests pass the AWP reference checker (with a digest in `image` also under the
+  security profile), and an object read back from a cluster validates as well.

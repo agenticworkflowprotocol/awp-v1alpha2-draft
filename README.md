@@ -1,7 +1,7 @@
 # AWP v1alpha2 draft, side by side
 
 What changes from AWP `v1alpha1` to the `v1alpha2` draft of the
-[Agentic Workflow Protocol](https://agenticworkflowprotocol.org): 28 examples, each with the old
+[Agentic Workflow Protocol](https://agenticworkflowprotocol.org): 29 examples, each with the old
 form on the left, the new form on the right, what changes and why.
 
 **Website:** https://agenticworkflowprotocol.github.io/awp-v1alpha2-draft/
