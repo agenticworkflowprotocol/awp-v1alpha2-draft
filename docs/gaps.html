@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AWP v1alpha2: Open Runtime Gaps</title>
+<meta name="description" content="Open gaps G41 to G61 found by a Kubernetes runtime proof of concept after the AWP v1alpha2 draft: what the draft says today and what the runtime proposes.">
+<style>
+/* Layout: sticky table of contents on the left, one column of examples with two code panes each.
+   Palette follows agenticworkflowprotocol.org: cool neutral greys, teal accent. */
+:root {
+  --bg: #f7f8f9;
+  --surface: #ffffff;
+  --code-bg: #f1f3f5;
+  --fg: #1b1e22;
+  --muted: #5a6068;
+  --hairline: #dde1e5;
+  --accent: #0f8a7d;
+  --accent-soft: #d8f3ef;
+  --del-bg: #fbe9e9;
+  --del-bar: #c94a4a;
+  --add-bg: #e3f5ec;
+  --add-bar: #2b9a62;
+  --concept: #8a5a00;
+  --concept-soft: #fbf0d9;
+  --tok-key: #0b6f65;
+  --tok-comment: #7a8089;
+  --tok-dash: #8a9099;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", "DejaVu Sans Mono", Menlo, Consolas, monospace;
+  --radius: 10px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101214; --surface: #181a1d; --code-bg: #14171a; --fg: #e8eaec; --muted: #9aa0a8;
+    --hairline: #2a2e33; --accent: #5fd6c8; --accent-soft: #0c3a36;
+    --del-bg: #3a1d1f; --del-bar: #e06b6b; --add-bg: #12352a; --add-bar: #4cc38a;
+    --concept: #f0c060; --concept-soft: #3a2e12; --tok-key: #7fdcd0; --tok-comment: #7d848d; --tok-dash: #6a7078;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101214; --surface: #181a1d; --code-bg: #14171a; --fg: #e8eaec; --muted: #9aa0a8;
+  --hairline: #2a2e33; --accent: #5fd6c8; --accent-soft: #0c3a36;
+  --del-bg: #3a1d1f; --del-bar: #e06b6b; --add-bg: #12352a; --add-bar: #4cc38a;
+  --concept: #f0c060; --concept-soft: #3a2e12; --tok-key: #7fdcd0; --tok-comment: #7d848d; --tok-dash: #6a7078;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 var(--font-body);
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+code { font-family: var(--font-mono); font-size: 0.88em; background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; }
+
+.topbar {
+  position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px;
+  background: var(--surface); border-bottom: 1px solid var(--hairline);
+  padding-block: 10px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.brand { font-weight: 650; letter-spacing: 0.01em; color: var(--fg); text-decoration: none; }
+.brand span { color: var(--accent); }
+.brand .brand-tail { color: inherit; }
+.topbar .spacer { flex: 1; }
+.topbar a.ext { font-size: 0.9rem; }
+#toc-toggle {
+  display: none; font: inherit; font-size: 0.9rem; color: var(--fg); background: var(--code-bg);
+  border: 1px solid var(--hairline); border-radius: 8px; padding: 6px 12px; cursor: pointer;
+}
+
+.layout { display: grid; grid-template-columns: 290px minmax(0, 1fr); max-width: 1500px; margin: 0 auto; }
+.toc {
+  position: sticky; top: 53px; align-self: start; height: calc(100vh - 53px); overflow-y: auto;
+  padding: 24px 16px 40px 24px; border-right: 1px solid var(--hairline); font-size: 0.9rem;
+}
+.toc ol { list-style: none; margin: 0; padding: 0; }
+.nav-chapter { margin-bottom: 18px; }
+.nav-chapter > a { display: block; font-weight: 650; color: var(--fg); text-decoration: none; margin-bottom: 4px; }
+.nav-chapter li a {
+  display: flex; gap: 8px; padding: 3px 6px; border-radius: 6px; color: var(--muted); text-decoration: none;
+}
+.nav-chapter li a:hover { background: var(--code-bg); color: var(--fg); }
+.nav-number { font-variant-numeric: tabular-nums; min-width: 1.6em; color: var(--tok-dash); }
+
+main {
+  min-width: 0; padding-block: 32px 80px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (min-width: 900px) { main { padding-left: 40px; padding-right: 40px; } }
+
+.intro { max-width: 72ch; margin-bottom: 40px; }
+.intro h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.15; margin: 0 0 12px; text-wrap: balance; }
+.intro .lede { font-size: 1.1rem; color: var(--muted); margin: 0 0 20px; }
+.notice {
+  border: 1px solid var(--hairline); background: var(--surface); border-radius: var(--radius);
+  padding: 14px 16px; font-size: 0.95rem; margin: 0 0 20px;
+}
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 0.88rem; color: var(--muted); margin: 0 0 24px; padding: 0; list-style: none; }
+.legend li { display: flex; align-items: center; gap: 6px; }
+.swatch { width: 14px; height: 14px; border-radius: 3px; border-left: 3px solid; }
+.swatch-del { background: var(--del-bg); border-color: var(--del-bar); }
+.swatch-add { background: var(--add-bg); border-color: var(--add-bar); }
+.overview { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.overview a {
+  display: flex; flex-direction: column; gap: 2px; height: 100%; padding: 12px 14px; border-radius: var(--radius);
+  border: 1px solid var(--hairline); background: var(--surface); color: var(--fg); text-decoration: none;
+}
+.overview a:hover { border-color: var(--accent); }
+.ov-title { font-weight: 600; }
+.ov-meta { font-size: 0.85rem; color: var(--muted); }
+
+.chapter { margin-top: 56px; }
+.chapter-head { max-width: 72ch; margin-bottom: 20px; }
+.chapter-head h2 { font-size: 1.6rem; margin: 4px 0 6px; text-wrap: balance; }
+.chapter-intro { color: var(--muted); margin: 0; }
+.eyebrow { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 0.85rem; }
+.chip {
+  font-size: 0.75rem; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 999px;
+}
+.chip-concept { color: var(--concept); background: var(--concept-soft); }
+
+.example { border-top: 1px solid var(--hairline); padding-top: 22px; margin-top: 28px; }
+.example-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+.example-head h3 { margin: 0; font-size: 1.2rem; text-wrap: balance; }
+.example-number { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 0.95rem; min-width: 1.6em; }
+.panes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 1100px) { .panes { grid-template-columns: minmax(0, 1fr); } }
+.pane { margin: 0; min-width: 0; border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--code-bg); overflow: hidden; }
+.pane figcaption {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  padding: 7px 12px; border-bottom: 1px solid var(--hairline); background: var(--surface); font-size: 0.82rem;
+}
+.pane-label { font-weight: 650; letter-spacing: 0.02em; }
+.pane-left .pane-label { color: var(--muted); }
+.pane-right .pane-label { color: var(--accent); }
+.verified { color: var(--muted); font-size: 0.78rem; }
+.verified::before { content: "✓ "; color: var(--add-bar); }
+.unchecked { color: var(--concept); font-size: 0.78rem; }
+.unchecked::before { content: "\25CB  "; }
+
+/* Page links in the top bar; on phones only the other page is shown, below 380px they move into the contents overlay. */
+.pagenav { display: flex; gap: 4px; font-size: 0.9rem; }
+.pagenav a { padding: 4px 10px; border-radius: 8px; text-decoration: none; color: var(--muted); white-space: nowrap; }
+.pagenav a:hover { color: var(--fg); background: var(--code-bg); }
+.pagenav a[aria-current="page"] { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+.toc-pages { display: none; list-style: none; margin: 0 0 20px; padding: 0 0 16px; border-bottom: 1px solid var(--hairline); }
+.toc-pages a { display: block; padding: 4px 6px; font-weight: 600; text-decoration: none; }
+.toc-pages a[aria-current="page"] { color: var(--fg); }
+
+/* Gaps page: severity chips, overview table, problem statement. */
+.sev {
+  font-size: 0.72rem; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
+  padding: 1px 8px; border-radius: 999px; color: var(--muted); background: var(--code-bg);
+}
+.sev-must { color: var(--del-bar); background: var(--del-bg); }
+.sev-should { color: var(--concept); background: var(--concept-soft); }
+.gap .example-head { flex-wrap: wrap; row-gap: 4px; }
+.gap-id { font-variant-numeric: tabular-nums; font-weight: 650; color: var(--muted); font-size: 0.95rem; }
+.problem { margin: 0 0 12px; max-width: 80ch; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--surface); max-width: 900px; }
+.gap-table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+.gap-table th, .gap-table td { text-align: left; vertical-align: top; padding: 7px 12px; border-bottom: 1px solid var(--hairline); }
+.gap-table thead th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 650; }
+.gap-table-chapter th { background: var(--code-bg); font-weight: 650; }
+.gap-table-chapter a { color: var(--fg); text-decoration: none; }
+.gap-table td:first-child { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.gap-table td:last-child { color: var(--muted); }
+.gap-table tbody:last-child tr:last-child td { border-bottom: none; }
+@media (max-width: 560px) { .gap-table th, .gap-table td { padding: 6px 8px; } }
+.pane pre { margin: 0; overflow-x: auto; padding: 10px 0; font: 13px/1.55 var(--font-mono); }
+.pane pre code { background: none; padding: 0; font-size: inherit; display: block; min-width: max-content; }
+.pane pre code > span { display: block; padding: 0 14px; border-left: 3px solid transparent; white-space: pre; }
+.line-del { background: var(--del-bg); border-left-color: var(--del-bar) !important; }
+.line-add { background: var(--add-bg); border-left-color: var(--add-bar) !important; }
+.tok-key { color: var(--tok-key); }
+.tok-comment { color: var(--tok-comment); font-style: italic; }
+.tok-dash { color: var(--tok-dash); }
+.tok-cmd { color: var(--muted); }
+
+.explain { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 28px; margin-top: 14px; max-width: 1100px; }
+@media (max-width: 700px) { .explain { grid-template-columns: minmax(0, 1fr); } }
+.explain h4 { margin: 0 0 2px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.explain p { margin: 0; }
+.refs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.refs a {
+  font-size: 0.82rem; text-decoration: none; padding: 2px 10px; border-radius: 999px;
+  border: 1px solid var(--hairline); color: var(--accent);
+}
+.refs a:hover { border-color: var(--accent); }
+.page-foot { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--hairline); color: var(--muted); font-size: 0.88rem; max-width: 72ch; }
+
+@media (max-width: 899px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  #toc-toggle { display: inline-block; }
+  .toc {
+    position: fixed; top: 53px; left: 0; right: 0; bottom: 0; height: auto; z-index: 15;
+    background: var(--surface); border-right: none; padding: 20px max(16px, env(safe-area-inset-right, 0px)) calc(40px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  }
+  .topbar a.ext { display: none; }
+}
+@media (max-width: 480px) {
+  .topbar { gap: 8px; }
+  .brand-tail { display: none; }
+  .pagenav a { padding: 4px 8px; font-size: 0.85rem; }
+  .pagenav a[aria-current="page"] { display: none; }
+  #toc-toggle { padding: 6px 10px; }
+}
+@media (max-width: 379px) {
+  .topbar .pagenav { display: none; }
+  .toc-pages { display: block; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#top">AWP <span>v1alpha2</span><span class="brand-tail"> draft</span></a>
+  <span class="spacer"></span>
+  <nav class="pagenav" aria-label="Pages"><a href="./">Side by side</a><a href="gaps.html" aria-current="page">Open gaps</a></nav>
+  <a class="ext" href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/pull/16">Pull request</a>
+  <a class="ext" href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/docs/v1alpha2-review-guide.md">Review guide</a>
+  <button id="toc-toggle" type="button" aria-expanded="false" aria-controls="toc">Contents</button>
+</header>
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Contents"><ul class="toc-pages"><li><a href="./">Side by side</a></li><li><a href="gaps.html" aria-current="page">Open gaps</a></li></ul><ol><li class="nav-chapter"><a href="#events">Events and triggers</a><ol><li><a href="#g41"><span class="nav-number">G41</span>Event data cannot reach the execution</a></li><li><a href="#g42"><span class="nav-number">G42</span>Filter semantics are undefined</a></li><li><a href="#g43"><span class="nav-number">G43</span>No duplicate handling and no concurrency for events</a></li><li><a href="#g44"><span class="nav-number">G44</span>Who started an event-triggered execution</a></li><li><a href="#g48"><span class="nav-number">G48</span>Event runs created by an event router</a></li><li><a href="#g52"><span class="nav-number">G52</span>Runtime trigger objects</a></li><li><a href="#g54"><span class="nav-number">G54</span>What triggers[].source means</a></li><li><a href="#g56"><span class="nav-number">G56</span>Delivery guarantee per event source</a></li><li><a href="#g57"><span class="nav-number">G57</span>Testing event-only workflows</a></li></ol></li><li class="nav-chapter"><a href="#network">Network permissions</a><ol><li><a href="#g47"><span class="nav-number">G47</span>Manifest requirement versus deployment ceiling</a></li><li><a href="#g49"><span class="nav-number">G49</span>allowHosts has no syntax</a></li><li><a href="#g50"><span class="nav-number">G50</span>Allowed hosts that resolve to private addresses</a></li><li><a href="#g51"><span class="nav-number">G51</span>How network rules are enforced for command steps</a></li></ol></li><li class="nav-chapter"><a href="#state">Conversation, state and identity</a><ol><li><a href="#g45"><span class="nav-number">G45</span>No reply path</a></li><li><a href="#g46"><span class="nav-number">G46</span>Conversation context for event-triggered runs</a></li><li><a href="#g53"><span class="nav-number">G53</span>State shared by two workflows</a></li><li><a href="#g55"><span class="nav-number">G55</span>The external identity a step acts as</a></li><li><a href="#g58"><span class="nav-number">G58</span>State as untrusted input</a></li></ol></li><li class="nav-chapter"><a href="#models">Models: input to AEP-0008</a><ol><li><a href="#g59"><span class="nav-number">G59</span>Catalog limits are binding</a></li><li><a href="#g60"><span class="nav-number">G60</span>Model capabilities</a></li><li><a href="#g61"><span class="nav-number">G61</span>Where model credentials live</a></li></ol></li></ol></nav>
+  <main id="top">
+    <section class="intro">
+      <h1>Runtime feedback: open gaps after v1alpha2</h1>
+      <p class="lede">What a Kubernetes runtime proof of concept and a reference concept still missed in the v1alpha2 draft: 21 gaps, each with what the draft says today on the left, a sketch of the proposal on the right, and what happened in the proof of concept.</p>
+      <p class="notice">These are <strong>proposals from one runtime</strong>, not accepted specification and not part of the draft. They are compared against the v1alpha2 draft at commit <code>b8a0ee8</code>. IDs follow the runtime feedback list; earlier gaps that the draft resolves (G01, G07, G08, G40) are on the <a href="./">side-by-side page</a>. Left snippets marked <span class="verified">valid</span> or <span class="verified">rejected by checker</span> were run through the reference checker; proposals are marked <span class="unchecked">not checked</span>. Field names in proposals are sketches unless the source names them.</p>
+      <ul class="legend">
+        <li><span class="sev sev-must">must</span> blocks portable runtimes</li>
+        <li><span class="sev sev-should">should</span> gap with a workaround</li>
+        <li><span class="sev sev-minor">minor</span> clarification</li>
+        <li><span class="swatch swatch-add"></span>added by the proposal</li>
+      </ul>
+      <div class="table-wrap"><table class="gap-table">
+      <thead><tr><th scope="col">Gap</th><th scope="col">Severity</th><th scope="col">Problem</th><th scope="col">Related</th></tr></thead>
+      <tbody>
+        <tr class="gap-table-chapter"><th colspan="4" scope="colgroup"><a href="#events">Events and triggers</a></th></tr>
+        <tr><td><a href="#g41">G41</a></td><td><span class="sev sev-must">must</span></td><td>Event data cannot reach the execution</td><td>AEP-0004</td></tr>
+        <tr><td><a href="#g42">G42</a></td><td><span class="sev sev-should">should</span></td><td>Filter semantics are undefined</td><td>AEP-0021 B6</td></tr>
+        <tr><td><a href="#g43">G43</a></td><td><span class="sev sev-should">should</span></td><td>No duplicate handling and no concurrency for events</td><td>Spec 5.2</td></tr>
+        <tr><td><a href="#g44">G44</a></td><td><span class="sev sev-should">should</span></td><td>Who started an event-triggered execution</td><td>AEP-0019</td></tr>
+        <tr><td><a href="#g48">G48</a></td><td><span class="sev sev-must">must</span></td><td>Event runs created by an event router</td><td>AEP-0019 (open question 1)</td></tr>
+        <tr><td><a href="#g52">G52</a></td><td><span class="sev sev-should">should</span></td><td>Runtime trigger objects</td><td>AEP-0021 B6</td></tr>
+        <tr><td><a href="#g54">G54</a></td><td><span class="sev sev-minor">minor</span></td><td>What triggers[].source means</td><td>AEP-0004, AEP-0021 B4</td></tr>
+        <tr><td><a href="#g56">G56</a></td><td><span class="sev sev-minor">minor</span></td><td>Delivery guarantee per event source</td><td>Spec 11.3</td></tr>
+        <tr><td><a href="#g57">G57</a></td><td><span class="sev sev-should">should</span></td><td>Testing event-only workflows</td><td>AEP-0019 (open question 1), AEP-0004</td></tr>
+      </tbody>
+      <tbody>
+        <tr class="gap-table-chapter"><th colspan="4" scope="colgroup"><a href="#network">Network permissions</a></th></tr>
+        <tr><td><a href="#g47">G47</a></td><td><span class="sev sev-should">should</span></td><td>Manifest requirement versus deployment ceiling</td><td>Spec 7.5</td></tr>
+        <tr><td><a href="#g49">G49</a></td><td><span class="sev sev-should">should</span></td><td>allowHosts has no syntax</td><td>Spec 7.5</td></tr>
+        <tr><td><a href="#g50">G50</a></td><td><span class="sev sev-must">must</span></td><td>Allowed hosts that resolve to private addresses</td><td>Spec 7.5</td></tr>
+        <tr><td><a href="#g51">G51</a></td><td><span class="sev sev-should">should</span></td><td>How network rules are enforced for command steps</td><td>Spec 5.6.2, 7.5</td></tr>
+      </tbody>
+      <tbody>
+        <tr class="gap-table-chapter"><th colspan="4" scope="colgroup"><a href="#state">Conversation, state and identity</a></th></tr>
+        <tr><td><a href="#g45">G45</a></td><td><span class="sev sev-minor">minor</span></td><td>No reply path</td><td>AEP-0004</td></tr>
+        <tr><td><a href="#g46">G46</a></td><td><span class="sev sev-should">should</span></td><td>Conversation context for event-triggered runs</td><td>AEP-0004</td></tr>
+        <tr><td><a href="#g53">G53</a></td><td><span class="sev sev-should">should</span></td><td>State shared by two workflows</td><td>G03 (no AEP yet)</td></tr>
+        <tr><td><a href="#g55">G55</a></td><td><span class="sev sev-should">should</span></td><td>The external identity a step acts as</td><td>AEP-0012</td></tr>
+        <tr><td><a href="#g58">G58</a></td><td><span class="sev sev-should">should</span></td><td>State as untrusted input</td><td>G11, spec 12</td></tr>
+      </tbody>
+      <tbody>
+        <tr class="gap-table-chapter"><th colspan="4" scope="colgroup"><a href="#models">Models: input to AEP-0008</a></th></tr>
+        <tr><td><a href="#g59">G59</a></td><td><span class="sev sev-should">should</span></td><td>Catalog limits are binding</td><td>AEP-0008</td></tr>
+        <tr><td><a href="#g60">G60</a></td><td><span class="sev sev-minor">minor</span></td><td>Model capabilities</td><td>AEP-0008</td></tr>
+        <tr><td><a href="#g61">G61</a></td><td><span class="sev sev-should">should</span></td><td>Where model credentials live</td><td>Spec 5.4.3, 7.9</td></tr>
+      </tbody>
+    </table></div>
+    </section>
+    <section class="chapter" id="events">
+  <header class="chapter-head">
+    <p class="eyebrow"><span class="chip chip-concept">Proposal</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0004-event-references.md">AEP-0004</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0019-workflow-run-and-status.md">AEP-0019</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0021-extension-model.md">AEP-0021</a></p>
+    <h2>Events and triggers</h2>
+    <p class="chapter-intro">Event triggers exist in spec 5.2, but the event itself does not reach the execution, and filters, duplicates, actors and run objects for events are undefined. The proof of concept starts runs from chat mentions, webhooks and MQTT through an event router.</p>
+  </header>
+  <article class="example gap" id="g41">
+  <header class="example-head">
+    <span class="gap-id">G41</span>
+    <h3>Event data cannot reach the execution</h3>
+    <span class="sev sev-must">must</span>
+  </header>
+  <p class="problem">An event trigger starts an execution, but nothing in the run can read the event: section 3.9 knows only <code>inputs</code>, <code>steps</code> and <code>execution</code>. A chat message that starts a run cannot pass its text to the agent.</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha2 draft: rejected (no event root in 3.9)</span><span class="verified" title="Checked with the reference checker">rejected by checker</span></figcaption>
+  <pre><code><span><span class="tok-key">triggers</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">type</span>:<span class="tok-value"> event</span></span><span>    <span class="tok-key">source</span>:<span class="tok-value"> chat.example.com</span></span><span>    <span class="tok-key">eventType</span>:<span class="tok-value"> message.mention</span></span><span><span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> answer</span></span><span>    <span class="tok-key">agent</span>:<span class="tok-value"> assistant</span></span><span>    <span class="tok-key">task</span>:<span class="tok-value"> &quot;Answer: ${{ event.data.message }}&quot;</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal: apply AEP-0004 to v1alpha2</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-key">triggers</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">type</span>:<span class="tok-value"> event</span></span><span>    <span class="tok-key">source</span>:<span class="tok-value"> chat.example.com</span></span><span>    <span class="tok-key">eventType</span>:<span class="tok-value"> message.mention</span></span><span class="line-add">    <span class="tok-key">classification</span>:<span class="tok-value"> internal</span></span><span class="line-add">    <span class="tok-key">dataSchema</span>:<span class="tok-value"></span></span><span class="line-add">      <span class="tok-key">type</span>:<span class="tok-value"> object</span></span><span class="line-add">      <span class="tok-key">required</span>:<span class="tok-value"> [message]</span></span><span class="line-add">      <span class="tok-key">properties</span>:<span class="tok-value"></span></span><span class="line-add">        <span class="tok-key">message</span>:<span class="tok-value"> { type: string, maxLength: 4000 }</span></span><span><span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> answer</span></span><span>    <span class="tok-key">agent</span>:<span class="tok-value"> assistant</span></span><span>    <span class="tok-key">task</span>:<span class="tok-value"> &quot;Answer: ${{ event.data.message }}&quot;</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>Chat mentions, webhook payloads and MQTT messages started executions in the proof of concept. With no event context, it maps event fields to workflow inputs, which hides that the value comes from an external sender.</p></div>
+    <div><h4>Status against the draft</h4><p>Partly covered: owner decision D7 chose an own <code>event</code> root, AEP-0004 is in Review and not applied to the draft. The original runtime note also suggested mapping event fields to <code>inputs</code> per trigger; that contradicts D7, so the sketch follows AEP-0004.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0004-event-references.md">AEP-0004</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#39-expressions">Spec 3.9</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#52-triggers">Spec 5.2</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
+</article>
+<article class="example gap" id="g42">
+  <header class="example-head">
+    <span class="gap-id">G42</span>
+    <h3>Filter semantics are undefined</h3>
+    <span class="sev sev-should">should</span>
+  </header>
+  <p class="problem"><code>filter</code> is a map of string. The draft does not say which fields the keys name (event attributes or payload paths), whether values match by equality, or how several entries combine.</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha2 draft (spec 5.2)</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span><span class="tok-key">triggers</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">type</span>:<span class="tok-value"> event</span></span><span>    <span class="tok-key">source</span>:<span class="tok-value"> git.example.com</span></span><span>    <span class="tok-key">eventType</span>:<span class="tok-value"> pull_request.opened</span></span><span>    <span class="tok-key">filter</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">repository</span>:<span class="tok-value"> example-org/web-shop</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-key">triggers</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">type</span>:<span class="tok-value"> event</span></span><span>    <span class="tok-key">source</span>:<span class="tok-value"> git.example.com</span></span><span>    <span class="tok-key">eventType</span>:<span class="tok-value"> pull_request.opened</span></span><span>    <span class="tok-key">filter</span>:<span class="tok-value"></span></span><span class="line-add">     <span class="tok-comment"> # keys: CloudEvents attribute names or data.&lt;path&gt;</span></span><span class="line-add">     <span class="tok-comment"> # values: equality; all entries must match (AND)</span></span><span class="line-add">      <span class="tok-key">data.repository</span>:<span class="tok-value"> example-org/web-shop</span></span><span class="line-add"><span class="tok-comment"># Richer conditions (for example CEL) stay in a</span></span><span class="line-add"><span class="tok-comment"># runtime trigger object (G52) and may only narrow</span></span><span class="line-add"><span class="tok-comment"># this filter.</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>The concept filters chat events with the key <code>data.user</code>. Because its meaning is open, the manifest filter is only descriptive there and the event router does the real filtering.</p></div>
+    <div><h4>Status against the draft</h4><p>Open.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#52-triggers">Spec 5.2</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0021-extension-model.md">AEP-0021</a></footer>
+</article>
+<article class="example gap" id="g43">
+  <header class="example-head">
+    <span class="gap-id">G43</span>
+    <h3>No duplicate handling and no concurrency for events</h3>
+    <span class="sev sev-should">should</span>
+  </header>
+  <p class="problem">MQTT with QoS 1 and webhook retries deliver the same event more than once, and each delivery can start an execution. <code>concurrencyPolicy</code> exists only for schedule triggers.</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">Spec 5.2 (v1alpha2 draft)</span></figcaption>
+  <pre><code><span>concurrencyPolicy only considers executions</span><span>started by the same trigger entry of the same</span><span>workflow (kind, metadata.namespace,</span><span>metadata.name), regardless of their version.</span><span>Manual and event-triggered executions are not</span><span>considered.</span><span> </span><span>(Nothing on duplicate events.)</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-key">triggers</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">type</span>:<span class="tok-value"> event</span></span><span>    <span class="tok-key">source</span>:<span class="tok-value"> mqtt.example.com</span></span><span>    <span class="tok-key">eventType</span>:<span class="tok-value"> sensor.alert</span></span><span>    <span class="tok-key">concurrencyPolicy</span>:<span class="tok-value"> forbid  </span><span class="tok-comment"> # as for schedule</span></span><span>   <span class="tok-comment"> # plus a rate limit (shape not sketched)</span></span><span><span class="tok-comment"># Runtime: deduplicate by CloudEvents source + id</span></span><span><span class="tok-comment"># within a window it documents.</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>The proof of concept implemented duplicate detection on its own. Concurrency control for event-triggered runs is still missing there.</p></div>
+    <div><h4>Status against the draft</h4><p>Open.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#52-triggers">Spec 5.2</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
+</article>
+<article class="example gap" id="g44">
+  <header class="example-head">
+    <span class="gap-id">G44</span>
+    <h3>Who started an event-triggered execution</h3>
+    <span class="sev sev-should">should</span>
+  </header>
+  <p class="problem">The draft takes the actor from an authenticated source. For an event that is the bridge that delivered it, not the person who wrote the message. The person can only be attested by the bridge.</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">Spec 5.2 and 10.8 (v1alpha2 draft)</span></figcaption>
+  <pre><code><span>5.2: An execution started by schedule or event</span><span>has the actor type system; an execution started</span><span>by manual has the actor type human.</span><span> </span><span>10.8: The runtime MUST take this identity from an</span><span>authenticated source [...], never from a field</span><span>the client wrote.</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-comment"># workflow.started, data (sketch)</span></span><span><span class="tok-key">trigger</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">type</span>:<span class="tok-value"> event</span></span><span>  <span class="tok-key">index</span>:<span class="tok-value"> 0</span></span><span>  <span class="tok-key">source</span>:<span class="tok-value"> chat-bridge  </span><span class="tok-comment"> # authenticated transport identity</span></span><span>  <span class="tok-key">actor</span>:<span class="tok-value">               </span><span class="tok-comment"> # optional, attested by the source</span></span><span>    <span class="tok-key">type</span>:<span class="tok-value"> human</span></span><span>    <span class="tok-key">id</span>:<span class="tok-value"> slauger</span></span><span><span class="tok-comment"># Policies may require an attested actor.</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>In the proof of concept a chat bridge attests &quot;message from slauger&quot;. Until this is decided, the concept keeps the attested person only in the event data.</p></div>
+    <div><h4>Status against the draft</h4><p>Open. Conflicts with spec 5.2, which gives every event start the actor type <code>system</code>; both cannot hold.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#52-triggers">Spec 5.2</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#108-kind-workflowrun">Spec 10.8</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0019-workflow-run-and-status.md">AEP-0019</a></footer>
+</article>
+<article class="example gap" id="g48">
+  <header class="example-head">
+    <span class="gap-id">G48</span>
+    <h3>Event runs created by an event router</h3>
+    <span class="sev sev-must">must</span>
+  </header>
+  <p class="problem">A client-created <code>WorkflowRun</code> is a manual start, and runtime-created runs record the trigger only in status. A router such as Argo Events or Tekton Triggers that creates runs for event triggers fits neither role.</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha2 draft: valid, but a manual start</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha2</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> WorkflowRun</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">generateName</span>:<span class="tok-value"> chat-answer-</span></span><span>  <span class="tok-key">namespace</span>:<span class="tok-value"> agents</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">workflowRef</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">name</span>:<span class="tok-value"> chat-answer</span></span><span>  <span class="tok-key">inputs</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">question</span>:<span class="tok-value"> What plays in Leipzig this week?</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha2</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> WorkflowRun</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">generateName</span>:<span class="tok-value"> chat-answer-</span></span><span>  <span class="tok-key">namespace</span>:<span class="tok-value"> agents</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">workflowRef</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">name</span>:<span class="tok-value"> chat-answer</span></span><span class="line-add">  <span class="tok-key">trigger</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-key">type</span>:<span class="tok-value"> event</span></span><span class="line-add">  <span class="tok-key">event</span>:<span class="tok-value">              </span><span class="tok-comment"> # only from a trusted ingress identity</span></span><span class="line-add">    <span class="tok-key">source</span>:<span class="tok-value"> chat.example.com</span></span><span class="line-add">    <span class="tok-key">type</span>:<span class="tok-value"> message.mention</span></span><span class="line-add">    <span class="tok-key">data</span>:<span class="tok-value"></span></span><span class="line-add">      <span class="tok-key">message</span>:<span class="tok-value"> What plays in Leipzig this week?</span></span><span class="line-add"><span class="tok-comment"># The runtime checks the trigger against the manifest,</span></span><span class="line-add"><span class="tok-comment"># records the ingress identity and rejects event</span></span><span class="line-add"><span class="tok-comment"># fields from any other creator.</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>In the proof of concept an Argo Events sensor creates runs with <code>spec.trigger.type: event</code>, which is non-conforming; the runtime therefore keeps its own run kind instead of the AWP <code>WorkflowRun</code>.</p></div>
+    <div><h4>Status against the draft</h4><p>Open, and the same question as AEP-0019 open question 1. The runtime now also considers creating event runs itself from a generated trigger object (G52), which would need no new role.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#108-kind-workflowrun">Spec 10.8</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0019-workflow-run-and-status.md">AEP-0019</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
+</article>
+<article class="example gap" id="g52">
+  <header class="example-head">
+    <span class="gap-id">G52</span>
+    <h3>Runtime trigger objects</h3>
+    <span class="sev sev-should">should</span>
+  </header>
+  <p class="problem">AEP-0021 B6 attaches runtime bindings to a workflow, but not objects for event routing, CEL filters or rate limits. A hand-written Argo Events sensor has no reference to the workflow and no status.</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">AEP-0021 B6 (concept): bindings only</span></figcaption>
+  <pre><code><span><span class="tok-key">apiVersion</span>:<span class="tok-value"> runtime.example.com/v1</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> WorkflowBinding</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> chat-answer</span></span><span>  <span class="tok-key">namespace</span>:<span class="tok-value"> agents</span></span><span>  <span class="tok-key">labels</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">awp.agenticworkflowprotocol.org/binding</span>:<span class="tok-value"> &quot;true&quot;</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">targetRefs</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">group</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org</span></span><span>      <span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span>      <span class="tok-key">name</span>:<span class="tok-value"> chat-answer</span></span><span>  <span class="tok-key">runnerImage</span>:<span class="tok-value"> registry.example.com/runner@sha256:...</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-key">apiVersion</span>:<span class="tok-value"> runtime.example.com/v1</span></span><span class="line-add"><span class="tok-key">kind</span>:<span class="tok-value"> EventTrigger         </span><span class="tok-comment"> # runtime-specific kind</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> chat-answer</span></span><span>  <span class="tok-key">namespace</span>:<span class="tok-value"> agents</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">targetRefs</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">group</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org</span></span><span>      <span class="tok-key">kind</span>:<span class="tok-value"> Workflow</span></span><span>      <span class="tok-key">name</span>:<span class="tok-value"> chat-answer</span></span><span class="line-add">      <span class="tok-key">sectionName</span>:<span class="tok-value"> &quot;0&quot;     </span><span class="tok-comment"> # index of the trigger entry</span></span><span class="line-add"> <span class="tok-comment"> # routing, CEL filter, rate limit: runtime-specific,</span></span><span class="line-add"> <span class="tok-comment"> # may only narrow the manifest trigger</span></span><span class="line-add"><span class="tok-key">status</span>:<span class="tok-value"></span></span><span class="line-add">  <span class="tok-key">conditions</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-dash">- </span><span class="tok-key">type</span>:<span class="tok-value"> Accepted</span></span><span class="line-add">      <span class="tok-key">status</span>:<span class="tok-value"> &quot;True&quot;</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>The proof of concept routes events with an Argo Events sensor written by hand. Nothing ties it to the trigger entry it serves, and it reports no status.</p></div>
+    <div><h4>Status against the draft</h4><p>Open. Generated from <code>spec.triggers</code> or validated against it, as an extension of AEP-0021 B6.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0021-extension-model.md">AEP-0021</a></footer>
+</article>
+<article class="example gap" id="g54">
+  <header class="example-head">
+    <span class="gap-id">G54</span>
+    <h3>What triggers[].source means</h3>
+    <span class="sev sev-minor">minor</span>
+  </header>
+  <p class="problem">In CloudEvents, <code>source</code> is the context in which an event happened (a URI reference). AEP-0021 B4 treats <code>triggers[].source</code> as the name of an event source, with a domain prefix for implementation values.</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">Spec 5.2 and AEP-0021 B4</span></figcaption>
+  <pre><code><span>5.2: The mapping of source and eventType to</span><span>concrete event sources is implementation-defined.</span><span> </span><span>    source: git.example.com</span><span> </span><span>B4: triggers[].source (event): names listed by</span><span>AWP; implementation value:</span><span> </span><span>    source: events.example.com/github</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-comment"># Option A: the producer context (CloudEvents)</span></span><span><span class="tok-key">source</span>:<span class="tok-value"> https://git.example.com/example-org/web-shop</span></span><span> </span><span><span class="tok-comment"># Option B: an event source name (AEP-0021 B4)</span></span><span><span class="tok-key">source</span>:<span class="tok-value"> events.example.com/github</span></span><span> </span><span><span class="tok-comment"># The proposal is only: state which one it is.</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>The proof of concept used <code>source</code> as the name of its event source adapter, while the events it receives carry a CloudEvents <code>source</code> of their own. Both readings are plausible from the draft.</p></div>
+    <div><h4>Status against the draft</h4><p>Open.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#52-triggers">Spec 5.2</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0004-event-references.md">AEP-0004</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0021-extension-model.md">AEP-0021</a></footer>
+</article>
+<article class="example gap" id="g56">
+  <header class="example-head">
+    <span class="gap-id">G56</span>
+    <h3>Delivery guarantee per event source</h3>
+    <span class="sev sev-minor">minor</span>
+  </header>
+  <p class="problem">Whether an event can be lost or arrives more than once depends on the event source and the router in between. A router can silently weaken the guarantee.</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">Spec 11.3 (v1alpha2 draft)</span></figcaption>
+  <pre><code><span><span class="tok-key">implementation</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> example-runtime</span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 0.4.0</span></span><span><span class="tok-key">conformance</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">awp</span>:<span class="tok-value"> v1alpha2</span></span><span>  <span class="tok-key">profiles</span>:<span class="tok-value"></span></span><span>    - core</span><span>  <span class="tok-key">limitations</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">&quot;audit</span>:<span class="tok-value"> integrity mode signed is not supported&quot;</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-key">implementation</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> example-runtime</span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 0.4.0</span></span><span><span class="tok-key">conformance</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">awp</span>:<span class="tok-value"> v1alpha2</span></span><span>  <span class="tok-key">profiles</span>:<span class="tok-value"></span></span><span>    - core</span><span>  <span class="tok-key">limitations</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">&quot;audit</span>:<span class="tok-value"> integrity mode signed is not supported&quot;</span></span><span class="line-add">  <span class="tok-key">eventSources</span>:<span class="tok-value">            </span><span class="tok-comment"> # field names illustrative</span></span><span class="line-add">    <span class="tok-dash">- </span><span class="tok-key">source</span>:<span class="tok-value"> mqtt.example.com</span></span><span class="line-add">      <span class="tok-key">delivery</span>:<span class="tok-value"> atLeastOnce</span><span class="tok-comment"> # or atMostOnce</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>The Argo Events MQTT event source used by the proof of concept subscribes with QoS 0, which silently downgrades delivery to at most once.</p></div>
+    <div><h4>Status against the draft</h4><p>Open.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#113-conformance-statement">Spec 11.3</a></footer>
+</article>
+<article class="example gap" id="g57">
+  <header class="example-head">
+    <span class="gap-id">G57</span>
+    <h3>Testing event-only workflows</h3>
+    <span class="sev sev-should">should</span>
+  </header>
+  <p class="problem">A workflow that reads <code>event.*</code> cannot be run conformingly without a real event: AEP-0004 makes <code>event.*</code> fail outside event runs, and a client-created run is always manual.</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">AEP-0004 and spec 10.8</span></figcaption>
+  <pre><code><span>AEP-0004: A reference to event.* in an execution</span><span>that was not started by an event trigger is an</span><span>evaluation error (the step fails with reason</span><span>missingEvent).</span><span> </span><span>10.8: A WorkflowRun created by a client is a</span><span>manual start.</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha2</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> WorkflowRun</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">generateName</span>:<span class="tok-value"> chat-answer-test-</span></span><span>  <span class="tok-key">namespace</span>:<span class="tok-value"> agents</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">workflowRef</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">name</span>:<span class="tok-value"> chat-answer</span></span><span>  <span class="tok-key">event</span>:<span class="tok-value">           </span><span class="tok-comment"> # supplied test event</span></span><span>    <span class="tok-key">type</span>:<span class="tok-value"> message.mention</span></span><span>    <span class="tok-key">data</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">message</span>:<span class="tok-value"> What plays in Leipzig this week?</span></span><span><span class="tok-comment"># Marked as test or replay (field not decided),</span></span><span><span class="tok-comment"># validated against dataSchema, actor = creator.</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>Found while writing the reference concept: an event-only workflow such as the chat workflow cannot be started with a sample event in a conforming way.</p></div>
+    <div><h4>Status against the draft</h4><p>Open. Same question as AEP-0019 open question 1 (can a client set the trigger of a run).</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0004-event-references.md">AEP-0004</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0019-workflow-run-and-status.md">AEP-0019</a></footer>
+</article>
+</section>
+<section class="chapter" id="network">
+  <header class="chapter-head">
+    <p class="eyebrow"><span class="chip chip-concept">Proposal</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#75-tool-governance-permissions">Spec 7.5</a></p>
+    <h2>Network permissions</h2>
+    <p class="chapter-intro">What <code>permissions.network</code> means, how its host list is written, and how a runtime enforces it for command steps. No AEP exists yet; one network AEP for these gaps (with G10) is under discussion.</p>
+  </header>
+  <article class="example gap" id="g47">
+  <header class="example-head">
+    <span class="gap-id">G47</span>
+    <h3>Manifest requirement versus deployment ceiling</h3>
+    <span class="sev sev-should">should</span>
+  </header>
+  <p class="problem">Operators restrict egress outside the manifest (NetworkPolicy, egress proxy, firewall). The draft does not say how <code>permissions.network</code> relates to such limits, or what happens when a runtime cannot enforce a rule. Without a <code>network</code> block, a manifest claims full egress.</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha2 draft: valid, egress defaults to allow</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span><span class="tok-key">permissions</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">default</span>:<span class="tok-value"> deny</span></span><span>  <span class="tok-key">tools</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">shell.execute</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">allow</span>:<span class="tok-value"> true</span></span><span><span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> fetch</span></span><span>    <span class="tok-key">type</span>:<span class="tok-value"> command</span></span><span>    <span class="tok-key">command</span>:<span class="tok-value"> ./fetch.sh</span></span><span><span class="tok-comment"># no permissions.network: egress is allow (7.5.1)</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-key">permissions</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">default</span>:<span class="tok-value"> deny</span></span><span>  <span class="tok-key">tools</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">shell.execute</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">allow</span>:<span class="tok-value"> true</span></span><span class="line-add">  <span class="tok-key">network</span>:<span class="tok-value">             </span><span class="tok-comment"> # a requirement the runtime enforces</span></span><span class="line-add">    <span class="tok-key">egress</span>:<span class="tok-value"> deny       </span><span class="tok-comment"> # default under the security profile?</span></span><span class="line-add">    <span class="tok-key">allowHosts</span>:<span class="tok-value"></span></span><span class="line-add">      - api.example.com</span><span><span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> fetch</span></span><span>    <span class="tok-key">type</span>:<span class="tok-value"> command</span></span><span>    <span class="tok-key">command</span>:<span class="tok-value"> ./fetch.sh</span></span><span class="line-add"><span class="tok-comment"># The deployment MAY restrict further. If its ceiling</span></span><span class="line-add"><span class="tok-comment"># is narrower, or the rule cannot be enforced for a</span></span><span class="line-add"><span class="tok-comment"># step type: reject before any execution.</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>The proof of concept cannot restrict command-step egress by host name without a proxy and rejects such manifests. Namespaces that deny egress by default do not give what a manifest without <code>network</code> claims, so the concept writes <code>network</code> into every manifest.</p></div>
+    <div><h4>Status against the draft</h4><p>Open.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#75-tool-governance-permissions">Spec 7.5</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#562-command-steps">Spec 5.6.2</a></footer>
+</article>
+<article class="example gap" id="g49">
+  <header class="example-head">
+    <span class="gap-id">G49</span>
+    <h3>allowHosts has no syntax</h3>
+    <span class="sev sev-should">should</span>
+  </header>
+  <p class="problem"><code>allowHosts</code> is a list of &quot;host names&quot;. Subdomain wildcards, ports, IP literals and CIDRs are not defined, so an allowlist cannot be carried from one runtime to another.</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha2 draft: all valid, meaning open</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span><span class="tok-key">network</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">egress</span>:<span class="tok-value"> deny</span></span><span>  <span class="tok-key">allowHosts</span>:<span class="tok-value"></span></span><span>    - api.example.com</span><span>    - .example.org         <span class="tok-comment"> # suffix match?</span></span><span>    - 10.0.0.0/8           <span class="tok-comment"> # CIDR?</span></span><span>    - api.example.com:8443 <span class="tok-comment"> # port?</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-key">network</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">egress</span>:<span class="tok-value"> deny</span></span><span>  <span class="tok-key">allowHosts</span>:<span class="tok-value"></span></span><span class="line-add">    - api.example.com      <span class="tok-comment"> # exact host</span></span><span class="line-add">    - &quot;*.example.org&quot;      <span class="tok-comment"> # subdomains</span></span><span class="line-add">    - api.example.com:8443 <span class="tok-comment"> # optional port</span></span><span class="line-add"><span class="tok-comment"># Whether IP literals and CIDRs are allowed:</span></span><span class="line-add"><span class="tok-comment"># to be decided.</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>The proof of concept enforces <code>allowHosts</code> with Squid and uses its notation <code>.example.org</code> and a CIDR mode. The concept marks both as runtime-specific until the spec defines a syntax.</p></div>
+    <div><h4>Status against the draft</h4><p>Open.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#75-tool-governance-permissions">Spec 7.5</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
+</article>
+<article class="example gap" id="g50">
+  <header class="example-head">
+    <span class="gap-id">G50</span>
+    <h3>Allowed hosts that resolve to private addresses</h3>
+    <span class="sev sev-must">must</span>
+  </header>
+  <p class="problem">An allowed host name can resolve to loopback, private, link-local (cloud metadata) or CGNAT addresses. That opens server-side request forgery and DNS rebinding through an allowlist that looks harmless.</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha2 draft: valid</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span><span class="tok-key">network</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">egress</span>:<span class="tok-value"> deny</span></span><span>  <span class="tok-key">allowHosts</span>:<span class="tok-value"></span></span><span>    - news.example.com</span><span><span class="tok-comment"># If news.example.com resolves to 169.254.169.254,</span></span><span><span class="tok-comment"># nothing in the draft forbids the connection.</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-key">network</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">egress</span>:<span class="tok-value"> deny</span></span><span>  <span class="tok-key">allowHosts</span>:<span class="tok-value"></span></span><span>    - news.example.com</span><span class="line-add"><span class="tok-comment"># Security profile: after DNS resolution, deny</span></span><span class="line-add"><span class="tok-comment"># loopback, private, link-local and CGNAT</span></span><span class="line-add"><span class="tok-comment"># destinations unless they are listed explicitly</span></span><span class="line-add"><span class="tok-comment"># as addresses (syntax: G49).</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>The tool proxy of the proof of concept had exactly this hole.</p></div>
+    <div><h4>Status against the draft</h4><p>Open.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#75-tool-governance-permissions">Spec 7.5</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#12-security-considerations">Spec 12</a></footer>
+</article>
+<article class="example gap" id="g51">
+  <header class="example-head">
+    <span class="gap-id">G51</span>
+    <h3>How network rules are enforced for command steps</h3>
+    <span class="sev sev-should">should</span>
+  </header>
+  <p class="problem">The draft requires runtimes to apply <code>permissions.network</code> to command steps but gives no guidance how. Kubernetes NetworkPolicy matches addresses, not host names (G10).</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">Spec 5.6.2 (v1alpha2 draft)</span></figcaption>
+  <pre><code><span>Implementations MUST execute command steps in an</span><span>isolated environment (for example a container or</span><span>sandbox) and MUST apply permissions.network and</span><span>permissions.filesystem to it.</span><span> </span><span>(No guidance on host-based rules.)</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-comment"># Informative: one conforming enforcement.</span></span><span><span class="tok-comment"># A per-workload egress proxy with an allowlist</span></span><span><span class="tok-comment"># derived from allowHosts, and a network policy</span></span><span><span class="tok-comment"># that allows only that proxy:</span></span><span><span class="tok-key">apiVersion</span>:<span class="tok-value"> networking.k8s.io/v1</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> NetworkPolicy</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> fetch-egress</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">podSelector</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">matchLabels</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">app</span>:<span class="tok-value"> fetch-step</span></span><span>  <span class="tok-key">policyTypes</span>:<span class="tok-value"> [Egress]</span></span><span>  <span class="tok-key">egress</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">to</span>:<span class="tok-value"></span></span><span>        <span class="tok-dash">- </span><span class="tok-key">podSelector</span>:<span class="tok-value"></span></span><span>            <span class="tok-key">matchLabels</span>:<span class="tok-value"></span></span><span>              <span class="tok-key">app</span>:<span class="tok-value"> egress-proxy</span></span><span><span class="tok-comment"># A runtime that cannot enforce a rule rejects</span></span><span><span class="tok-comment"># the workflow.</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>The proof of concept runs an egress proxy per agent workload, fed from <code>allowHosts</code>, and a NetworkPolicy that only allows that proxy. Without the proxy it rejects host-based rules for command steps (G47).</p></div>
+    <div><h4>Status against the draft</h4><p>Open. Extends G10 and G47.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#562-command-steps">Spec 5.6.2</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#75-tool-governance-permissions">Spec 7.5</a></footer>
+</article>
+</section>
+<section class="chapter" id="state">
+  <header class="chapter-head">
+    <p class="eyebrow"><span class="chip chip-concept">Proposal</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0004-event-references.md">AEP-0004</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0012-tool-steps.md">AEP-0012</a></p>
+    <h2>Conversation, state and identity</h2>
+    <p class="chapter-intro">Context that outlives one message or one execution: reply targets, chat threads, state shared between workflows, and the identity a workflow uses towards other systems.</p>
+  </header>
+  <article class="example gap" id="g45">
+  <header class="example-head">
+    <span class="gap-id">G45</span>
+    <h3>No reply path</h3>
+    <span class="sev sev-minor">minor</span>
+  </header>
+  <p class="problem">A run started by a chat message should answer in the same thread. The manifest has no way to refer to where the event came from.</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">AEP-0004 (Review, not applied)</span></figcaption>
+  <pre><code><span>event.source, event.type, event.id, event.time:</span><span>metadata of the event that started the execution;</span><span>event.data and event.data.&lt;path&gt;: the event</span><span>payload.</span><span> </span><span>(No reply target or correlation data.)</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> reply</span></span><span>    <span class="tok-key">type</span>:<span class="tok-value"> command</span></span><span>    <span class="tok-key">command</span>:<span class="tok-value"> ./post-reply.sh</span></span><span>    <span class="tok-key">env</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">THREAD</span>:<span class="tok-value"> &quot;${{ event.data.thread }}&quot;</span></span><span><span class="tok-comment"># Correlation data in the event context; delivery</span></span><span><span class="tok-comment"># stays with steps. Optionally a standard replyTo</span></span><span><span class="tok-comment"># attribute (CloudEvents extension).</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>The proof of concept delivers chat answers with a command step, which needs the thread of the triggering message from the event data.</p></div>
+    <div><h4>Status against the draft</h4><p>Open.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0004-event-references.md">AEP-0004</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
+</article>
+<article class="example gap" id="g46">
+  <header class="example-head">
+    <span class="gap-id">G46</span>
+    <h3>Conversation context for event-triggered runs</h3>
+    <span class="sev sev-should">should</span>
+  </header>
+  <p class="problem">A reply in a thread (chat, ticket, mail) starts a run that sees only the triggering message. Follow-up questions lose the conversation.</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">AEP-0004 (Review, not applied)</span></figcaption>
+  <pre><code><span>event.data is an untrusted external input. Its</span><span>classification enters the data classification of</span><span>every operation in a step that references it.</span><span> </span><span>(event.data is the payload of one event; there is</span><span>no shape for earlier messages.)</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-comment"># event.data, attached by the source adapter (sketch)</span></span><span><span class="tok-key">message</span>:<span class="tok-value"> And on Saturday?</span></span><span><span class="tok-key">thread</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">truncated</span>:<span class="tok-value"> true           </span><span class="tok-comment"> # capped, truncation flagged</span></span><span>  <span class="tok-key">messages</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">author</span>:<span class="tok-value"> slauger</span></span><span>      <span class="tok-key">bot</span>:<span class="tok-value"> false</span></span><span>      <span class="tok-key">time</span>:<span class="tok-value"> &quot;2026-11-20T09:12:00Z&quot;</span></span><span>      <span class="tok-key">text</span>:<span class="tok-value"> What plays in Leipzig this week?</span></span><span><span class="tok-comment"># Untrusted and classified like the rest of</span></span><span><span class="tok-comment"># event.data. Participants are personal data.</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>In the proof of concept the chat bridge attaches the earlier messages of the thread to the event. Every source with conversations needs the same, so a common shape keeps workflows independent of the source.</p></div>
+    <div><h4>Status against the draft</h4><p>Open. Memory across threads stays out of scope (state, G03 and G53).</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0004-event-references.md">AEP-0004</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
+</article>
+<article class="example gap" id="g53">
+  <header class="example-head">
+    <span class="gap-id">G53</span>
+    <h3>State shared by two workflows</h3>
+    <span class="sev sev-should">should</span>
+  </header>
+  <p class="problem">Two workflows of one owner share state: a daily run writes what it reported, a chat run reads and writes preferences. AWP has no state at all (G03), let alone shared state.</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha2 draft: valid, state invisible</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span><span class="tok-key">permissions</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">filesystem</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">read</span>:<span class="tok-value"> [/state]</span></span><span>    <span class="tok-key">write</span>:<span class="tok-value"> [/state]</span></span><span><span class="tok-comment"># The volume behind /state comes from the runtime</span></span><span><span class="tok-comment"># binding. AWP sees neither its class nor its</span></span><span><span class="tok-comment"># retention, nor that another workflow writes it.</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span class="line-add"><span class="tok-comment"># workflow daily-scout</span></span><span class="line-add"><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span class="line-add">  <span class="tok-key">state</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> music-taste</span></span><span class="line-add">      <span class="tok-key">access</span>:<span class="tok-value"> readWrite</span></span><span class="line-add">---</span><span class="line-add"><span class="tok-comment"># workflow chat-answer</span></span><span class="line-add"><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span class="line-add">  <span class="tok-key">state</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> music-taste</span></span><span class="line-add">      <span class="tok-key">access</span>:<span class="tok-value"> readWrite  </span><span class="tok-comment"> # or read</span></span><span class="line-add"><span class="tok-comment"># The state resource itself (G03): name,</span></span><span class="line-add"><span class="tok-comment"># classification, retention. Rules for concurrent</span></span><span class="line-add"><span class="tok-comment"># writers; the strictest classification applies to</span></span><span class="line-add"><span class="tok-comment"># every reader. Shape illustrative.</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>The concert scout and the chat workflow of the proof of concept share a volume with already reported concerts and taste preferences.</p></div>
+    <div><h4>Status against the draft</h4><p>Open. Extends G03 (state across executions, no AEP yet).</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#75-tool-governance-permissions">Spec 7.5</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
+</article>
+<article class="example gap" id="g55">
+  <header class="example-head">
+    <span class="gap-id">G55</span>
+    <h3>The external identity a step acts as</h3>
+    <span class="sev sev-should">should</span>
+  </header>
+  <p class="problem">A workflow that posts as its own bot account acts under an external identity. The manifest shows only a secret, and governance sees <code>shell.execute</code> (G06).</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">v1alpha2 draft: valid</span><span class="verified" title="Checked with the reference checker">valid</span></figcaption>
+  <pre><code><span><span class="tok-key">secrets</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> BOT_TOKEN</span></span><span>    <span class="tok-key">source</span>:<span class="tok-value"> secret-manager</span></span><span>    <span class="tok-key">scope</span>:<span class="tok-value"> [command]</span></span><span><span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> notify</span></span><span>    <span class="tok-key">type</span>:<span class="tok-value"> command</span></span><span>    <span class="tok-key">command</span>:<span class="tok-value"> ./post.sh</span></span><span><span class="tok-comment"># Governance sees shell.execute; the message goes</span></span><span><span class="tok-comment"># out as the bot account behind BOT_TOKEN.</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> notify</span></span><span class="line-add">    <span class="tok-key">type</span>:<span class="tok-value"> tool             </span><span class="tok-comment"> # AEP-0012 (Draft)</span></span><span class="line-add">    <span class="tok-key">agent</span>:<span class="tok-value"> notifier</span></span><span class="line-add">    <span class="tok-key">tool</span>:<span class="tok-value"></span></span><span class="line-add">      <span class="tok-key">server</span>:<span class="tok-value"> chat</span></span><span class="line-add">      <span class="tok-key">name</span>:<span class="tok-value"> post_message</span></span><span class="line-add">    <span class="tok-key">args</span>:<span class="tok-value"></span></span><span class="line-add">      <span class="tok-key">text</span>:<span class="tok-value"> &quot;${{ steps.curate.outputs.summary }}&quot;</span></span><span class="line-add">   <span class="tok-comment"> # plus the external identity the step acts as,</span></span><span class="line-add">   <span class="tok-comment"> # for audit events and policies (shape open)</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>The notify step of the proof of concept sends a Telegram message as its own bot account (G06). Audit events show a shell command, not the account that spoke.</p></div>
+    <div><h4>Status against the draft</h4><p>Open. Related to the open point in AEP-0012 on which identity calls a tool.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0012-tool-steps.md">AEP-0012</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#79-secrets">Spec 7.9</a></footer>
+</article>
+<article class="example gap" id="g58">
+  <header class="example-head">
+    <span class="gap-id">G58</span>
+    <h3>State as untrusted input</h3>
+    <span class="sev sev-should">should</span>
+  </header>
+  <p class="problem">What one execution writes into state, the next reads as data. A chat message or a web page can become a persistent instruction (memory poisoning).</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">Spec 12 (v1alpha2 draft)</span></figcaption>
+  <pre><code><span>Prompt injection. Tool results and remote agent</span><span>messages are untrusted input.</span><span> </span><span>(State is not listed; there is no state.)</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">state</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> music-taste</span></span><span>      <span class="tok-key">access</span>:<span class="tok-value"> readWrite</span></span><span>     <span class="tok-comment"> # origin marking as proposed in G11</span></span><span>     <span class="tok-comment"> # (outputs[].trust: external), applied to state:</span></span><span>     <span class="tok-comment"> # state is untrusted input by default</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>Seen in the chat workflow of the proof of concept: what a chat message put into state reached later runs as data.</p></div>
+    <div><h4>Status against the draft</h4><p>Open. Extends G11 (origin of data).</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#12-security-considerations">Spec 12</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
+</article>
+</section>
+<section class="chapter" id="models">
+  <header class="chapter-head">
+    <p class="eyebrow"><span class="chip chip-concept">Proposal</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0008-model-provider-catalog.md">AEP-0008</a></p>
+    <h2>Models: input to AEP-0008</h2>
+    <p class="chapter-intro">AEP-0008 (Review, targets v1alpha3) defines a <code>ModelCatalog</code> kind for prices, regions and limits. These gaps are offered as input to it, not as changes to v1alpha2.</p>
+  </header>
+  <article class="example gap" id="g59">
+  <header class="example-head">
+    <span class="gap-id">G59</span>
+    <h3>Catalog limits are binding</h3>
+    <span class="sev sev-should">should</span>
+  </header>
+  <p class="problem">AEP-0008 treats <code>contextTokens</code> and <code>maxOutputTokens</code> as informative. A runtime may ask for more output tokens than the model allows, and the provider rejects the request.</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">AEP-0008 (Review, targets v1alpha3)</span></figcaption>
+  <pre><code><span><span class="tok-key">providers</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> on-prem</span></span><span>    <span class="tok-key">region</span>:<span class="tok-value"> on-premise</span></span><span>    <span class="tok-key">models</span>:<span class="tok-value"></span></span><span>      <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> example-local</span></span><span>        <span class="tok-key">price</span>:<span class="tok-value"> { inputPerMTok: 0, outputPerMTok: 0 }</span></span><span>        <span class="tok-key">maxOutputTokens</span>:<span class="tok-value"> 8192  </span><span class="tok-comment"> # informative limit</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-key">providers</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> on-prem</span></span><span>    <span class="tok-key">region</span>:<span class="tok-value"> on-premise</span></span><span>    <span class="tok-key">models</span>:<span class="tok-value"></span></span><span>      <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> example-local</span></span><span class="line-add">        <span class="tok-key">price</span>:<span class="tok-value"> { inputPerMTok: 0, outputPerMTok: 0 } </span><span class="tok-comment"> # known cost</span></span><span class="line-add">        <span class="tok-key">maxOutputTokens</span>:<span class="tok-value"> 8192  </span><span class="tok-comment"> # binding</span></span><span class="line-add"><span class="tok-comment"># The runtime caps requested output tokens at</span></span><span class="line-add"><span class="tok-comment"># maxOutputTokens and rejects a workflow whose</span></span><span class="line-add"><span class="tok-comment"># budget or settings cannot fit.</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>A vLLM server rejected every request of the proof of concept until the runtime capped output tokens at the model limit. Its provider profiles confirm the split of AEP-0008: prices and limits in the catalog, endpoint, protocol and credentials in runtime configuration. Price 0 for local models counts as known (G35).</p></div>
+    <div><h4>Status against the draft</h4><p>Input to AEP-0008.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0008-model-provider-catalog.md">AEP-0008</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
+</article>
+<article class="example gap" id="g60">
+  <header class="example-head">
+    <span class="gap-id">G60</span>
+    <h3>Model capabilities</h3>
+    <span class="sev sev-minor">minor</span>
+  </header>
+  <p class="problem">An agent step needs a model that can call tools (<code>complete_step</code> and declared tools). Very small models call tools without arguments or not at all, and that shows only at run time.</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">AEP-0008 (Review, targets v1alpha3)</span></figcaption>
+  <pre><code><span><span class="tok-key">models</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> example-tiny</span></span><span>    <span class="tok-key">price</span>:<span class="tok-value"> { inputPerMTok: 0, outputPerMTok: 0 }</span></span><span>    <span class="tok-key">contextTokens</span>:<span class="tok-value"> 32768</span></span><span><span class="tok-comment"># No way to say whether the model supports tool calls.</span></span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span><span class="tok-key">models</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> example-tiny</span></span><span>    <span class="tok-key">price</span>:<span class="tok-value"> { inputPerMTok: 0, outputPerMTok: 0 }</span></span><span>    <span class="tok-key">contextTokens</span>:<span class="tok-value"> 32768</span></span><span class="line-add">    <span class="tok-key">toolUse</span>:<span class="tok-value"> false         </span><span class="tok-comment"> # optional capability flags</span></span><span class="line-add">    <span class="tok-key">structuredOutput</span>:<span class="tok-value"> false</span></span><span class="line-add"><span class="tok-comment"># A runtime rejects an agent with tools on a model</span></span><span class="line-add"><span class="tok-comment"># without tool support, before the execution starts.</span></span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>A 0.6B local model in the proof of concept called <code>complete_step</code> without arguments or not at all; the failure showed only at run time.</p></div>
+    <div><h4>Status against the draft</h4><p>Input to AEP-0008.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0008-model-provider-catalog.md">AEP-0008</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#543-model-object">Spec 5.4.3</a></footer>
+</article>
+<article class="example gap" id="g61">
+  <header class="example-head">
+    <span class="gap-id">G61</span>
+    <h3>Where model credentials live</h3>
+    <span class="sev sev-should">should</span>
+  </header>
+  <p class="problem">The draft does not say where model credentials live. A runtime may hand the provider key to the agent step, where any command or injected instruction can read it.</p>
+  <div class="panes">
+    <figure class="pane pane-left">
+  <figcaption><span class="pane-label">Spec 5.4.3 and 7.9 (v1alpha2 draft)</span></figcaption>
+  <pre><code><span>5.4.3: Provider identifiers are opaque strings;</span><span>their mapping to endpoints is</span><span>implementation-defined.</span><span> </span><span>7.9: Runtimes MUST NOT pass secret values to</span><span>models [...].</span><span> </span><span>(Nothing on whether the step environment may</span><span>hold the provider key.)</span></code></pre>
+</figure>
+    <figure class="pane pane-right">
+  <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
+  <pre><code><span class="line-add">Security profile (proposed):</span><span> </span><span class="line-add">- Model credentials MUST NOT be visible in the</span><span class="line-add">  step environment.</span><span class="line-add">- The runtime calls the provider itself, or</span><span class="line-add">- a proxy authenticates the step with a</span><span class="line-add">  short-lived, execution-bound credential.</span></code></pre>
+</figure>
+  </div>
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>The proof of concept enforces budgets in a model proxy. Whether the key stays there or reaches the step is not covered by the draft, and the proof of concept already found a provider key leak through a model <code>baseURL</code> in its binding.</p></div>
+    <div><h4>Status against the draft</h4><p>Open. Model connections stay runtime configuration, as in AEP-0008.</p></div>
+  </div>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#543-model-object">Spec 5.4.3</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/spec/v1alpha2/README.md#79-secrets">Spec 7.9</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/aep/0008-model-provider-catalog.md">AEP-0008</a></footer>
+</article>
+</section>
+    <footer class="page-foot">
+      Sources: the runtime feedback list of the proof of concept (gaps G41 to G61), the <a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">concept comparison</a> (German) and the draft in <a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/tree/feat/v1alpha2-refactoring">agenticworkflowprotocol.org</a>. This page is generated from <a href="https://github.com/agenticworkflowprotocol/awp-v1alpha2-draft">awp-v1alpha2-draft</a>; corrections are welcome as issues or pull requests.
+    </footer>
+  </main>
+</div>
+<script>
+  // Mobile: the table of contents is an overlay that closes after a jump.
+  const toggle = document.getElementById('toc-toggle');
+  const toc = document.getElementById('toc');
+  const mobile = window.matchMedia('(max-width: 899px)');
+  function setOpen(open) {
+    toggle.setAttribute('aria-expanded', String(open));
+    toc.hidden = mobile.matches && !open;
+    toggle.textContent = open ? 'Close' : 'Contents';
+  }
+  toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+  toc.addEventListener('click', (event) => { if (event.target.closest('a') && mobile.matches) setOpen(false); });
+  mobile.addEventListener('change', () => setOpen(false));
+  setOpen(false);
+</script>
+</body>
+</html>

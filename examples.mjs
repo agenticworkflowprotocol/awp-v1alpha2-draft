@@ -26,6 +26,36 @@ export const chapters = [
   { id: 'extensions', title: 'Extension model (concept)', aep: EXT, concept: true, intro: 'A proposal, not applied to the schema: replace `x-` fields with the extension model of the Kubernetes Gateway API. Left is the current v1alpha2 draft, right the proposal.' },
 ];
 
+// Page frame for docs/index.html (title, intro, the Helm chart section after the chapters, footer).
+export const page = {
+  file: 'index.html',
+  title: 'AWP v1alpha2 Draft',
+  description: 'What changes from AWP v1alpha1 to the v1alpha2 draft: side-by-side examples with the reason for each change.',
+  h1: 'From v1alpha1 to the v1alpha2 draft',
+  lede: '{{count}} examples of what changes in the Agentic Workflow Protocol, each with the old form on the left, the new form on the right, and the reason for the change.',
+  notice: 'The v1alpha2 draft makes AWP manifests valid Kubernetes resources while keeping them usable by runtimes without Kubernetes, and adds what a first runtime implementation was missing. Everything here is a <strong>Draft</strong> under review; nothing is accepted. The last chapter is a <strong>concept</strong> that is not applied to the schema. Snippets marked <span class="verified">valid</span> or <span class="verified">rejected by checker</span> were run through the reference checker.',
+  navExtra: '<li class="nav-chapter"><a href="#try">Try it: Helm chart</a></li>',
+  after: `    <section class="chapter" id="try">
+      <header class="chapter-head">
+        <p class="eyebrow"><span class="chip">Example</span><a href="https://github.com/agenticworkflowprotocol/awp-v1alpha2-draft/tree/main/charts/concert-scout">charts/concert-scout</a></p>
+        <h2>Try it: a complete workflow as a Helm chart</h2>
+        <p class="chapter-intro">A full v1alpha2 workflow that checks venue programs for new concerts, rates them against a music taste (Metalcore, Metal, Hardcore and related genres by default) and sends a summary. The chart shows OCI registries as one way to transport AWP manifests and ships the CustomResourceDefinitions. It contains no runtime: without one, the objects are stored and nothing runs.</p>
+      </header>
+      <figure class="pane pane-right">
+        <figcaption><span class="pane-label">Install from the OCI registry</span></figcaption>
+        <pre><code><span>helm install scout oci://ghcr.io/agenticworkflowprotocol/charts/concert-scout \\</span><span>  --namespace music --create-namespace \\</span><span>  --set taste.region.home=Leipzig</span><span> </span><span class="tok-cmd">$ kubectl get workflows,policies,workflowruns -n music</span><span>NAME                                            VERSION   OWNER        VALID   READY</span><span>workflow.awp.agenticworkflowprotocol.org/scout  0.1.0     music-fans</span></code></pre>
+      </figure>
+      <div class="explain">
+        <div><h4>What it shows</h4><p>Command steps with outputs in <code>$AWP_OUTPUTS</code>, agent steps that end with <code>complete_step</code>, a schedule with <code>concurrencyPolicy</code>, an included <code>Policy</code>, budgets, and an optional <code>WorkflowRun</code> per release.</p></div>
+        <div><h4>Why Helm</h4><p>Helm labels and the release namespace are not covered by the AWP digest, so packaging does not change the identity of the workflow. The VALID and READY columns stay empty until a runtime reports status.</p></div>
+      </div>
+    </section>
+`,
+  footer: `Source of every example: the AEPs, the specification draft and the conformance suite in
+      <a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/tree/feat/v1alpha2-refactoring">agenticworkflowprotocol.org</a>.
+      This page is generated from <a href="https://github.com/agenticworkflowprotocol/awp-v1alpha2-draft">awp-v1alpha2-draft</a>; corrections are welcome as issues or pull requests.`,
+};
+
 const V1 = 'awp.agenticworkflowprotocol.org/v1alpha1';
 const V2 = 'awp.agenticworkflowprotocol.org/v1alpha2';
 

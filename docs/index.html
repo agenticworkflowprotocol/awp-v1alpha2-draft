@@ -66,6 +66,7 @@ code { font-family: var(--font-mono); font-size: 0.88em; background: var(--code-
 }
 .brand { font-weight: 650; letter-spacing: 0.01em; color: var(--fg); text-decoration: none; }
 .brand span { color: var(--accent); }
+.brand .brand-tail { color: inherit; }
 .topbar .spacer { flex: 1; }
 .topbar a.ext { font-size: 0.9rem; }
 #toc-toggle {
@@ -141,6 +142,38 @@ main {
 .pane-right .pane-label { color: var(--accent); }
 .verified { color: var(--muted); font-size: 0.78rem; }
 .verified::before { content: "✓ "; color: var(--add-bar); }
+.unchecked { color: var(--concept); font-size: 0.78rem; }
+.unchecked::before { content: "\25CB  "; }
+
+/* Page links in the top bar; on phones only the other page is shown, below 380px they move into the contents overlay. */
+.pagenav { display: flex; gap: 4px; font-size: 0.9rem; }
+.pagenav a { padding: 4px 10px; border-radius: 8px; text-decoration: none; color: var(--muted); white-space: nowrap; }
+.pagenav a:hover { color: var(--fg); background: var(--code-bg); }
+.pagenav a[aria-current="page"] { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+.toc-pages { display: none; list-style: none; margin: 0 0 20px; padding: 0 0 16px; border-bottom: 1px solid var(--hairline); }
+.toc-pages a { display: block; padding: 4px 6px; font-weight: 600; text-decoration: none; }
+.toc-pages a[aria-current="page"] { color: var(--fg); }
+
+/* Gaps page: severity chips, overview table, problem statement. */
+.sev {
+  font-size: 0.72rem; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
+  padding: 1px 8px; border-radius: 999px; color: var(--muted); background: var(--code-bg);
+}
+.sev-must { color: var(--del-bar); background: var(--del-bg); }
+.sev-should { color: var(--concept); background: var(--concept-soft); }
+.gap .example-head { flex-wrap: wrap; row-gap: 4px; }
+.gap-id { font-variant-numeric: tabular-nums; font-weight: 650; color: var(--muted); font-size: 0.95rem; }
+.problem { margin: 0 0 12px; max-width: 80ch; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--surface); max-width: 900px; }
+.gap-table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+.gap-table th, .gap-table td { text-align: left; vertical-align: top; padding: 7px 12px; border-bottom: 1px solid var(--hairline); }
+.gap-table thead th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 650; }
+.gap-table-chapter th { background: var(--code-bg); font-weight: 650; }
+.gap-table-chapter a { color: var(--fg); text-decoration: none; }
+.gap-table td:first-child { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.gap-table td:last-child { color: var(--muted); }
+.gap-table tbody:last-child tr:last-child td { border-bottom: none; }
+@media (max-width: 560px) { .gap-table th, .gap-table td { padding: 6px 8px; } }
 .pane pre { margin: 0; overflow-x: auto; padding: 10px 0; font: 13px/1.55 var(--font-mono); }
 .pane pre code { background: none; padding: 0; font-size: inherit; display: block; min-width: max-content; }
 .pane pre code > span { display: block; padding: 0 14px; border-left: 3px solid transparent; white-space: pre; }
@@ -172,18 +205,30 @@ main {
   }
   .topbar a.ext { display: none; }
 }
+@media (max-width: 480px) {
+  .topbar { gap: 8px; }
+  .brand-tail { display: none; }
+  .pagenav a { padding: 4px 8px; font-size: 0.85rem; }
+  .pagenav a[aria-current="page"] { display: none; }
+  #toc-toggle { padding: 6px 10px; }
+}
+@media (max-width: 379px) {
+  .topbar .pagenav { display: none; }
+  .toc-pages { display: block; }
+}
 </style>
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="#top">AWP <span>v1alpha2</span> draft</a>
+  <a class="brand" href="#top">AWP <span>v1alpha2</span><span class="brand-tail"> draft</span></a>
   <span class="spacer"></span>
+  <nav class="pagenav" aria-label="Pages"><a href="./" aria-current="page">Side by side</a><a href="gaps.html">Open gaps</a></nav>
   <a class="ext" href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/pull/16">Pull request</a>
   <a class="ext" href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/docs/v1alpha2-review-guide.md">Review guide</a>
   <button id="toc-toggle" type="button" aria-expanded="false" aria-controls="toc">Contents</button>
 </header>
 <div class="layout">
-  <nav class="toc" id="toc" aria-label="Contents"><ol><li class="nav-chapter"><a href="#model">Document model</a><ol><li><a href="#minimal"><span class="nav-number">1</span>A minimal workflow</a></li><li><a href="#governance-fields"><span class="nav-number">2</span>Governance fields live in spec</a></li><li><a href="#owner"><span class="nav-number">3</span>Owner is always an object</a></li><li><a href="#policy-conditions"><span class="nav-number">4</span>Policy conditions have one form</a></li><li><a href="#agent"><span class="nav-number">5</span>Agent manifests</a></li><li><a href="#store-fields"><span class="nav-number">6</span>Objects read back from a cluster</a></li><li><a href="#digest"><span class="nav-number">7</span>The digest survives deployment</a></li><li><a href="#status"><span class="nav-number">8</span>status is reserved for runtimes</a></li><li><a href="#kubernetes"><span class="nav-number">9</span>Storing a workflow in Kubernetes</a></li><li><a href="#extensions-interim"><span class="nav-number">10</span>x- fields move into extensions</a></li></ol></li><li class="nav-chapter"><a href="#schedule">Schedules</a><ol><li><a href="#concurrency"><span class="nav-number">11</span>Overlapping ticks</a></li><li><a href="#trigger-skipped"><span class="nav-number">12</span>Skipped ticks are audited</a></li></ol></li><li class="nav-chapter"><a href="#input">Human input</a><ol><li><a href="#input-step"><span class="nav-number">13</span>Asking a person during a workflow</a></li><li><a href="#agent-input"><span class="nav-number">14</span>An agent asks a question</a></li></ol></li><li class="nav-chapter"><a href="#outputs">Step outputs</a><ol><li><a href="#command-outputs"><span class="nav-number">15</span>Outputs of a command step</a></li><li><a href="#agent-outputs"><span class="nav-number">16</span>Outputs of an agent step</a></li><li><a href="#reserved-env"><span class="nav-number">17</span>Reserved environment variables</a></li></ol></li><li class="nav-chapter"><a href="#run">WorkflowRun and status</a><ol><li><a href="#start-run"><span class="nav-number">18</span>Starting an execution</a></li><li><a href="#run-status"><span class="nav-number">19</span>Watching an execution</a></li><li><a href="#kubectl"><span class="nav-number">20</span>kubectl shows validity and progress</a></li></ol></li><li class="nav-chapter"><a href="#pinning">Execution pinning</a><ol><li><a href="#pinning"><span class="nav-number">21</span>A GitOps sync during an execution</a></li><li><a href="#started-digest"><span class="nav-number">22</span>The digest is required at start</a></li><li><a href="#assert-version"><span class="nav-number">23</span>Run exactly the reviewed version</a></li><li><a href="#image-pinning"><span class="nav-number">24</span>Images: tags in the manifest, digests in the record</a></li></ol></li><li class="nav-chapter"><a href="#extensions">Extension model (concept)</a><ol><li><a href="#extension-step"><span class="nav-number">25</span>A vendor-specific step</a></li><li><a href="#policy-attachment"><span class="nav-number">26</span>Policies attached by the platform team</a></li><li><a href="#binding"><span class="nav-number">27</span>Runtime configuration stays out of the manifest</a></li><li><a href="#domain-values"><span class="nav-number">28</span>Vendor values carry a domain</a></li><li><a href="#strict"><span class="nav-number">29</span>Typos are caught at apply time</a></li></ol></li><li class="nav-chapter"><a href="#try">Try it: Helm chart</a></li></ol></nav>
+  <nav class="toc" id="toc" aria-label="Contents"><ul class="toc-pages"><li><a href="./" aria-current="page">Side by side</a></li><li><a href="gaps.html">Open gaps</a></li></ul><ol><li class="nav-chapter"><a href="#model">Document model</a><ol><li><a href="#minimal"><span class="nav-number">1</span>A minimal workflow</a></li><li><a href="#governance-fields"><span class="nav-number">2</span>Governance fields live in spec</a></li><li><a href="#owner"><span class="nav-number">3</span>Owner is always an object</a></li><li><a href="#policy-conditions"><span class="nav-number">4</span>Policy conditions have one form</a></li><li><a href="#agent"><span class="nav-number">5</span>Agent manifests</a></li><li><a href="#store-fields"><span class="nav-number">6</span>Objects read back from a cluster</a></li><li><a href="#digest"><span class="nav-number">7</span>The digest survives deployment</a></li><li><a href="#status"><span class="nav-number">8</span>status is reserved for runtimes</a></li><li><a href="#kubernetes"><span class="nav-number">9</span>Storing a workflow in Kubernetes</a></li><li><a href="#extensions-interim"><span class="nav-number">10</span>x- fields move into extensions</a></li></ol></li><li class="nav-chapter"><a href="#schedule">Schedules</a><ol><li><a href="#concurrency"><span class="nav-number">11</span>Overlapping ticks</a></li><li><a href="#trigger-skipped"><span class="nav-number">12</span>Skipped ticks are audited</a></li></ol></li><li class="nav-chapter"><a href="#input">Human input</a><ol><li><a href="#input-step"><span class="nav-number">13</span>Asking a person during a workflow</a></li><li><a href="#agent-input"><span class="nav-number">14</span>An agent asks a question</a></li></ol></li><li class="nav-chapter"><a href="#outputs">Step outputs</a><ol><li><a href="#command-outputs"><span class="nav-number">15</span>Outputs of a command step</a></li><li><a href="#agent-outputs"><span class="nav-number">16</span>Outputs of an agent step</a></li><li><a href="#reserved-env"><span class="nav-number">17</span>Reserved environment variables</a></li></ol></li><li class="nav-chapter"><a href="#run">WorkflowRun and status</a><ol><li><a href="#start-run"><span class="nav-number">18</span>Starting an execution</a></li><li><a href="#run-status"><span class="nav-number">19</span>Watching an execution</a></li><li><a href="#kubectl"><span class="nav-number">20</span>kubectl shows validity and progress</a></li></ol></li><li class="nav-chapter"><a href="#pinning">Execution pinning</a><ol><li><a href="#pinning"><span class="nav-number">21</span>A GitOps sync during an execution</a></li><li><a href="#started-digest"><span class="nav-number">22</span>The digest is required at start</a></li><li><a href="#assert-version"><span class="nav-number">23</span>Run exactly the reviewed version</a></li><li><a href="#image-pinning"><span class="nav-number">24</span>Images: tags in the manifest, digests in the record</a></li></ol></li><li class="nav-chapter"><a href="#extensions">Extension model (concept)</a><ol><li><a href="#extension-step"><span class="nav-number">25</span>A vendor-specific step</a></li><li><a href="#policy-attachment"><span class="nav-number">26</span>Policies attached by the platform team</a></li><li><a href="#binding"><span class="nav-number">27</span>Runtime configuration stays out of the manifest</a></li><li><a href="#domain-values"><span class="nav-number">28</span>Vendor values carry a domain</a></li><li><a href="#strict"><span class="nav-number">29</span>Typos are caught at apply time</a></li></ol></li><li class="nav-chapter"><a href="#try">Try it: Helm chart</a></li></ol></nav>
   <main id="top">
     <section class="intro">
       <h1>From v1alpha1 to the v1alpha2 draft</h1>

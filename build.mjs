@@ -1,7 +1,10 @@
-// Renders the side-by-side comparison into docs/index.html (served by GitHub Pages).
+// Renders both pages into docs/ (served by GitHub Pages):
+//   docs/index.html  side-by-side comparison (examples.mjs)
+//   docs/gaps.html   open runtime feedback after v1alpha2 (gaps.mjs)
 //   node build.mjs
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { chapters, examples } from './examples.mjs';
+import * as comparison from './examples.mjs';
+import * as feedback from './gaps.mjs';
 
 const escapeHtml = (text) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -52,52 +55,71 @@ function renderCode(code, lang, marks, markClass) {
   }).join('');
 }
 
-function pane(side, example, chapter, marks) {
-  const data = example[side];
+/** One code pane. `unchecked` marks proposals that are deliberately not run through the checker. */
+function pane(side, data, fallbackLabel, marks, unchecked = false) {
   const lang = data.lang ?? 'yaml';
-  const fallback = side === 'left'
-    ? (chapter.concept ? 'v1alpha2 draft' : 'v1alpha1')
-    : (chapter.concept ? 'AEP-0021 proposal' : 'v1alpha2 draft');
-  const label = data.label ?? fallback;
+  const label = data.label ?? fallbackLabel;
   const markClass = side === 'left' ? 'line-del' : 'line-add';
   const badge = data.check
     ? `<span class="verified" title="Checked with the reference checker">${data.check.endsWith('invalid') ? 'rejected by checker' : 'valid'}</span>`
-    : '';
+    : unchecked ? '<span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span>' : '';
   return `<figure class="pane pane-${side}">
   <figcaption><span class="pane-label">${inline(label)}</span>${badge}</figcaption>
   <pre><code>${renderCode(data.code, lang, marks, markClass)}</code></pre>
 </figure>`;
 }
 
-function renderExample(example, chapter, number) {
-  // Highlight differences only when both sides show the same kind of content.
-  const comparable = (example.left.lang ?? 'yaml') === (example.right.lang ?? 'yaml');
+/**
+ * Both panes; differences are highlighted only when both sides show the same kind of content.
+ * Proposals (`proposal`) mark only what they add: the left side is the draft, not something removed.
+ */
+function panes(left, right, leftLabel, rightLabel, proposal = false) {
+  const comparable = (left.lang ?? 'yaml') === (right.lang ?? 'yaml');
   const { removed, added } = comparable
-    ? diffLines(example.left.code.split('\n'), example.right.code.split('\n'))
+    ? diffLines(left.code.split('\n'), right.code.split('\n'))
     : { removed: new Set(), added: new Set() };
-  const refs = example.refs.map((r) => `<a href="${r.href}">${escapeHtml(r.label)}</a>`).join('');
-  return `<article class="example" id="${example.id}">
+  return `<div class="panes">
+    ${pane('left', left, leftLabel, proposal ? new Set() : removed)}
+    ${pane('right', right, rightLabel, added, proposal)}
+  </div>`;
+}
+
+const renderRefs = (refs) => refs.map((r) => `<a href="${r.href}">${escapeHtml(r.label)}</a>`).join('');
+
+function renderIntro(page, count, legend, overview) {
+  return `<section class="intro">
+      <h1>${escapeHtml(page.h1)}</h1>
+      <p class="lede">${inline(page.lede.replace('{{count}}', String(count)))}</p>
+      <p class="notice">${page.notice}</p>
+      ${legend}
+      ${overview}
+    </section>`;
+}
+
+// ------------------------------------------------------------------ page 1: side by side
+
+function renderComparison({ chapters, examples, page }) {
+  const inChapter = (chapter) => examples.filter((e) => e.chapter === chapter.id);
+
+  const renderExample = (example, chapter, number) => `<article class="example" id="${example.id}">
   <header class="example-head">
     <span class="example-number">${number}</span>
     <h3>${inline(example.title)}</h3>
   </header>
-  <div class="panes">
-    ${pane('left', example, chapter, removed)}
-    ${pane('right', example, chapter, added)}
-  </div>
+  ${panes(example.left, example.right,
+    chapter.concept ? 'v1alpha2 draft' : 'v1alpha1',
+    chapter.concept ? 'AEP-0021 proposal' : 'v1alpha2 draft')}
   <div class="explain">
     <div><h4>What changes</h4><p>${inline(example.what)}</p></div>
     <div><h4>Why</h4><p>${inline(example.why)}</p></div>
   </div>
-  <footer class="refs">${refs}</footer>
+  <footer class="refs">${renderRefs(example.refs)}</footer>
 </article>`;
-}
 
-function renderChapter(chapter, startNumber) {
-  const items = examples.filter((e) => e.chapter === chapter.id);
-  const body = items.map((e, i) => renderExample(e, chapter, startNumber + i)).join('\n');
-  const status = chapter.concept ? '<span class="chip chip-concept">Concept</span>' : '<span class="chip">Draft</span>';
-  return `<section class="chapter" id="${chapter.id}">
+  const renderChapter = (chapter, startNumber) => {
+    const body = inChapter(chapter).map((e, i) => renderExample(e, chapter, startNumber + i)).join('\n');
+    const status = chapter.concept ? '<span class="chip chip-concept">Concept</span>' : '<span class="chip">Draft</span>';
+    return `<section class="chapter" id="${chapter.id}">
   <header class="chapter-head">
     <p class="eyebrow">${status}<a href="${chapter.aep.href}">${escapeHtml(chapter.aep.label)}</a></p>
     <h2>${inline(chapter.title)}</h2>
@@ -105,38 +127,116 @@ function renderChapter(chapter, startNumber) {
   </header>
   ${body}
 </section>`;
-}
+  };
 
-function renderNav() {
   let number = 1;
-  return chapters.map((chapter) => {
-    const items = examples.filter((e) => e.chapter === chapter.id)
+  const nav = chapters.map((chapter) => {
+    const items = inChapter(chapter)
       .map((e) => `<li><a href="#${e.id}"><span class="nav-number">${number++}</span>${inline(e.title)}</a></li>`).join('');
     return `<li class="nav-chapter"><a href="#${chapter.id}">${inline(chapter.title)}</a><ol>${items}</ol></li>`;
-  }).join('') + '<li class="nav-chapter"><a href="#try">Try it: Helm chart</a></li>';
-}
+  }).join('') + (page.navExtra ?? '');
 
-function renderOverview() {
-  return chapters.map((chapter) => {
-    const count = examples.filter((e) => e.chapter === chapter.id).length;
+  const legend = `<ul class="legend">
+        <li><span class="swatch swatch-del"></span>only in the old form</li>
+        <li><span class="swatch swatch-add"></span>new or moved in the new form</li>
+      </ul>`;
+  const overview = `<ol class="overview">${chapters.map((chapter) => {
+    const count = inChapter(chapter).length;
     return `<li><a href="#${chapter.id}"><span class="ov-title">${inline(chapter.title)}</span><span class="ov-meta">${escapeHtml(chapter.aep.label)} · ${count} ${count === 1 ? 'example' : 'examples'}${chapter.concept ? ' · concept' : ''}</span></a></li>`;
-  }).join('');
+  }).join('')}</ol>`;
+
+  let next = 1;
+  const body = chapters.map((chapter) => {
+    const html = renderChapter(chapter, next);
+    next += inChapter(chapter).length;
+    return html;
+  }).join('\n');
+
+  return { nav, intro: renderIntro(page, examples.length, legend, overview), body, summary: `${examples.length} examples in ${chapters.length} chapters` };
 }
 
-let next = 1;
-const body = chapters.map((chapter) => {
-  const html = renderChapter(chapter, next);
-  next += examples.filter((e) => e.chapter === chapter.id).length;
-  return html;
-}).join('\n');
+// ------------------------------------------------------------------ page 2: open gaps
+
+function renderGaps({ chapters, gaps, page }) {
+  const inChapter = (chapter) => gaps.filter((g) => g.chapter === chapter.id);
+  const anchor = (gap) => gap.id.toLowerCase();
+  const severity = (level) => `<span class="sev sev-${level}">${level}</span>`;
+
+  const renderGap = (gap) => `<article class="example gap" id="${anchor(gap)}">
+  <header class="example-head">
+    <span class="gap-id">${gap.id}</span>
+    <h3>${inline(gap.title)}</h3>
+    ${severity(gap.severity)}
+  </header>
+  <p class="problem">${inline(gap.problem)}</p>
+  ${panes(gap.left, gap.right, 'v1alpha2 draft today', 'Proposal', true)}
+  <div class="explain">
+    <div><h4>Why: in the proof of concept</h4><p>${inline(gap.why)}</p></div>
+    <div><h4>Status against the draft</h4><p>${inline(gap.status)}</p></div>
+  </div>
+  <footer class="refs">${renderRefs(gap.refs)}</footer>
+</article>`;
+
+  const renderChapter = (chapter) => `<section class="chapter" id="${chapter.id}">
+  <header class="chapter-head">
+    <p class="eyebrow"><span class="chip chip-concept">Proposal</span>${renderRefs(chapter.related)}</p>
+    <h2>${inline(chapter.title)}</h2>
+    <p class="chapter-intro">${inline(chapter.intro)}</p>
+  </header>
+  ${inChapter(chapter).map(renderGap).join('\n')}
+</section>`;
+
+  const nav = chapters.map((chapter) => {
+    const items = inChapter(chapter)
+      .map((g) => `<li><a href="#${anchor(g)}"><span class="nav-number">${g.id}</span>${inline(g.title)}</a></li>`).join('');
+    return `<li class="nav-chapter"><a href="#${chapter.id}">${inline(chapter.title)}</a><ol>${items}</ol></li>`;
+  }).join('');
+
+  const rows = chapters.map((chapter) => `<tbody>
+        <tr class="gap-table-chapter"><th colspan="4" scope="colgroup"><a href="#${chapter.id}">${inline(chapter.title)}</a></th></tr>
+        ${inChapter(chapter).map((g) => `<tr><td><a href="#${anchor(g)}">${g.id}</a></td><td>${severity(g.severity)}</td><td>${inline(g.title)}</td><td>${inline(g.related)}</td></tr>`).join('\n        ')}
+      </tbody>`).join('\n      ');
+  const overview = `<div class="table-wrap"><table class="gap-table">
+      <thead><tr><th scope="col">Gap</th><th scope="col">Severity</th><th scope="col">Problem</th><th scope="col">Related</th></tr></thead>
+      ${rows}
+    </table></div>`;
+
+  const legend = `<ul class="legend">
+        <li>${severity('must')} blocks portable runtimes</li>
+        <li>${severity('should')} gap with a workaround</li>
+        <li>${severity('minor')} clarification</li>
+        <li><span class="swatch swatch-add"></span>added by the proposal</li>
+      </ul>`;
+
+  return { nav, intro: renderIntro(page, gaps.length, legend, overview), body: chapters.map(renderChapter).join('\n'), summary: `${gaps.length} gaps in ${chapters.length} chapters` };
+}
+
+// ------------------------------------------------------------------ output
+
+const PAGES = [
+  { label: 'Side by side', href: './', module: comparison, render: renderComparison },
+  { label: 'Open gaps', href: 'gaps.html', module: feedback, render: renderGaps },
+];
 
 const template = readFileSync(new URL('./template.html', import.meta.url), 'utf8');
-const html = template
-  .replace('{{nav}}', renderNav())
-  .replace('{{overview}}', renderOverview())
-  .replace('{{count}}', String(examples.length))
-  .replace('{{chapters}}', body);
-
 mkdirSync(new URL('./docs/', import.meta.url), { recursive: true });
-writeFileSync(new URL('./docs/index.html', import.meta.url), html);
-console.log(`docs/index.html: ${examples.length} examples in ${chapters.length} chapters`);
+
+for (const current of PAGES) {
+  const { page } = current.module;
+  const { nav, intro, body, summary } = current.render(current.module);
+  const pagenav = `<nav class="pagenav" aria-label="Pages">${PAGES.map((p) => `<a href="${p.href}"${p === current ? ' aria-current="page"' : ''}>${p.label}</a>`).join('')}</nav>`;
+  const tocpages = `<ul class="toc-pages">${PAGES.map((p) => `<li><a href="${p.href}"${p === current ? ' aria-current="page"' : ''}>${p.label}</a></li>`).join('')}</ul>`;
+  // Replacement functions, so that "$" sequences in the content are taken literally.
+  const html = template
+    .replace('{{title}}', () => escapeHtml(page.title))
+    .replace('{{description}}', () => escapeHtml(page.description))
+    .replace('{{pagenav}}', () => pagenav)
+    .replace('{{tocpages}}', () => tocpages)
+    .replace('{{nav}}', () => nav)
+    .replace('{{intro}}', () => intro)
+    .replace('{{chapters}}', () => body)
+    .replace('{{after}}', () => page.after ?? '')
+    .replace('{{footer}}', () => page.footer);
+  writeFileSync(new URL(`./docs/${page.file}`, import.meta.url), html);
+  console.log(`docs/${page.file}: ${summary}`);
+}

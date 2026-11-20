@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>AWP v1alpha2 Draft</title>
-<meta name="description" content="What changes from AWP v1alpha1 to the v1alpha2 draft: side-by-side examples with the reason for each change.">
+<title>{{title}}</title>
+<meta name="description" content="{{description}}">
 <style>
 /* Layout: sticky table of contents on the left, one column of examples with two code panes each.
    Palette follows agenticworkflowprotocol.org: cool neutral greys, teal accent. */
@@ -66,6 +66,7 @@ code { font-family: var(--font-mono); font-size: 0.88em; background: var(--code-
 }
 .brand { font-weight: 650; letter-spacing: 0.01em; color: var(--fg); text-decoration: none; }
 .brand span { color: var(--accent); }
+.brand .brand-tail { color: inherit; }
 .topbar .spacer { flex: 1; }
 .topbar a.ext { font-size: 0.9rem; }
 #toc-toggle {
@@ -141,6 +142,38 @@ main {
 .pane-right .pane-label { color: var(--accent); }
 .verified { color: var(--muted); font-size: 0.78rem; }
 .verified::before { content: "✓ "; color: var(--add-bar); }
+.unchecked { color: var(--concept); font-size: 0.78rem; }
+.unchecked::before { content: "\25CB  "; }
+
+/* Page links in the top bar; on phones only the other page is shown, below 380px they move into the contents overlay. */
+.pagenav { display: flex; gap: 4px; font-size: 0.9rem; }
+.pagenav a { padding: 4px 10px; border-radius: 8px; text-decoration: none; color: var(--muted); white-space: nowrap; }
+.pagenav a:hover { color: var(--fg); background: var(--code-bg); }
+.pagenav a[aria-current="page"] { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+.toc-pages { display: none; list-style: none; margin: 0 0 20px; padding: 0 0 16px; border-bottom: 1px solid var(--hairline); }
+.toc-pages a { display: block; padding: 4px 6px; font-weight: 600; text-decoration: none; }
+.toc-pages a[aria-current="page"] { color: var(--fg); }
+
+/* Gaps page: severity chips, overview table, problem statement. */
+.sev {
+  font-size: 0.72rem; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
+  padding: 1px 8px; border-radius: 999px; color: var(--muted); background: var(--code-bg);
+}
+.sev-must { color: var(--del-bar); background: var(--del-bg); }
+.sev-should { color: var(--concept); background: var(--concept-soft); }
+.gap .example-head { flex-wrap: wrap; row-gap: 4px; }
+.gap-id { font-variant-numeric: tabular-nums; font-weight: 650; color: var(--muted); font-size: 0.95rem; }
+.problem { margin: 0 0 12px; max-width: 80ch; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--surface); max-width: 900px; }
+.gap-table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+.gap-table th, .gap-table td { text-align: left; vertical-align: top; padding: 7px 12px; border-bottom: 1px solid var(--hairline); }
+.gap-table thead th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 650; }
+.gap-table-chapter th { background: var(--code-bg); font-weight: 650; }
+.gap-table-chapter a { color: var(--fg); text-decoration: none; }
+.gap-table td:first-child { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.gap-table td:last-child { color: var(--muted); }
+.gap-table tbody:last-child tr:last-child td { border-bottom: none; }
+@media (max-width: 560px) { .gap-table th, .gap-table td { padding: 6px 8px; } }
 .pane pre { margin: 0; overflow-x: auto; padding: 10px 0; font: 13px/1.55 var(--font-mono); }
 .pane pre code { background: none; padding: 0; font-size: inherit; display: block; min-width: max-content; }
 .pane pre code > span { display: block; padding: 0 14px; border-left: 3px solid transparent; white-space: pre; }
@@ -172,49 +205,35 @@ main {
   }
   .topbar a.ext { display: none; }
 }
+@media (max-width: 480px) {
+  .topbar { gap: 8px; }
+  .brand-tail { display: none; }
+  .pagenav a { padding: 4px 8px; font-size: 0.85rem; }
+  .pagenav a[aria-current="page"] { display: none; }
+  #toc-toggle { padding: 6px 10px; }
+}
+@media (max-width: 379px) {
+  .topbar .pagenav { display: none; }
+  .toc-pages { display: block; }
+}
 </style>
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="#top">AWP <span>v1alpha2</span> draft</a>
+  <a class="brand" href="#top">AWP <span>v1alpha2</span><span class="brand-tail"> draft</span></a>
   <span class="spacer"></span>
+  {{pagenav}}
   <a class="ext" href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/pull/16">Pull request</a>
   <a class="ext" href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring/docs/v1alpha2-review-guide.md">Review guide</a>
   <button id="toc-toggle" type="button" aria-expanded="false" aria-controls="toc">Contents</button>
 </header>
 <div class="layout">
-  <nav class="toc" id="toc" aria-label="Contents"><ol>{{nav}}</ol></nav>
+  <nav class="toc" id="toc" aria-label="Contents">{{tocpages}}<ol>{{nav}}</ol></nav>
   <main id="top">
-    <section class="intro">
-      <h1>From v1alpha1 to the v1alpha2 draft</h1>
-      <p class="lede">{{count}} examples of what changes in the Agentic Workflow Protocol, each with the old form on the left, the new form on the right, and the reason for the change.</p>
-      <p class="notice">The v1alpha2 draft makes AWP manifests valid Kubernetes resources while keeping them usable by runtimes without Kubernetes, and adds what a first runtime implementation was missing. Everything here is a <strong>Draft</strong> under review; nothing is accepted. The last chapter is a <strong>concept</strong> that is not applied to the schema. Snippets marked <span class="verified">valid</span> or <span class="verified">rejected by checker</span> were run through the reference checker.</p>
-      <ul class="legend">
-        <li><span class="swatch swatch-del"></span>only in the old form</li>
-        <li><span class="swatch swatch-add"></span>new or moved in the new form</li>
-      </ul>
-      <ol class="overview">{{overview}}</ol>
-    </section>
+    {{intro}}
     {{chapters}}
-    <section class="chapter" id="try">
-      <header class="chapter-head">
-        <p class="eyebrow"><span class="chip">Example</span><a href="https://github.com/agenticworkflowprotocol/awp-v1alpha2-draft/tree/main/charts/concert-scout">charts/concert-scout</a></p>
-        <h2>Try it: a complete workflow as a Helm chart</h2>
-        <p class="chapter-intro">A full v1alpha2 workflow that checks venue programs for new concerts, rates them against a music taste (Metalcore, Metal, Hardcore and related genres by default) and sends a summary. The chart shows OCI registries as one way to transport AWP manifests and ships the CustomResourceDefinitions. It contains no runtime: without one, the objects are stored and nothing runs.</p>
-      </header>
-      <figure class="pane pane-right">
-        <figcaption><span class="pane-label">Install from the OCI registry</span></figcaption>
-        <pre><code><span>helm install scout oci://ghcr.io/agenticworkflowprotocol/charts/concert-scout \</span><span>  --namespace music --create-namespace \</span><span>  --set taste.region.home=Leipzig</span><span> </span><span class="tok-cmd">$ kubectl get workflows,policies,workflowruns -n music</span><span>NAME                                            VERSION   OWNER        VALID   READY</span><span>workflow.awp.agenticworkflowprotocol.org/scout  0.1.0     music-fans</span></code></pre>
-      </figure>
-      <div class="explain">
-        <div><h4>What it shows</h4><p>Command steps with outputs in <code>$AWP_OUTPUTS</code>, agent steps that end with <code>complete_step</code>, a schedule with <code>concurrencyPolicy</code>, an included <code>Policy</code>, budgets, and an optional <code>WorkflowRun</code> per release.</p></div>
-        <div><h4>Why Helm</h4><p>Helm labels and the release namespace are not covered by the AWP digest, so packaging does not change the identity of the workflow. The VALID and READY columns stay empty until a runtime reports status.</p></div>
-      </div>
-    </section>
-    <footer class="page-foot">
-      Source of every example: the AEPs, the specification draft and the conformance suite in
-      <a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/tree/feat/v1alpha2-refactoring">agenticworkflowprotocol.org</a>.
-      This page is generated from <a href="https://github.com/agenticworkflowprotocol/awp-v1alpha2-draft">awp-v1alpha2-draft</a>; corrections are welcome as issues or pull requests.
+{{after}}    <footer class="page-foot">
+      {{footer}}
     </footer>
   </main>
 </div>
