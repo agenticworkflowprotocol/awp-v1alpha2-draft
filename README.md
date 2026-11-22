@@ -1,36 +1,35 @@
-# AWP v1alpha2 draft, side by side
+# AWP v1alpha3, explained
 
-What changes from AWP `v1alpha1` to the `v1alpha2` draft of the
-[Agentic Workflow Protocol](https://agenticworkflowprotocol.org): 29 examples, each with the old
-form on the left, the new form on the right, what changes and why.
+One site for the [Agentic Workflow Protocol](https://agenticworkflowprotocol.org) as it now stands:
+the `v1alpha3` draft, what the open spec pull requests propose on top, what is still open, and how
+to adopt it. The repository keeps its old name `awp-v1alpha2-draft`.
 
 **Website:** https://agenticworkflowprotocol.github.io/awp-v1alpha2-draft/
 
-The draft itself lives in
-[agenticworkflowprotocol.org](https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org)
-(AEPs 0015 to 0021, `spec/v1alpha2`, the conformance suite). Everything shown here is a draft
-under review; the extension model chapter is a concept that is not applied to the schema.
+The site shows a **combined preview of the two open spec pull requests, not merged text**: every
+spec and AEP link and every check uses the branch
+[`preview/pr19-pr20`](https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/tree/preview/pr19-pr20)
+of the specification repository, which is main (the `v1alpha3` draft, decision D20) with
+pull requests [#20](https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/pull/20)
+and [#19](https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/pull/19) merged on
+top. Everything is a draft under review.
 
-## Open runtime gaps
+## Pages
 
-**Second page:** https://agenticworkflowprotocol.github.io/awp-v1alpha2-draft/gaps.html
+| Page | File | Content |
+| --- | --- | --- |
+| [Guide](https://agenticworkflowprotocol.github.io/awp-v1alpha2-draft/) (start here) | `docs/index.html` from `guide.mjs` | How it fits together: a resource map, the lifecycle from manifest to finished run with the status of each step (in v1alpha3, PR #19, planned, platform only), five worked examples, what flowed in from PR #19 and #20, what is still open, AWP next to related work, how a Kubernetes runtime can map it (informative), and checklists for authors and runtime implementers. |
+| [Side by side](https://agenticworkflowprotocol.github.io/awp-v1alpha2-draft/compare.html) | `docs/compare.html` from `examples.mjs` | v1alpha1 on the left and v1alpha3 on the right, then v1alpha3 next to the proposals of PR #19 (AEP-0023 to AEP-0025), the planned AEP-0004 pull request and the AEP-0021 concept; each with what changes and why. |
+| [Open gaps](https://agenticworkflowprotocol.github.io/awp-v1alpha2-draft/gaps.html) | `docs/gaps.html` from `gaps.mjs` | The runtime gaps G41 to G61, classified as A (belongs in AWP), B (an AWP rule enforced by the platform) or C (platform only), with a verdict, a target AEP, the draft text, a proposal sketch and the evidence from a proof of concept. Proposals from one runtime, not accepted specification. |
 
-The gaps G41 to G61 that a Kubernetes runtime proof of concept and a reference concept still find
-in the draft, classified as A (belongs in AWP), B (an AWP rule enforced by the platform) or C
-(platform only), with a verdict, a target AEP and a proposed order. Each gap shows what the draft
-says today, a sketch of the proposal and what happened in the proof of concept. Source: the
-runtime feedback list of the proof of concept and the
-[concept comparison](https://slauger.github.io/ai-agent-operations/awp-abgleich/) (German). These
-are proposals from one runtime, not accepted specification.
-
-The draft compared on this page is now called `v1alpha3` (decision D20: pull request #16 was merged
-as `v1alpha3`, and `v1alpha2` is the step iteration draft of D19). The side-by-side page and the
-repository name still use the old name `v1alpha2`.
+`docs/index.html` used to be the side-by-side page. Links to its old anchors (for example
+`index.html#pinning`) are forwarded to `compare.html`.
 
 ## Example as a Helm chart
 
-[`charts/concert-scout`](charts/concert-scout) packages a complete `v1alpha2` workflow and the
-CustomResourceDefinitions, published as an OCI artifact:
+[`charts/concert-scout`](charts/concert-scout) packages a complete workflow of the draft (written as
+`v1alpha2`, before the rename to `v1alpha3`) and the CustomResourceDefinitions, published as an OCI
+artifact:
 
 ```sh
 helm install scout oci://ghcr.io/agenticworkflowprotocol/charts/concert-scout -n music --create-namespace
@@ -40,18 +39,21 @@ helm install scout oci://ghcr.io/agenticworkflowprotocol/charts/concert-scout -n
 
 ```sh
 node check.mjs ../agenticworkflowprotocol.org   # run marked snippets through the reference checker
-node build.mjs                                  # render docs/index.html and docs/gaps.html
+node build.mjs                                  # render docs/index.html, docs/compare.html, docs/gaps.html
 ```
 
-- `examples.mjs`: chapters and examples of the side-by-side page.
-- `gaps.mjs`: chapters and gaps of the second page. Proposals are never checked; they are not
-  valid against the draft schema.
-- `check.mjs`: snippets with `check` in both files must be valid (or rejected, for error cases)
-  with the reference checker of the specification repository, at the commit each file names in
-  `SPEC_REF` (`b8a0ee8` for the side-by-side page, `baac181` on main for the gaps page). The commits
-  are exported with `git archive`; the checkout is not changed.
-- `build.mjs`, `template.html`: static pages without dependencies, one shared template, served by
-  GitHub Pages from `docs/`.
+- `spec-ref.mjs`: the spec revision all three pages are checked and linked against, the head of
+  `preview/pr19-pr20` (`818601c`). The branch may move; then update `PREVIEW_REF` there (one line)
+  and run both commands again. The spec checkout passed to `check.mjs` must contain that commit
+  (`git fetch origin preview/pr19-pr20`).
+- `guide.mjs`, `examples.mjs`, `gaps.mjs`: the content of the three pages.
+- `check.mjs`: snippets marked `check` must be valid (or rejected, for error cases) with the
+  reference checker at `SPEC_REF`. The commit is exported with `git archive`; the checkout is not
+  changed. Proposals (PR #19, the planned AEP-0004 pull request, gap proposals) are never checked,
+  and marking one is an error.
+- `build.mjs`, `render.mjs`, `render-guide.mjs`, `template.html`: static pages without
+  dependencies and without external scripts or styles, one shared template, served by GitHub Pages
+  from `docs/`. The pages also work when opened from disk.
 
 ## License
 
