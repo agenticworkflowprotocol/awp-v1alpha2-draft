@@ -132,7 +132,7 @@ export const kinds = [
   { kind: '`Agent`', status: 'v3', writer: 'An agent author or a platform team, published separately.', refs: 'Model, tools, MCP servers, secrets (which the workflow must also declare), `promptRef`.', reader: 'The runtime, when a workflow references it. Never executed on its own.' },
   { kind: '`Policy`', status: 'v3', writer: 'A governance or platform team.', refs: 'Nothing; rules on actions, data class, destination, model, actor. Only `deny` and `requireApproval`: policies restrict, permissions grant.', reader: 'The runtime decision algorithm (spec 8.4), under the governance profile.' },
   { kind: '`WorkflowRun`', status: 'v3', writer: 'A client for a manual start, or the runtime itself for schedule and event triggers.', refs: 'One `Workflow` by `name` in the same namespace; `version` and `digest` are assertions, not selectors.', reader: 'The runtime starts at most one execution from it and writes `status`; people and tools read the status.' },
-  { kind: '`spec.state` (a field)', status: 'pr19', writer: 'The workflow author.', refs: 'Named stores, shared by workflows of the same owner in the same namespace.', reader: 'The runtime, which exposes only declared stores. Open question: its own kind?' },
+  { kind: '`spec.state` (a field)', status: 'pr19', writer: 'The workflow author.', refs: 'Named stores, shared by workflows of the same owner in the same namespace.', reader: 'The runtime, which exposes only declared stores. AEP-0025 proposes `spec.state`; its own kind is the alternative under review.' },
   { kind: 'Conformance statement', status: 'v3', writer: 'The runtime implementer (not a manifest).', refs: 'Profiles, limitations, limits, `executionObjects`.', reader: 'Operators and authors who choose a runtime.' },
   { kind: 'Binding, trigger object', status: 'platform', writer: 'The operator, in a kind of the runtime.', refs: 'A `Workflow` (`targetRefs` in the AEP-0021 concept).', reader: 'The runtime only. Placement, images, volumes, model endpoints, secret mapping.' },
 ];
@@ -662,12 +662,12 @@ export const inflowNote = 'PR #19 cites D21 for its prior-art notes, and D21 its
 
 // Open after both pull requests and the planned AEP-0004 pull request (runtime-feedback.md, status overview on PR #19).
 export const open = [
-  { title: 'Drafted, but not applied or accepted', text: 'AEP-0023, AEP-0024 and AEP-0025 are Draft. They change nothing in v1alpha3 until they are applied to the text, the schema and the conformance suite, and none can become Accepted without an external reviewer (D16). Their open questions: whether authors can see the platform ceiling and whether MCP over `streamable-http` falls under the network rules (0023); the 24 hour dedup window, `attestedActor` for manual starts (0024); state as its own kind, the sharing boundary, a state tool for agent steps (0025).' },
+  { title: 'Drafted, but not applied or accepted', text: 'AEP-0023, AEP-0024 and AEP-0025 are Draft. They change nothing in v1alpha3 until they are applied to the text, the schema and the conformance suite, and none can become Accepted without an external reviewer (D16). Their open questions: whether authors can see the platform ceiling and whether MCP over `streamable-http` falls under the network rules (0023); the 24 hour dedup window, `attestedActor` for manual starts (0024); `spec.state` as proposed or its own kind as the alternative under review, the sharing boundary, a state tool for agent steps (0025).' },
   { title: 'Covered by an existing AEP that is not applied', text: 'G02 (typed outputs, AEP-0003 and AEP-0014), G04 (conditional steps, AEP-0001), G06 and G55 (tool steps and the identity a step acts as, AEP-0012), G22 (array item schemas, AEP-0014), G52 (runtime trigger objects, AEP-0021 B6), G59 and G60 (catalog limits and capabilities, AEP-0008, after the current draft).' },
   { title: 'Open, no AEP yet', text: 'G05 (secret scopes per step, a must), G09 (unknown fields pass strict apply), G11 (origin marking of untrusted outputs), G12 (where command code comes from), G13 (`finally` steps), G16 to G21, G24 to G39 (mostly clarifications: defaults, retries, budget units, model parameters, runtime neutrality) and K (a Kubernetes mapping, normative or informative).' },
 ];
 
-export const openNote = 'runtime-feedback.md still lists G23 (fan-out) as open, although v1alpha3 has `forEach` (spec 5.6.5, AEP-0022); that entry looks stale.';
+export const openNote = 'G23 (fan-out) is resolved: `forEach`, AEP-0022 (accepted, D19), spec v1alpha3 5.6.5.';
 
 // ------------------------------------------------------------------ related work
 

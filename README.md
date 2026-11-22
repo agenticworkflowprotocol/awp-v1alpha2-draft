@@ -43,7 +43,7 @@ node build.mjs                                  # render docs/index.html, docs/c
 ```
 
 - `spec-ref.mjs`: the spec revision all three pages are checked and linked against, the head of
-  `preview/pr19-pr20` (`818601c`). The branch may move; then update `PREVIEW_REF` there (one line)
+  `preview/pr19-pr20` (`544a123`). The branch may move; then update `PREVIEW_REF` there (one line)
   and run both commands again. The spec checkout passed to `check.mjs` must contain that commit
   (`git fetch origin preview/pr19-pr20`).
 - `guide.mjs`, `examples.mjs`, `gaps.mjs`: the content of the three pages.
