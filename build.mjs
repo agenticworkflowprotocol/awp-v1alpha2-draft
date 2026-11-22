@@ -166,7 +166,7 @@ function renderGaps({ chapters, gaps, page }) {
 // ------------------------------------------------------------------ output
 
 const PAGES = [
-  { label: 'Guide', href: './', module: guide, render: (m) => renderGuide(m, { decisions: feedback.page.decisions }) },
+  { label: 'Guide', href: 'index.html', module: guide, render: (m) => renderGuide(m, { decisions: feedback.page.decisions }) },
   { label: 'Side by side', href: 'compare.html', module: comparison, render: renderComparison },
   { label: 'Open gaps', href: 'gaps.html', module: feedback, render: renderGaps },
 ];
