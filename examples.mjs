@@ -1,14 +1,20 @@
-// Side-by-side examples: v1alpha1 (left) and the v1alpha2 draft (right).
+// Side-by-side examples: v1alpha1 (left) and the v1alpha3 draft (right), plus chapters for the
+// proposals of spec pull request #19 and the planned AEP-0004 pull request (v1alpha3 left, proposal right).
+// The draft chapters were first written at b8a0ee8, when the draft of pull request #16 was called
+// v1alpha2; it was merged as v1alpha3 (decision D20). Everything is checked and linked at the
+// preview branch (spec-ref.mjs).
 // `check` says how build.mjs verifies a snippet with the reference checker of the spec repository:
 //   'v1' / 'v2'           must be valid
 //   'v1-invalid' / 'v2-invalid'  must be rejected (the left or right side shows an error case)
 //   null                  not an AWP manifest (shell output, audit events, concept syntax)
 
-// Commit of the spec repository the snippets are checked against (check.mjs).
-export const SPEC_REF = 'b8a0ee8';
-const SPEC = 'https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring';
+import { PREVIEW, PREVIEW_REF } from './spec-ref.mjs';
+
+// Commit of the spec repository the snippets are checked against (check.mjs): the preview branch.
+export const SPEC_REF = PREVIEW_REF;
+const SPEC = PREVIEW;
 export const aep = (n, slug) => ({ label: `AEP-${n}`, href: `${SPEC}/aep/${n}-${slug}.md` });
-export const spec = (section, anchor) => ({ label: `Spec ${section}`, href: `${SPEC}/spec/v1alpha2/README.md#${anchor}` });
+export const spec = (section, anchor) => ({ label: `Spec ${section}`, href: `${SPEC}/spec/v1alpha3/README.md#${anchor}` });
 
 const KRM = aep('0015', 'kubernetes-resource-model');
 const SCHED = aep('0016', 'schedule-semantics');
@@ -17,6 +23,11 @@ const OUTPUTS = aep('0018', 'step-outputs');
 const RUN = aep('0019', 'workflow-run-and-status');
 const PIN = aep('0020', 'execution-pinning');
 const EXT = aep('0021', 'extension-model');
+const ITER = aep('0022', 'step-iteration');
+const ISOLATION = { label: 'AEP-0023 (PR #19)', href: `${SPEC}/aep/0023-step-isolation.md` };
+const TRIGGERS = { label: 'AEP-0024 (PR #19)', href: `${SPEC}/aep/0024-event-triggers.md` };
+const STATE = { label: 'AEP-0025 (PR #19)', href: `${SPEC}/aep/0025-state.md` };
+const EVENTS = { label: 'AEP-0004 (planned)', href: `${SPEC}/aep/0004-event-references.md` };
 
 export const chapters = [
   { id: 'model', title: 'Document model', aep: KRM, intro: 'Every manifest becomes a valid Kubernetes resource and stays usable without Kubernetes. Most of this is a mechanical move, done by `awp-check.mjs migrate`.' },
@@ -25,24 +36,29 @@ export const chapters = [
   { id: 'outputs', title: 'Step outputs', aep: OUTPUTS, intro: 'How a step actually produces the values of its declared outputs, the largest portability gap found by the runtime proof of concept.' },
   { id: 'run', title: 'WorkflowRun and status', aep: RUN, intro: 'A new kind for one execution, and a status shape that existing Kubernetes tools understand.' },
   { id: 'pinning', title: 'Execution pinning', aep: PIN, intro: 'An execution keeps the manifests it started with, even when GitOps changes them halfway.' },
-  { id: 'extensions', title: 'Extension model (concept)', aep: EXT, concept: true, intro: 'A proposal, not applied to the schema: replace `x-` fields with the extension model of the Kubernetes Gateway API. Left is the current v1alpha2 draft, right the proposal.' },
+  { id: 'iteration', title: 'Step iteration', aep: ITER, intro: 'A bounded fan-out over a list known when the step becomes ready: accepted for `v1alpha2` (D19) and part of v1alpha3 as section 5.6.5, combined with the step output interface.' },
+  { id: 'isolation', title: 'Step isolation (proposal)', aep: ISOLATION, proposal: 'pr19', intro: 'Proposed in spec pull request #19, not applied to the schema: a host syntax for `allowHosts`, the platform ceiling, enforce or reject, internal destinations and model credentials. Left is v1alpha3 today, right the proposal.' },
+  { id: 'event-triggers', title: 'Event triggers with CloudEvents (proposal)', aep: TRIGGERS, proposal: 'pr19', intro: 'Proposed in spec pull request #19: CloudEvents as the event model, equality filters, duplicates, concurrency, rate limits and the actor behind an event. Left is v1alpha3 today, right the proposal.' },
+  { id: 'state', title: 'State across executions (proposal)', aep: STATE, proposal: 'pr19', intro: 'Proposed in spec pull request #19: stores that survive executions, declared in the manifest with classification, retention and access mode. Left is v1alpha3 today, right the proposal.' },
+  { id: 'event-data', title: 'Event data in the run (planned)', aep: EVENTS, proposal: 'planned', intro: 'Planned, no draft text yet: a pull request that applies AEP-0004 to v1alpha3 and amends open question 1 of AEP-0019 (G41, G48, G57). The right side is a sketch of the intended result.' },
+  { id: 'extensions', title: 'Extension model (concept)', aep: EXT, concept: true, intro: 'A proposal, not applied to the schema: replace `x-` fields with the extension model of the Kubernetes Gateway API. Left is the draft (now v1alpha3), right the proposal.' },
 ];
 
-// Page frame for docs/index.html (title, intro, the Helm chart section after the chapters, footer).
+// Page frame for docs/compare.html (title, intro, the Helm chart section after the chapters, footer).
 export const page = {
-  version: 'v1alpha2', // shown in the top bar
-  file: 'index.html',
-  title: 'AWP v1alpha2 Draft',
-  description: 'What changes from AWP v1alpha1 to the v1alpha2 draft: side-by-side examples with the reason for each change.',
-  h1: 'From v1alpha1 to the v1alpha2 draft',
-  lede: '{{count}} examples of what changes in the Agentic Workflow Protocol, each with the old form on the left, the new form on the right, and the reason for the change.',
-  notice: 'The v1alpha2 draft makes AWP manifests valid Kubernetes resources while keeping them usable by runtimes without Kubernetes, and adds what a first runtime implementation was missing. Everything here is a <strong>Draft</strong> under review; nothing is accepted. The last chapter is a <strong>concept</strong> that is not applied to the schema. Snippets marked <span class="verified">valid</span> or <span class="verified">rejected by checker</span> were run through the reference checker.',
+  version: 'v1alpha3', // shown in the top bar
+  file: 'compare.html',
+  title: 'AWP: v1alpha1, v1alpha3 and the Proposals Side by Side',
+  description: 'What changes from AWP v1alpha1 to the v1alpha3 draft, and what the open spec pull requests propose on top: side-by-side examples with the reason for each change.',
+  h1: 'From v1alpha1 to v1alpha3, and what is proposed next',
+  lede: '{{count}} examples of what changes in the Agentic Workflow Protocol, each with the old form on the left, the new form on the right, and the reason for the change: first what is in the v1alpha3 draft, then what pull request #19 proposes and what is planned.',
+  notice: 'New to AWP? Start with <a href="./">how it fits together</a>. <strong>What is shown.</strong> The draft chapters compare <code>v1alpha1</code> with the <code>v1alpha3</code> draft: the Kubernetes resource model of pull request #16, merged as <code>v1alpha3</code> by decision D20 on top of <code>v1alpha2</code> (<code>v1alpha1</code> plus step iteration, D19). They were first written when that draft was called <code>v1alpha2</code>. The <strong>proposal</strong> chapters put <code>v1alpha3</code> today next to what spec pull request #19 proposes (AEP-0023 to AEP-0025), the <strong>planned</strong> chapter next to a sketch of the AEP-0004 pull request that has no text yet, and the <strong>concept</strong> chapter next to AEP-0021. Everything is a <strong>Draft</strong> under review; nothing is accepted except step iteration. All links and checks use the spec branch <code>preview/pr19-pr20</code> (main plus the open pull requests #20 and #19, not merged text). Snippets marked <span class="verified">valid</span> or <span class="verified">rejected by checker</span> were run through the reference checker there; proposals are marked <span class="unchecked">not checked</span>.',
   navExtra: '<li class="nav-chapter"><a href="#try">Try it: Helm chart</a></li>',
   after: `    <section class="chapter" id="try">
       <header class="chapter-head">
         <p class="eyebrow"><span class="chip">Example</span><a href="https://github.com/agenticworkflowprotocol/awp-v1alpha2-draft/tree/main/charts/concert-scout">charts/concert-scout</a></p>
         <h2>Try it: a complete workflow as a Helm chart</h2>
-        <p class="chapter-intro">A full v1alpha2 workflow that checks venue programs for new concerts, rates them against a music taste (Metalcore, Metal, Hardcore and related genres by default) and sends a summary. The chart shows OCI registries as one way to transport AWP manifests and ships the CustomResourceDefinitions. It contains no runtime: without one, the objects are stored and nothing runs.</p>
+        <p class="chapter-intro">A full workflow of the draft (written as <code>v1alpha2</code>, now <code>v1alpha3</code>) that checks venue programs for new concerts, rates them against a music taste (Metalcore, Metal, Hardcore and related genres by default) and sends a summary. The chart shows OCI registries as one way to transport AWP manifests and ships the CustomResourceDefinitions. It contains no runtime: without one, the objects are stored and nothing runs.</p>
       </header>
       <figure class="pane pane-right">
         <figcaption><span class="pane-label">Install from the OCI registry</span></figcaption>
@@ -55,12 +71,12 @@ export const page = {
     </section>
 `,
   footer: `Source of every example: the AEPs, the specification draft and the conformance suite in
-      <a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/tree/feat/v1alpha2-refactoring">agenticworkflowprotocol.org</a>.
+      <a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/tree/preview/pr19-pr20">agenticworkflowprotocol.org</a>, branch <code>preview/pr19-pr20</code>.
       This page is generated from <a href="https://github.com/agenticworkflowprotocol/awp-v1alpha2-draft">awp-v1alpha2-draft</a>; corrections are welcome as issues or pull requests.`,
 };
 
 const V1 = 'awp.agenticworkflowprotocol.org/v1alpha1';
-const V2 = 'awp.agenticworkflowprotocol.org/v1alpha2';
+const V2 = 'awp.agenticworkflowprotocol.org/v1alpha3'; // the draft (v1alpha2 at b8a0ee8, v1alpha3 since D20)
 
 export const examples = [
   // ---------------------------------------------------------------- document model
@@ -419,7 +435,7 @@ NAME    VERSION   OWNER           VALID   READY   AGE
 hello   0.1.0     platform-team   True    True    2m
 
 $ kubectl wait --for=condition=Ready workflow/hello
-workflow.awp.agenticworkflowprotocol.org/hello condition met`, label: 'v1alpha2: a native custom resource' },
+workflow.awp.agenticworkflowprotocol.org/hello condition met`, label: 'v1alpha3: a native custom resource' },
     what: 'The repository publishes CustomResourceDefinitions generated from the JSON Schema (`schema/crd/`), with printer columns and a status subresource.',
     why: 'With a wrapper, the AWP document is invisible to RBAC, `kubectl`, GitOps health checks and owner references, and every runtime wraps differently. The output on the right was checked on a local k3s cluster.',
     refs: [KRM, spec('3.10', '310-object-stores-and-kubernetes')],
@@ -908,7 +924,7 @@ spec:
     - id: deployer
       model:
         provider: ollama
-        name: qwen3`, label: 'v1alpha2 draft' },
+        name: qwen3`, label: 'v1alpha3 draft' },
     right: { check: null, code: `workflow:
   - id: deploy
     type: extension
@@ -938,7 +954,7 @@ spec:
         version: 1.0.0
 
 # The platform team cannot enforce a policy
-# on a workflow whose author left it out.`, label: 'v1alpha2 draft' },
+# on a workflow whose author left it out.`, label: 'v1alpha3 draft' },
     right: { check: null, code: `apiVersion: ${V2}
 kind: Policy
 metadata:
@@ -982,7 +998,7 @@ status:
         x-example-nodeSelector:
           pool: agents
   extensions:
-    x-example-modelBaseURL: https://llm.internal.example.com`, label: 'v1alpha2 draft' },
+    x-example-modelBaseURL: https://llm.internal.example.com`, label: 'v1alpha3 draft' },
     right: { check: null, code: `apiVersion: runtime.example.com/v1
 kind: WorkflowBinding
 metadata:
@@ -1019,7 +1035,7 @@ status:
 secrets:
   - name: TOKEN
     source: vault-ha           # collides with
-                               # another runtime's name`, label: 'v1alpha2 draft' },
+                               # another runtime's name`, label: 'v1alpha3 draft' },
     right: { check: null, code: `agents:
   - id: assistant
     model:
@@ -1045,10 +1061,10 @@ fixer   0.1.0     security-team   False   False
 
 (CRDs keep unknown fields so that the runtime can
  fail closed; the error shows up only in status,
- and Argo CD reports "Synced")`, label: 'v1alpha2 draft' },
+ and Argo CD reports "Synced")`, label: 'v1alpha3 draft' },
     right: { check: null, lang: 'text', code: `$ kubectl apply --validate=strict -f fixer.yaml
 Error from server (BadRequest): error when creating
-"fixer.yaml": Workflow in version "v1alpha2" cannot be
+"fixer.yaml": Workflow in version "v1alpha3" cannot be
 handled as a Workflow: strict decoding error:
 unknown field "spec.permisions"
 
@@ -1058,5 +1074,561 @@ unknown field "spec.permisions"
     what: 'The CRDs drop `x-kubernetes-preserve-unknown-fields`, prune unknown fields and get CEL rules (`x-kubernetes-validations`). No admission webhook is needed.',
     why: 'Fixes G09. The Gateway API removed its webhook in favour of CEL. CRD validation is feedback, not a security boundary (GEP-922), so runtimes keep validating.',
     refs: [EXT],
+  },
+  // ---------------------------------------------------------------- iteration
+  {
+    id: 'foreach', chapter: 'iteration', title: 'One step per item of a list',
+    left: { check: 'v1', code: `apiVersion: ${V1}
+kind: Workflow
+metadata:
+  name: image-scan
+  version: 0.1.0
+  owner:
+    team: security-team
+spec:
+  agents:
+    - id: scanner
+      model:
+        provider: example-provider
+        name: example-model
+  workflow:
+    # one step per image, written out by hand
+    - id: scan-web
+      agent: scanner
+      task: Scan registry.example.com/web:1.4.
+    - id: scan-api
+      agent: scanner
+      task: Scan registry.example.com/api:2.0.` },
+    right: { check: 'v2', code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: image-scan
+spec:
+  version: 0.1.0
+  owner:
+    team: security-team
+  inputs:
+    - name: images
+      type: array
+      default:
+        - registry.example.com/web:1.4
+        - registry.example.com/api:2.0
+  budget:
+    resources:
+      maxConcurrency: 2
+  agents:
+    - id: scanner
+      model:
+        provider: example-provider
+        name: example-model
+  workflow:
+    - id: scan
+      agent: scanner
+      task: "Scan \${{ forEach.item }}."
+      forEach:
+        items: "\${{ inputs.images }}"
+        maxItems: 20
+        concurrency: 2
+      outputs:
+        - name: report` },
+    what: '`forEach` runs the step once per item, at most `maxItems` items and `concurrency` at a time; each running item run counts against `budget.resources.maxConcurrency` (default 1). Each item run produces its own outputs through `$AWP_OUTPUTS` or `complete_step`; the step output is a JSON list in item order.',
+    why: 'The number of item runs never depends on what an item run produces, so budgets and reviews stay bounded. A list longer than `maxItems` fails the step instead of being truncated.',
+    refs: [ITER, spec('5.6.5', '565-iteration')],
+  },
+
+  // ---------------------------------------------------------------- AEP-0023 (PR #19)
+  {
+    id: 'allow-hosts', chapter: 'isolation', title: 'One syntax for allowed hosts',
+    left: { check: 'v2', code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: support-triage
+spec:
+  version: 0.1.0
+  owner:
+    team: support
+  classification: internal
+  permissions:
+    network:
+      egress: deny
+      allowHosts:
+        - api.example.com
+        - cdn.example.com
+  agents:
+    - id: triage
+      model:
+        provider: example-provider
+        name: example-model
+  workflow:
+    - id: run
+      agent: triage
+      task: Triage new tickets.` },
+    right: { code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: support-triage
+spec:
+  version: 0.1.0
+  owner:
+    team: support
+  classification: internal
+  permissions:
+    network:
+      egress: deny
+      allowHosts:
+        - api.example.com
+        - "*.cdn.example.com:443"   # subdomain wildcard, port
+        - 10.20.0.0/16              # internal ticket system
+  agents:
+    - id: triage
+      model:
+        provider: example-provider
+        name: example-model
+  workflow:
+    - id: run
+      agent: triage
+      task: Triage new tickets.` },
+    what: 'An entry is a host name, a subdomain wildcard `*.domain` (not the domain itself), an address or a CIDR, each with an optional `:port`. A bare `*` or a `*` in another label is invalid. Names are matched before resolution, addresses after.',
+    why: 'Today the forms are undefined (G49), so the same list means different things in different runtimes and cannot be translated into a proxy or network policy.',
+    refs: [ISOLATION, spec('7.5', '75-tool-governance-permissions')],
+  },
+  {
+    id: 'egress-default', chapter: 'isolation', profiles: 'core,security', title: 'Egress is denied by default under security',
+    left: { check: 'v2', code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: support-triage
+spec:
+  version: 0.1.0
+  owner:
+    team: support
+  classification: internal
+  permissions:
+    default: deny
+    tools:
+      shell.execute:
+        allow: true
+  agents:
+    - id: triage
+      model:
+        provider: example-provider
+        name: example-model
+  workflow:
+    - id: run
+      agent: triage
+      task: Triage new tickets.
+# under security: egress is allow (the default)` },
+    right: { code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: support-triage
+spec:
+  version: 0.1.0
+  owner:
+    team: support
+  classification: internal
+  permissions:
+    default: deny
+    tools:
+      shell.execute:
+        allow: true
+    network:                  # without this block:
+      egress: deny            # deny under security
+      allowHosts:
+        - api.example.com
+  agents:
+    - id: triage
+      model:
+        provider: example-provider
+        name: example-model
+  workflow:
+    - id: run
+      agent: triage
+      task: Triage new tickets.` },
+    what: 'Under the `security` profile, a manifest without `network.egress` gets `deny`. Outside it, the default stays `allow`.',
+    why: 'Deny-by-default deployments and the intent of the security profile conflict with `egress: allow` as the default (G47). Authors add `egress: allow` or `allowHosts` where a step needs the network.',
+    refs: [ISOLATION],
+  },
+  {
+    id: 'ceiling', chapter: 'isolation', title: 'Enforce or reject against the platform ceiling',
+    left: { check: null, lang: 'text', code: `# v1alpha3: permissions.network applies to
+# command steps (5.6.2), but nothing says what
+# happens when the platform allows less, or when
+# the runtime cannot restrict egress by host name.
+#
+# A runtime may run the step anyway, with weaker
+# restrictions than the reviewed manifest says.`, label: 'v1alpha3 draft' },
+    right: { check: null, lang: 'text', code: `# effective network = every permissions.network
+#                     intersected with the ceiling
+$ awp run support-triage
+rejected before any step ran:
+  permissions.network.allowHosts[2] (10.20.0.15)
+  is not allowed by the platform ceiling
+  for step type command
+# (message format is a sketch; the AEP requires a
+#  reason that names the rule and the step type)`, label: 'AEP-0023 proposal' },
+    what: 'A platform may set a ceiling (per namespace, tenant or installation). The effective network of a step is the intersection of the manifest and the ceiling. If the runtime cannot enforce a rule for a step type, or the ceiling forbids a destination the manifest needs, it rejects before any step runs, and never runs with weaker rules.',
+    why: 'An author cannot tell whether a reviewed manifest will run, and a runtime could silently ignore `allowHosts` (G10, G47, G51). Internal destinations (loopback, private, link-local, CGNAT) are denied after resolution under `security` unless manifest and ceiling both allow them (G50).',
+    refs: [ISOLATION],
+  },
+  {
+    id: 'model-credentials', chapter: 'isolation', title: 'Model credentials stay out of steps',
+    left: { check: null, lang: 'text', code: `# v1alpha3 says nothing about provider keys.
+# A runtime may hand them to the agent step:
+$ env   # inside an agent step
+PROVIDER_API_KEY=<the provider key>
+# readable by any command or injected instruction`, label: 'v1alpha3 draft' },
+    right: { check: null, lang: 'text', code: `# security profile: no provider key in the step
+# (environment, files, arguments). The runtime calls
+# the provider itself, or a proxy authenticates the
+# step with a short-lived credential bound to one
+# execution or attempt.
+$ env   # inside an agent step
+<no provider key>`, label: 'AEP-0023 proposal' },
+    what: 'Model credentials are runtime configuration. Under `security` they MUST NOT be visible to steps; outside it, a runtime that exposes them says so in its conformance statement.',
+    why: 'A key inside the step can be exfiltrated by any command or prompt injection (G61). A proof of concept keeps keys only at the runtime and gives each attempt a short-lived credential.',
+    refs: [ISOLATION, spec('7.9', '79-secrets')],
+  },
+
+  // ---------------------------------------------------------------- AEP-0024 (PR #19)
+  {
+    id: 'event-filter', chapter: 'event-triggers', title: 'Filters match CloudEvents attributes',
+    left: { check: 'v2', code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: support-chat
+spec:
+  version: 0.1.0
+  owner:
+    team: support
+  classification: internal
+  triggers:
+    - type: event
+      source: chat.example.com
+      eventType: com.example.chat.message.posted
+      filter:
+        mentions: support-bot     # matched how?
+  agents:
+    - id: triage
+      model:
+        provider: example-provider
+        name: example-model
+  workflow:
+    - id: answer
+      agent: triage
+      task: Answer the support question.` },
+    right: { code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: support-chat
+spec:
+  version: 0.1.0
+  owner:
+    team: support
+  classification: internal
+  triggers:
+    - type: event
+      source: chat.example.com    # CloudEvents source
+      eventType: com.example.chat.message.posted
+      filter:                     # equality, all match
+        subject: support          # an attribute
+        data.mentions: support-bot
+  agents:
+    - id: triage
+      model:
+        provider: example-provider
+        name: example-model
+  workflow:
+    - id: answer
+      agent: triage
+      task: Answer the support question.` },
+    what: 'An event is a CloudEvent 1.0. `source` is matched against the CloudEvents `source` (the producer, not an adapter), `eventType` against `type`. Filter keys are attribute names or `data.<path>`; values match by equality with the string form; all entries must match, and a missing attribute does not match.',
+    why: 'Today the filter is a map of strings with no rule which fields it matches or how (G42, G54). Richer conditions may live in runtime trigger objects, which may only narrow the manifest trigger.',
+    refs: [TRIGGERS, spec('5.2', '52-triggers')],
+  },
+  {
+    id: 'event-dedup', chapter: 'event-triggers', title: 'Duplicates, concurrency and rate',
+    left: { check: 'v2-invalid', expect: 'schema.not', label: 'v1alpha3 draft: rejected (concurrencyPolicy is schedule-only)', code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: support-chat
+spec:
+  version: 0.1.0
+  owner:
+    team: support
+  classification: internal
+  triggers:
+    - type: event
+      source: chat.example.com
+      eventType: com.example.chat.message.posted
+      concurrencyPolicy: allow
+  agents:
+    - id: triage
+      model:
+        provider: example-provider
+        name: example-model
+  workflow:
+    - id: answer
+      agent: triage
+      task: Answer the support question.` },
+    right: { code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: support-chat
+spec:
+  version: 0.1.0
+  owner:
+    team: support
+  classification: internal
+  triggers:
+    - type: event
+      source: chat.example.com
+      eventType: com.example.chat.message.posted
+      concurrencyPolicy: allow    # default for events
+      rateLimit:
+        maxExecutions: 20
+        period: 1h
+      # dedup by source and id: runtime duty, no field
+  agents:
+    - id: triage
+      model:
+        provider: example-provider
+        name: example-model
+  workflow:
+    - id: answer
+      agent: triage
+      task: Answer the support question.` },
+    what: 'The runtime never starts a second execution for the same `source` and `id` within a window of at least 24 hours (`trigger.skipped`, reason `duplicate`). Event triggers get `concurrencyPolicy` (default `allow`) and `rateLimit` with `maxExecutions` per `period` (reason `rateLimited`).',
+    why: 'Brokers and webhooks redeliver; the proof of concept saw a second run for the same event (G43). Today `concurrencyPolicy` exists only for schedules, so the schema rejects it on an event trigger.',
+    refs: [TRIGGERS],
+  },
+  {
+    id: 'event-actor', chapter: 'event-triggers', title: 'The person behind an event',
+    left: { check: null, code: `# workflow.started of an event-triggered run
+type: workflow.started
+executionId: awp-exec-01JD3Q7Y2M8K4N6P0R5S7T9V1W
+actor:
+  type: system
+  id: chat-bridge
+data:
+  trigger:
+    type: event
+    index: 0`, label: 'v1alpha3 draft' },
+    right: { code: `type: workflow.started
+executionId: awp-exec-01JD3Q7Y2M8K4N6P0R5S7T9V1W
+actor:
+  type: system
+  id: chat-bridge            # authenticated source
+data:
+  trigger:
+    type: event
+    index: 0
+  attestedActor:             # only from a source
+    type: human              # trusted to attest people
+    id: kim@example.com`, label: 'AEP-0024 proposal' },
+    what: 'The actor stays `system` with the authenticated identity of the source. If a source the runtime trusts attests a person, it is recorded as `attestedActor`, and `initiatorCannotApprove` and `actorCannotApproveOwnAction` treat that person as the initiator. A policy can require an attested actor (`trigger.attested`).',
+    why: 'With `system` as the only actor, a person could start a run by message and approve its own request (G44, a must). Conversation context in `event.data` is untrusted input and personal data.',
+    refs: [TRIGGERS, spec('7.8', '78-separation-of-duties'), spec('10.3', '103-event-envelope')],
+  },
+
+  // ---------------------------------------------------------------- AEP-0025 (PR #19)
+  {
+    id: 'state-declared', chapter: 'state', title: 'State is declared in the manifest',
+    left: { check: 'v2', code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: daily-digest
+spec:
+  version: 0.1.0
+  owner:
+    team: support
+  classification: internal
+  triggers:
+    - type: schedule
+      cron: "0 6 * * *"
+  agents:
+    - id: triage
+      model:
+        provider: example-provider
+        name: example-model
+  workflow:
+    - id: diff
+      type: command
+      image: registry.example.com/tools:1.0.0
+      command: python3 /opt/diff.py
+# remembers seen items in a runtime volume,
+# invisible in the manifest` },
+    right: { code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: daily-digest
+spec:
+  version: 0.1.0
+  owner:
+    team: support
+  classification: internal
+  triggers:
+    - type: schedule
+      cron: "0 6 * * *"
+  state:
+    - name: seen-items
+      retention: 180d
+      maxSize: 64Mi
+    - name: preferences
+      access: read
+  agents:
+    - id: triage
+      model:
+        provider: example-provider
+        name: example-model
+  workflow:
+    - id: diff
+      type: command
+      image: registry.example.com/tools:1.0.0
+      command: python3 /opt/diff.py "$AWP_STATE_DIR/seen-items"` },
+    what: '`spec.state` lists stores with `name`, `access` (`read` or `readWrite`), `classification`, `retention` and `maxSize`. Command steps see them as `$AWP_STATE_DIR/<name>`, agent steps only through granted tools. Undeclared stores are never exposed; writes are atomic.',
+    why: 'Today state lives in a runtime volume that reviewers cannot see, without data class or retention (G03).',
+    refs: [STATE],
+  },
+  {
+    id: 'state-shared', chapter: 'state', title: 'Two workflows of one owner share a store',
+    left: { check: 'v2', code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: chat-assistant
+spec:
+  version: 0.1.0
+  owner:
+    team: support
+  classification: internal
+  triggers:
+    - type: manual
+  agents:
+    - id: triage
+      model:
+        provider: example-provider
+        name: example-model
+  workflow:
+    - id: answer
+      agent: triage
+      task: Answer and remember preferences.
+# cannot see what daily-digest stored` },
+    right: { code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: chat-assistant
+spec:
+  version: 0.1.0
+  owner:
+    team: support
+  classification: internal
+  triggers:
+    - type: manual
+  state:                    # same owner and namespace
+    - name: preferences     # as daily-digest: shared
+      access: readWrite
+    - name: seen-items
+      access: read
+  agents:
+    - id: triage
+      model:
+        provider: example-provider
+        name: example-model
+  workflow:
+    - id: answer
+      agent: triage
+      task: Answer and remember preferences.` },
+    what: 'Workflows with the same `spec.owner` in the same namespace that declare a store of the same name share it; the strictest classification applies to every reader; a store of another owner can never be reached. Content read from state is untrusted input (spec 12).',
+    why: 'A daily run writes what it found and a chat run reads it and writes preferences (G53); a message stored by one run must not become an instruction for the next (G58).',
+    refs: [STATE, spec('12', '12-security-considerations')],
+  },
+
+  // ---------------------------------------------------------------- AEP-0004 (planned)
+  {
+    id: 'event-root', chapter: 'event-data', title: 'Event data under its own root',
+    left: { check: 'v2-invalid', expect: 'schema.pattern', label: 'v1alpha3 draft: rejected (no event root in 3.9)', code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: support-chat
+spec:
+  version: 0.1.0
+  owner:
+    team: support
+  classification: internal
+  triggers:
+    - type: event
+      source: chat.example.com
+      eventType: com.example.chat.message.posted
+  agents:
+    - id: triage
+      model:
+        provider: example-provider
+        name: example-model
+  workflow:
+    - id: answer
+      agent: triage
+      task: "Answer: \${{ event.data.message }}"` },
+    right: { code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: support-chat
+spec:
+  version: 0.1.0
+  owner:
+    team: support
+  classification: internal
+  triggers:
+    - type: event
+      source: chat.example.com
+      eventType: com.example.chat.message.posted
+      classification: internal
+      dataSchema:
+        type: object
+        required: [message]
+        properties:
+          message: { type: string, maxLength: 4000 }
+  agents:
+    - id: triage
+      model:
+        provider: example-provider
+        name: example-model
+  workflow:
+    - id: answer
+      agent: triage
+      task: "Answer: \${{ event.data.message }}"
+# no mapping to inputs (D7)`, label: 'Planned: AEP-0004 applied (sketch)' },
+    what: '`${{ event.id }}`, `event.source`, `event.type`, `event.time` and `event.data.<path>` become a reference root. `dataSchema` is validated before the run starts, and `classification` enters every operation that reads the data. A workflow without an event trigger may not use `event.*`.',
+    why: 'D7 decided an own root instead of mapping events to inputs, which hides that a value comes from an external sender (G41). AEP-0004 is in Review for `v1alpha2` and not applied to v1alpha3 yet.',
+    refs: [EVENTS, spec('3.9', '39-expressions')],
+  },
+  {
+    id: 'event-replay', chapter: 'event-data', title: 'A run that carries its event',
+    left: { check: 'v2', code: `apiVersion: ${V2}
+kind: WorkflowRun
+metadata:
+  generateName: support-chat-
+spec:
+  workflowRef:
+    name: support-chat
+# A client-created run is always a manual start
+# (10.8): it cannot carry an event, so an
+# event-only workflow cannot be tested.` },
+    right: { code: `apiVersion: ${V2}
+kind: WorkflowRun
+metadata:
+  generateName: support-chat-replay-
+spec:
+  workflowRef:
+    name: support-chat
+  event:                  # set by a trusted ingress,
+    origin: replay        # or supplied for a test
+    source: chat.example.com
+    type: com.example.chat.message.posted
+    id: msg-4711
+    data:
+      message: My order has not arrived.`, label: 'Planned: AEP-0019 amendment (sketch)' },
+    what: 'The run object carries the event: `origin: ingress` when a trusted router creates it, `origin: replay` for a test or replay, where the actor is the creator and the data is validated against `dataSchema`. Field names are a sketch of the planned amendment.',
+    why: 'Event runs created by an external router fit neither role of spec 10.8 (G48), and event-only workflows cannot be tested conformingly (G57). This is open question 1 of AEP-0019.',
+    refs: [{ label: 'AEP-0019', href: `${SPEC}/aep/0019-workflow-run-and-status.md` }, EVENTS, spec('10.8', '108-kind-workflowrun')],
   },
 ];

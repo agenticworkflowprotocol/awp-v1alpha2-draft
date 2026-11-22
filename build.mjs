@@ -1,103 +1,32 @@
-// Renders both pages into docs/ (served by GitHub Pages):
-//   docs/index.html  side-by-side comparison (examples.mjs)
-//   docs/gaps.html   open runtime feedback after v1alpha2 (gaps.mjs)
+// Renders the three pages into docs/ (served by GitHub Pages):
+//   docs/index.html    guide: how v1alpha3 fits together (guide.mjs), the recommended start
+//   docs/compare.html  side-by-side comparison of v1alpha1 and the draft (examples.mjs)
+//   docs/gaps.html     open runtime gaps G41 to G61 (gaps.mjs)
+// index.html used to be the comparison; its old anchors are forwarded to compare.html.
 //   node build.mjs
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import * as comparison from './examples.mjs';
 import * as feedback from './gaps.mjs';
-
-const escapeHtml = (text) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
-/** Inline Markdown subset used in the texts: `code`. */
-const inline = (text) => escapeHtml(text).replace(/`([^`]+)`/g, '<code>$1</code>');
-
-/** Line-based longest common subsequence: marks lines only on the left (removed) or right (added). */
-function diffLines(left, right) {
-  const n = left.length;
-  const m = right.length;
-  const table = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
-  for (let i = n - 1; i >= 0; i--) {
-    for (let j = m - 1; j >= 0; j--) {
-      table[i][j] = left[i] === right[j] ? table[i + 1][j + 1] + 1 : Math.max(table[i + 1][j], table[i][j + 1]);
-    }
-  }
-  const removed = new Set();
-  const added = new Set();
-  let i = 0;
-  let j = 0;
-  while (i < n && j < m) {
-    if (left[i] === right[j]) { i++; j++; } else if (table[i + 1][j] >= table[i][j + 1]) removed.add(i++); else added.add(j++);
-  }
-  while (i < n) removed.add(i++);
-  while (j < m) added.add(j++);
-  return { removed, added };
-}
-
-/** Light YAML highlighting: comments, keys, list markers. Plain text is left alone. */
-function highlight(line, lang) {
-  if (lang === 'text') {
-    return /^\s*(\$|#)/.test(line) ? `<span class="tok-cmd">${escapeHtml(line)}</span>` : escapeHtml(line);
-  }
-  const comment = line.match(/^(.*?)(\s#.*|^#.*)$/);
-  const body = comment ? comment[1] : line;
-  const rest = comment ? `<span class="tok-comment">${escapeHtml(comment[2])}</span>` : '';
-  const key = body.match(/^(\s*)(- )?([A-Za-z0-9_.\-/$"]+)(:)(\s.*|$)/);
-  if (!key) return escapeHtml(body) + rest;
-  const [, indent, dash = '', name, colon, value] = key;
-  return `${indent}${dash ? '<span class="tok-dash">- </span>' : ''}<span class="tok-key">${escapeHtml(name)}</span>${colon}<span class="tok-value">${escapeHtml(value)}</span>${rest}`;
-}
-
-function renderCode(code, lang, marks, markClass) {
-  const lines = code.split('\n');
-  return lines.map((line, index) => {
-    const cls = marks.has(index) ? ` class="${markClass}"` : '';
-    return `<span${cls}>${highlight(line, lang) || ' '}</span>`;
-  }).join('');
-}
-
-/** One code pane. `unchecked` marks proposals that are deliberately not run through the checker. */
-function pane(side, data, fallbackLabel, marks, unchecked = false) {
-  const lang = data.lang ?? 'yaml';
-  const label = data.label ?? fallbackLabel;
-  const markClass = side === 'left' ? 'line-del' : 'line-add';
-  const badge = data.check
-    ? `<span class="verified" title="Checked with the reference checker">${data.check.endsWith('invalid') ? 'rejected by checker' : 'valid'}</span>`
-    : unchecked ? '<span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span>' : '';
-  return `<figure class="pane pane-${side}">
-  <figcaption><span class="pane-label">${inline(label)}</span>${badge}</figcaption>
-  <pre><code>${renderCode(data.code, lang, marks, markClass)}</code></pre>
-</figure>`;
-}
-
-/**
- * Both panes; differences are highlighted only when both sides show the same kind of content.
- * Proposals (`proposal`) mark only what they add: the left side is the draft, not something removed.
- */
-function panes(left, right, leftLabel, rightLabel, proposal = false) {
-  const comparable = (left.lang ?? 'yaml') === (right.lang ?? 'yaml');
-  const { removed, added } = comparable
-    ? diffLines(left.code.split('\n'), right.code.split('\n'))
-    : { removed: new Set(), added: new Set() };
-  return `<div class="panes">
-    ${pane('left', left, leftLabel, proposal ? new Set() : removed)}
-    ${pane('right', right, rightLabel, added, proposal)}
-  </div>`;
-}
-
-/** Reference chips; entries without `href` (proposed AEPs without a document) are plain text. */
-const renderRefs = (refs) => refs.map((r) => (r.href ? `<a href="${r.href}">${escapeHtml(r.label)}</a>` : `<span class="ref-plain">${escapeHtml(r.label)}</span>`)).join('');
-
-function renderIntro(page, count, legend, overview) {
-  return `<section class="intro">
-      <h1>${escapeHtml(page.h1)}</h1>
-      <p class="lede">${inline(page.lede.replace('{{count}}', String(count)))}</p>
-      <p class="notice">${page.notice}</p>
-      ${legend}
-      ${overview}
-    </section>`;
-}
+import * as guide from './guide.mjs';
+import { renderGuide } from './render-guide.mjs';
+import { escapeHtml, inline, panes, renderIntro, renderRefs } from './render.mjs';
 
 // ------------------------------------------------------------------ page 1: side by side
+
+/** Kind of a chapter: in the draft, a concept, or a proposal of a pull request or a planned one. */
+const chapterKind = (chapter) => (chapter.proposal === 'planned' ? 'planned' : chapter.proposal ? 'proposal' : chapter.concept ? 'concept' : 'draft');
+const CHAPTER_CHIP = {
+  draft: '<span class="chip">Draft</span>',
+  concept: '<span class="chip chip-concept">Concept</span>',
+  proposal: '<span class="chip chip-concept">Proposal: PR #19</span>',
+  planned: '<span class="chip chip-planned">Planned</span>',
+};
+const paneLabels = (chapter) => ({
+  draft: ['v1alpha1', 'v1alpha3 draft'],
+  concept: ['v1alpha3 draft', 'AEP-0021 proposal'],
+  proposal: ['v1alpha3 draft', `${chapter.aep.label.replace(' (PR #19)', '')} proposal (PR #19)`],
+  planned: ['v1alpha3 draft', 'Planned (sketch)'],
+})[chapterKind(chapter)];
 
 function renderComparison({ chapters, examples, page }) {
   const inChapter = (chapter) => examples.filter((e) => e.chapter === chapter.id);
@@ -107,9 +36,7 @@ function renderComparison({ chapters, examples, page }) {
     <span class="example-number">${number}</span>
     <h3>${inline(example.title)}</h3>
   </header>
-  ${panes(example.left, example.right,
-    chapter.concept ? 'v1alpha2 draft' : 'v1alpha1',
-    chapter.concept ? 'AEP-0021 proposal' : 'v1alpha2 draft')}
+  ${panes(example.left, example.right, ...paneLabels(chapter), Boolean(chapter.proposal))}
   <div class="explain">
     <div><h4>What changes</h4><p>${inline(example.what)}</p></div>
     <div><h4>Why</h4><p>${inline(example.why)}</p></div>
@@ -119,7 +46,7 @@ function renderComparison({ chapters, examples, page }) {
 
   const renderChapter = (chapter, startNumber) => {
     const body = inChapter(chapter).map((e, i) => renderExample(e, chapter, startNumber + i)).join('\n');
-    const status = chapter.concept ? '<span class="chip chip-concept">Concept</span>' : '<span class="chip">Draft</span>';
+    const status = CHAPTER_CHIP[chapterKind(chapter)];
     return `<section class="chapter" id="${chapter.id}">
   <header class="chapter-head">
     <p class="eyebrow">${status}<a href="${chapter.aep.href}">${escapeHtml(chapter.aep.label)}</a></p>
@@ -139,11 +66,11 @@ function renderComparison({ chapters, examples, page }) {
 
   const legend = `<ul class="legend">
         <li><span class="swatch swatch-del"></span>only in the old form</li>
-        <li><span class="swatch swatch-add"></span>new or moved in the new form</li>
+        <li><span class="swatch swatch-add"></span>new or moved in the new form, or added by a proposal</li>
       </ul>`;
   const overview = `<ol class="overview">${chapters.map((chapter) => {
     const count = inChapter(chapter).length;
-    return `<li><a href="#${chapter.id}"><span class="ov-title">${inline(chapter.title)}</span><span class="ov-meta">${escapeHtml(chapter.aep.label)} · ${count} ${count === 1 ? 'example' : 'examples'}${chapter.concept ? ' · concept' : ''}</span></a></li>`;
+    return `<li><a href="#${chapter.id}"><span class="ov-title">${inline(chapter.title)}</span><span class="ov-meta">${escapeHtml(chapter.aep.label)} · ${count} ${count === 1 ? 'example' : 'examples'}${chapterKind(chapter) === 'draft' ? '' : ` · ${chapterKind(chapter)}`}</span></a></li>`;
   }).join('')}</ol>`;
 
   let next = 1;
@@ -239,9 +166,14 @@ function renderGaps({ chapters, gaps, page }) {
 // ------------------------------------------------------------------ output
 
 const PAGES = [
-  { label: 'Side by side', href: './', module: comparison, render: renderComparison },
+  { label: 'Guide', href: './', module: guide, render: (m) => renderGuide(m, { decisions: feedback.page.decisions }) },
+  { label: 'Side by side', href: 'compare.html', module: comparison, render: renderComparison },
   { label: 'Open gaps', href: 'gaps.html', module: feedback, render: renderGaps },
 ];
+
+
+// Anchors of the old index.html (the comparison) are forwarded to compare.html; the guide must not reuse them.
+const legacyAnchors = ['top', ...comparison.chapters.map((c) => c.id), ...comparison.examples.map((e) => e.id), 'try'];
 
 const template = readFileSync(new URL('./template.html', import.meta.url), 'utf8');
 mkdirSync(new URL('./docs/', import.meta.url), { recursive: true });
@@ -251,9 +183,16 @@ for (const current of PAGES) {
   const { nav, intro, body, summary } = current.render(current.module);
   const pagenav = `<nav class="pagenav" aria-label="Pages">${PAGES.map((p) => `<a href="${p.href}"${p === current ? ' aria-current="page"' : ''}>${p.label}</a>`).join('')}</nav>`;
   const tocpages = `<ul class="toc-pages">${PAGES.map((p) => `<li><a href="${p.href}"${p === current ? ' aria-current="page"' : ''}>${p.label}</a></li>`).join('')}</ul>`;
+  let head = '';
+  if (current.module === guide) {
+    const clash = legacyAnchors.filter((id) => id !== 'top' && new RegExp(`id="${id}"`).test(body + intro));
+    if (clash.length) throw new Error(`guide reuses anchors of the old index.html: ${clash.join(', ')}`);
+    head = `<script>(function () { var ids = ${JSON.stringify(legacyAnchors.filter((id) => id !== 'top'))}; var h = decodeURIComponent(location.hash.slice(1)); if (h && ids.indexOf(h) >= 0) location.replace('compare.html#' + h); })();</script>`;
+  }
   // Replacement functions, so that "$" sequences in the content are taken literally.
   const html = template
     .replace('{{title}}', () => escapeHtml(page.title))
+    .replace('{{head}}', () => head)
     .replace('{{version}}', () => page.version)
     .replace('{{description}}', () => escapeHtml(page.description))
     .replace('{{pagenav}}', () => pagenav)
