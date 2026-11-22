@@ -195,7 +195,7 @@ function renderGaps({ chapters, gaps, page }) {
   <header class="chapter-head">
     <p class="eyebrow"><span class="chip chip-concept">Proposal</span></p>
     <h2>Proposed order</h2>
-    <p class="chapter-intro">AEP-0023 to AEP-0025 are assigned numbers; the AEP documents are drafts being written.</p>
+    <p class="chapter-intro">AEP-0023 to AEP-0025 are assigned numbers; the AEP drafts are open for review in the spec pull request below.</p>
   </header>
   <ol class="order">${page.order.map((item) => `<li>${inline(item)}</li>`).join('')}</ol>
   <p class="pull-requests" id="pull-requests"><strong>Spec pull requests:</strong> ${page.pullRequests.length

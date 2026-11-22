@@ -63,8 +63,10 @@ export const page = {
     'Into existing AEPs: G52 into AEP-0021, G55 into AEP-0012, G59 and G60 into AEP-0008 (after the current draft), G34 earlier, in the current draft.',
     'Fix now: the `triggers[].source` row in AEP-0021 B4 (G54), and state as untrusted input in spec 12 (G58).',
   ],
-  // Spec pull requests for the AEPs above, as { label, href }; links follow.
-  pullRequests: [],
+  // Spec pull requests for the AEPs above, as { label, href }.
+  pullRequests: [
+    { label: '#19 (draft): G41 to G61, AEP-0023 to AEP-0025', href: 'https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/pull/19' },
+  ],
   decisions: [
     'Scope of the current draft for G44, for G47, G50 and G61, and for state (G03, G53).',
     'Whether G55 waits until after the current draft.',
