@@ -1,11 +1,14 @@
-// Open runtime feedback after the v1alpha2 draft: gaps G41 to G61.
-// Left: what the draft says today (v1alpha2 at b8a0ee8), right: the proposal from the runtime.
+// Open runtime feedback on the v1alpha3 draft: gaps G41 to G61.
+// Left: what the draft says today (v1alpha3 on main), right: the proposal from the runtime.
 // `check` on the left works as in examples.mjs ('v2', 'v2-invalid' or null).
 // The right side is always a proposal and never checked: it is not valid against the schema.
 
-// Compared against the v1alpha3 draft on main (formerly the v1alpha2 draft, b8a0ee8; renamed by decision D20).
-export const SPEC_REF = 'baac181';
-const SPEC = `https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/${SPEC_REF}`;
+import { PREVIEW, PREVIEW_REF } from './spec-ref.mjs';
+
+// Compared against the v1alpha3 draft (formerly the v1alpha2 draft, b8a0ee8; renamed by decision D20),
+// on the preview branch that adds the open pull requests #20 and #19 (spec-ref.mjs).
+export const SPEC_REF = PREVIEW_REF;
+const SPEC = PREVIEW;
 const aep = (n, slug) => ({ label: `AEP-${n}`, href: `${SPEC}/aep/${n}-${slug}.md` });
 const spec = (section, anchor) => ({ label: `Spec ${section}`, href: `${SPEC}/spec/v1alpha3/README.md#${anchor}` });
 
@@ -36,10 +39,10 @@ ${fragment}
         provider: ollama
         name: qwen3`;
 
-// Assigned numbers; the AEP documents are drafts being written.
-const ISOLATION = { label: 'AEP-0023 (draft in progress)' };
-const TRIGGERAEP = { label: 'AEP-0024 (draft in progress)' };
-const STATE = { label: 'AEP-0025 (draft in progress)' };
+// Draft AEPs on the branch of spec pull request #19 (not merged).
+const ISOLATION = { label: 'AEP-0023 (PR #19)', href: `${PREVIEW}/aep/0023-step-isolation.md` };
+const TRIGGERAEP = { label: 'AEP-0024 (PR #19)', href: `${PREVIEW}/aep/0024-event-triggers.md` };
+const STATE = { label: 'AEP-0025 (PR #19)', href: `${PREVIEW}/aep/0025-state.md` };
 
 export const page = {
   version: 'v1alpha3', // shown in the top bar
@@ -48,7 +51,7 @@ export const page = {
   description: 'Open gaps G41 to G61 found by a Kubernetes runtime proof of concept in the AWP v1alpha3 draft (formerly the v1alpha2 draft), classified by where they belong: AWP, an AWP rule enforced by the platform, or the platform only.',
   h1: 'Runtime feedback: open gaps in the v1alpha3 draft',
   lede: 'What a Kubernetes runtime proof of concept and a reference concept still miss in the v1alpha3 draft: {{count}} gaps, each with what the draft says today on the left, a sketch of the proposal on the right, and what happened in the proof of concept.',
-  notice: 'These are <strong>proposals from one runtime</strong>, not accepted specification and not part of the draft. The classification, verdicts and targets are agreed between the runtime side and the spec side; the maintainer still decides. AEP-0023 to AEP-0025 are assigned numbers; the AEPs themselves are drafts being written. Everything is compared against the v1alpha3 draft on main (formerly the v1alpha2 draft, <code>b8a0ee8</code>): pull request #16 was merged as v1alpha3 by decision D20, v1alpha2 is now the step iteration draft (D19), and the side-by-side page still uses the old name. Gaps the draft already resolves (G01, G07, G08, G40) are on the <a href="./">side-by-side page</a>. Left snippets marked <span class="verified">valid</span> or <span class="verified">rejected by checker</span> were run through the reference checker; proposals are marked <span class="unchecked">not checked</span>, and their field names are sketches unless the source names them.',
+  notice: 'These are <strong>proposals from one runtime</strong>, not accepted specification and not part of the draft. The classification, verdicts and targets are agreed between the runtime side and the spec side; the maintainer still decides. AEP-0023 to AEP-0025 are written and open for review in spec pull request #19 (not merged); <a href="./#inflow">the guide</a> summarises what they add. Everything is compared against the v1alpha3 draft (formerly the v1alpha2 draft, <code>b8a0ee8</code>) as previewed on the spec branch <code>preview/pr19-pr20</code>: main plus the open pull requests #20 and #19, not merged text. Pull request #16 was merged as v1alpha3 by decision D20, v1alpha2 is now the step iteration draft (D19). Gaps the draft already resolves (G01, G07, G08, G40) are on the <a href="compare.html">side-by-side page</a>. Left snippets marked <span class="verified">valid</span> or <span class="verified">rejected by checker</span> were run through the reference checker; proposals are marked <span class="unchecked">not checked</span>, and their field names are sketches unless the source names them.',
   // Yardstick: where a gap belongs.
   yardstick: [
     { cat: 'A', text: 'Belongs in AWP: what a workflow needs and may do, and what its fields mean, portable across runtimes.' },
@@ -66,6 +69,7 @@ export const page = {
   // Spec pull requests for the AEPs above, as { label, href }.
   pullRequests: [
     { label: '#19 (draft): G41 to G61, AEP-0023 to AEP-0025', href: 'https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/pull/19' },
+    { label: '#20 (draft): related work as prior art, decision D21', href: 'https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/pull/20' },
   ],
   decisions: [
     'Scope of the current draft for G44, for G47, G50 and G61, and for state (G03, G53).',
