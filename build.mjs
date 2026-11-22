@@ -84,7 +84,8 @@ function panes(left, right, leftLabel, rightLabel, proposal = false) {
   </div>`;
 }
 
-const renderRefs = (refs) => refs.map((r) => `<a href="${r.href}">${escapeHtml(r.label)}</a>`).join('');
+/** Reference chips; entries without `href` (proposed AEPs without a document) are plain text. */
+const renderRefs = (refs) => refs.map((r) => (r.href ? `<a href="${r.href}">${escapeHtml(r.label)}</a>` : `<span class="ref-plain">${escapeHtml(r.label)}</span>`)).join('');
 
 function renderIntro(page, count, legend, overview) {
   return `<section class="intro">
@@ -157,19 +158,23 @@ function renderComparison({ chapters, examples, page }) {
 
 // ------------------------------------------------------------------ page 2: open gaps
 
+/** Category of a gap: A, B, C, or mixed (for example "A+B", "C now, A later"). */
+const catClass = (cat) => ({ A: 'cat-a', B: 'cat-b', C: 'cat-c' })[cat] ?? 'cat-mixed';
+const catBadge = (cat) => `<span class="cat ${catClass(cat)}" title="Category ${escapeHtml(cat)}">${escapeHtml(cat)}</span>`;
+
 function renderGaps({ chapters, gaps, page }) {
   const inChapter = (chapter) => gaps.filter((g) => g.chapter === chapter.id);
   const anchor = (gap) => gap.id.toLowerCase();
-  const severity = (level) => `<span class="sev sev-${level}">${level}</span>`;
 
   const renderGap = (gap) => `<article class="example gap" id="${anchor(gap)}">
   <header class="example-head">
     <span class="gap-id">${gap.id}</span>
     <h3>${inline(gap.title)}</h3>
-    ${severity(gap.severity)}
+    ${catBadge(gap.cat)}
   </header>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>${inline(gap.verdict)}</dd></div><div><dt>Target</dt><dd>${inline(gap.target)}</dd></div></dl>
   <p class="problem">${inline(gap.problem)}</p>
-  ${panes(gap.left, gap.right, 'v1alpha2 draft today', 'Proposal', true)}
+  ${panes(gap.left, gap.right, 'v1alpha3 draft today', 'Proposal', true)}
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>${inline(gap.why)}</p></div>
     <div><h4>Status against the draft</h4><p>${inline(gap.status)}</p></div>
@@ -186,29 +191,49 @@ function renderGaps({ chapters, gaps, page }) {
   ${inChapter(chapter).map(renderGap).join('\n')}
 </section>`;
 
-  const nav = chapters.map((chapter) => {
+  const order = `<section class="chapter" id="order">
+  <header class="chapter-head">
+    <p class="eyebrow"><span class="chip chip-concept">Proposal</span></p>
+    <h2>Proposed order</h2>
+    <p class="chapter-intro">AEP-0023 to AEP-0025 are assigned numbers; the AEP documents are drafts being written.</p>
+  </header>
+  <ol class="order">${page.order.map((item) => `<li>${inline(item)}</li>`).join('')}</ol>
+  <p class="pull-requests" id="pull-requests"><strong>Spec pull requests:</strong> ${page.pullRequests.length
+    ? page.pullRequests.map((pr) => `<a href="${pr.href}">${escapeHtml(pr.label)}</a>`).join(', ')
+    : 'links follow once the drafts are opened.'}</p>
+</section>`;
+
+  const nav = '<li class="nav-chapter"><a href="#order">Proposed order</a></li>' + chapters.map((chapter) => {
     const items = inChapter(chapter)
       .map((g) => `<li><a href="#${anchor(g)}"><span class="nav-number">${g.id}</span>${inline(g.title)}</a></li>`).join('');
     return `<li class="nav-chapter"><a href="#${chapter.id}">${inline(chapter.title)}</a><ol>${items}</ol></li>`;
   }).join('');
 
   const rows = chapters.map((chapter) => `<tbody>
-        <tr class="gap-table-chapter"><th colspan="4" scope="colgroup"><a href="#${chapter.id}">${inline(chapter.title)}</a></th></tr>
-        ${inChapter(chapter).map((g) => `<tr><td><a href="#${anchor(g)}">${g.id}</a></td><td>${severity(g.severity)}</td><td>${inline(g.title)}</td><td>${inline(g.related)}</td></tr>`).join('\n        ')}
+        <tr class="gap-table-chapter"><th colspan="5" scope="colgroup"><a href="#${chapter.id}">${inline(chapter.title)}</a></th></tr>
+        ${inChapter(chapter).map((g) => `<tr><td><a href="#${anchor(g)}">${g.id}</a></td><td>${catBadge(g.cat)}</td><td>${inline(g.title)}</td><td>${inline(g.verdict)}</td><td>${inline(g.target)}</td></tr>`).join('\n        ')}
       </tbody>`).join('\n      ');
-  const overview = `<div class="table-wrap"><table class="gap-table">
-      <thead><tr><th scope="col">Gap</th><th scope="col">Severity</th><th scope="col">Problem</th><th scope="col">Related</th></tr></thead>
+  const table = `<div class="table-wrap"><table class="gap-table">
+      <thead><tr><th scope="col">Gap</th><th scope="col">Cat.</th><th scope="col">Problem</th><th scope="col">Verdict</th><th scope="col">Target</th></tr></thead>
       ${rows}
     </table></div>`;
 
-  const legend = `<ul class="legend">
-        <li>${severity('must')} blocks portable runtimes</li>
-        <li>${severity('should')} gap with a workaround</li>
-        <li>${severity('minor')} clarification</li>
-        <li><span class="swatch swatch-add"></span>added by the proposal</li>
-      </ul>`;
+  // Yardstick, counts per category and the open decisions, above the table.
+  const yardstick = `<ul class="yardstick">${page.yardstick.map((y) => `<li>${catBadge(y.cat)}<span>${inline(y.text)}</span></li>`).join('')}</ul>`;
+  const count = (cls) => gaps.filter((g) => catClass(g.cat) === cls).length;
+  const summary = `<div class="summary">
+        <p class="counts"><span>${catBadge('A')} ${count('cat-a')}</span><span>${catBadge('B')} ${count('cat-b')}</span><span>${catBadge('C')} ${count('cat-c')}</span><span>${catBadge('mixed')} ${count('cat-mixed')}</span></p>
+        <div class="decisions"><h4>Decisions for the maintainer</h4><ul>${page.decisions.map((d) => `<li>${inline(d)}</li>`).join('')}</ul></div>
+      </div>`;
 
-  return { nav, intro: renderIntro(page, gaps.length, legend, overview), body: chapters.map(renderChapter).join('\n'), summary: `${gaps.length} gaps in ${chapters.length} chapters` };
+  return {
+    nav,
+    intro: renderIntro(page, gaps.length, yardstick, `${summary}
+      <ul class="legend"><li><span class="swatch swatch-add"></span>added by the proposal</li></ul>
+      ${table}`),
+    body: order + '\n' + chapters.map(renderChapter).join('\n'),
+    summary: `${gaps.length} gaps in ${chapters.length} chapters`,
+  };
 }
 
 // ------------------------------------------------------------------ output
@@ -229,6 +254,7 @@ for (const current of PAGES) {
   // Replacement functions, so that "$" sequences in the content are taken literally.
   const html = template
     .replace('{{title}}', () => escapeHtml(page.title))
+    .replace('{{version}}', () => page.version)
     .replace('{{description}}', () => escapeHtml(page.description))
     .replace('{{pagenav}}', () => pagenav)
     .replace('{{tocpages}}', () => tocpages)

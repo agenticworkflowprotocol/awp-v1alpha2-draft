@@ -154,24 +154,42 @@ main {
 .toc-pages a { display: block; padding: 4px 6px; font-weight: 600; text-decoration: none; }
 .toc-pages a[aria-current="page"] { color: var(--fg); }
 
-/* Gaps page: severity chips, overview table, problem statement. */
-.sev {
-  font-size: 0.72rem; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
-  padding: 1px 8px; border-radius: 999px; color: var(--muted); background: var(--code-bg);
+/* Gaps page: category badges, yardstick, summary, overview table, verdict, order. */
+.cat {
+  display: inline-block; min-width: 1.9em; text-align: center; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em;
+  white-space: nowrap; padding: 1px 8px; border-radius: 999px; border: 1px solid transparent;
 }
-.sev-must { color: var(--del-bar); background: var(--del-bg); }
-.sev-should { color: var(--concept); background: var(--concept-soft); }
+.cat-a { color: var(--accent); background: var(--accent-soft); }
+.cat-b { color: var(--concept); background: var(--concept-soft); }
+.cat-c { color: var(--muted); background: var(--code-bg); border-color: var(--hairline); }
+.cat-mixed { color: var(--fg); background: var(--surface); border-color: var(--muted); border-style: dashed; }
+.yardstick { list-style: none; margin: 0 0 20px; padding: 0; display: grid; gap: 8px; max-width: 80ch; }
+.yardstick li { display: flex; align-items: baseline; gap: 10px; }
+.summary { display: flex; flex-wrap: wrap; gap: 12px 40px; margin: 0 0 20px; max-width: 900px; }
+.counts { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 0; align-items: center; font-variant-numeric: tabular-nums; }
+.counts > span { display: inline-flex; align-items: center; gap: 6px; }
+.decisions h4 { margin: 0 0 2px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.decisions ul { margin: 0; padding-left: 1.2em; }
+.verdict { display: flex; flex-wrap: wrap; gap: 4px 28px; margin: 0 0 10px; font-size: 0.92rem; }
+.verdict div { display: flex; gap: 8px; align-items: baseline; }
+.verdict dt { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 650; }
+.verdict dd { margin: 0; }
+.order { max-width: 80ch; padding-left: 1.4em; margin: 0; }
+.order li { margin-bottom: 8px; }
+.pull-requests { max-width: 80ch; margin: 12px 0 0; color: var(--muted); }
+.refs .ref-plain { font-size: 0.82rem; padding: 2px 10px; border-radius: 999px; border: 1px dashed var(--hairline); color: var(--muted); }
+.eyebrow .ref-plain { color: var(--muted); }
 .gap .example-head { flex-wrap: wrap; row-gap: 4px; }
 .gap-id { font-variant-numeric: tabular-nums; font-weight: 650; color: var(--muted); font-size: 0.95rem; }
 .problem { margin: 0 0 12px; max-width: 80ch; }
-.table-wrap { overflow-x: auto; border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--surface); max-width: 900px; }
-.gap-table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--surface); max-width: 1100px; }
+.gap-table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 0.9rem; }
 .gap-table th, .gap-table td { text-align: left; vertical-align: top; padding: 7px 12px; border-bottom: 1px solid var(--hairline); }
 .gap-table thead th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 650; }
 .gap-table-chapter th { background: var(--code-bg); font-weight: 650; }
 .gap-table-chapter a { color: var(--fg); text-decoration: none; }
 .gap-table td:first-child { font-variant-numeric: tabular-nums; white-space: nowrap; }
-.gap-table td:last-child { color: var(--muted); }
+.gap-table td:nth-child(4), .gap-table td:last-child { color: var(--muted); }
 .gap-table tbody:last-child tr:last-child td { border-bottom: none; }
 @media (max-width: 560px) { .gap-table th, .gap-table td { padding: 6px 8px; } }
 .pane pre { margin: 0; overflow-x: auto; padding: 10px 0; font: 13px/1.55 var(--font-mono); }

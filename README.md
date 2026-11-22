@@ -15,13 +15,17 @@ under review; the extension model chapter is a concept that is not applied to th
 
 **Second page:** https://agenticworkflowprotocol.github.io/awp-v1alpha2-draft/gaps.html
 
-The gaps G41 to G61 that a Kubernetes runtime proof of concept and a reference concept still found
-after the `v1alpha2` draft (commit `b8a0ee8`): events and triggers, network permissions,
-conversation, state and identity, and models as input to AEP-0008. Each gap shows what the draft
+The gaps G41 to G61 that a Kubernetes runtime proof of concept and a reference concept still find
+in the draft, classified as A (belongs in AWP), B (an AWP rule enforced by the platform) or C
+(platform only), with a verdict, a target AEP and a proposed order. Each gap shows what the draft
 says today, a sketch of the proposal and what happened in the proof of concept. Source: the
 runtime feedback list of the proof of concept and the
 [concept comparison](https://slauger.github.io/ai-agent-operations/awp-abgleich/) (German). These
 are proposals from one runtime, not accepted specification.
+
+The draft compared on this page is now called `v1alpha3` (decision D20: pull request #16 was merged
+as `v1alpha3`, and `v1alpha2` is the step iteration draft of D19). The side-by-side page and the
+repository name still use the old name `v1alpha2`.
 
 ## Example as a Helm chart
 
@@ -43,7 +47,9 @@ node build.mjs                                  # render docs/index.html and doc
 - `gaps.mjs`: chapters and gaps of the second page. Proposals are never checked; they are not
   valid against the draft schema.
 - `check.mjs`: snippets with `check` in both files must be valid (or rejected, for error cases)
-  with the reference checker of a checkout of the specification repository.
+  with the reference checker of the specification repository, at the commit each file names in
+  `SPEC_REF` (`b8a0ee8` for the side-by-side page, `baac181` on main for the gaps page). The commits
+  are exported with `git archive`; the checkout is not changed.
 - `build.mjs`, `template.html`: static pages without dependencies, one shared template, served by
   GitHub Pages from `docs/`.
 

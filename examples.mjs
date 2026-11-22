@@ -4,6 +4,8 @@
 //   'v1-invalid' / 'v2-invalid'  must be rejected (the left or right side shows an error case)
 //   null                  not an AWP manifest (shell output, audit events, concept syntax)
 
+// Commit of the spec repository the snippets are checked against (check.mjs).
+export const SPEC_REF = 'b8a0ee8';
 const SPEC = 'https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/feat/v1alpha2-refactoring';
 export const aep = (n, slug) => ({ label: `AEP-${n}`, href: `${SPEC}/aep/${n}-${slug}.md` });
 export const spec = (section, anchor) => ({ label: `Spec ${section}`, href: `${SPEC}/spec/v1alpha2/README.md#${anchor}` });
@@ -28,6 +30,7 @@ export const chapters = [
 
 // Page frame for docs/index.html (title, intro, the Helm chart section after the chapters, footer).
 export const page = {
+  version: 'v1alpha2', // shown in the top bar
   file: 'index.html',
   title: 'AWP v1alpha2 Draft',
   description: 'What changes from AWP v1alpha1 to the v1alpha2 draft: side-by-side examples with the reason for each change.',
