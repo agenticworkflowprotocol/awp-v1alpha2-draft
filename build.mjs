@@ -18,13 +18,13 @@ const chapterKind = (chapter) => (chapter.proposal === 'planned' ? 'planned' : c
 const CHAPTER_CHIP = {
   draft: '<span class="chip">Draft</span>',
   concept: '<span class="chip chip-concept">Concept</span>',
-  proposal: '<span class="chip chip-concept">Proposal: PR #23</span>',
+  proposal: '<span class="chip chip-concept">Proposal: PRs #24 to #26</span>',
   planned: '<span class="chip chip-planned">Planned</span>',
 };
 const paneLabels = (chapter) => ({
   draft: ['v1alpha1', 'v1alpha3 draft'],
   concept: ['v1alpha3 draft', 'AEP-0021 proposal'],
-  proposal: ['v1alpha3 draft', `${chapter.aep.label.replace(' (PR #23)', '')} proposal (PR #23)`],
+  proposal: ['v1alpha3 draft', `${chapter.aep.label.replace(/ \(PR #\d+\)$/, '')} proposal ${(chapter.aep.label.match(/\(PR #\d+\)/) || ['(PRs #24 to #26)'])[0]}`],
   planned: ['v1alpha3 draft', 'Planned (sketch)'],
 })[chapterKind(chapter)];
 

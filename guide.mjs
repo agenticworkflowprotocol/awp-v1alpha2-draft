@@ -3,21 +3,21 @@
 // Worked examples use the panes of the other pages. `check` works as in examples.mjs:
 //   'v2'          must be valid against v1alpha3 at SPEC_REF ('v2' means the current draft, as on the gaps page)
 //   'v2-invalid'  must be rejected, with `expect` as the diagnostic code
-//   absent        a proposal (pull request #23) or a planned change; never checked
+//   absent        a proposal (pull requests #24 to #26) or a planned change; never checked
 // `profiles` on an example or a pane selects the profiles the checker supports (default core).
 
 import { PREVIEW, PREVIEW_BRANCH, PREVIEW_REF, SPEC_REPO as REPO } from './spec-ref.mjs';
 
-// The branch of spec pull request #23: the v1alpha3 draft on main (D20) plus the former pull
+// The branch of spec pull request #26, the top of the stack #24, #25, #26 on the v1alpha3 draft (D20); formerly pull
 // requests #20 and #19 and the feedback from interactive sessions (spec-ref.mjs).
 export const SPEC_REF = PREVIEW_REF;
 const MAIN = PREVIEW;
-const PR23 = `${REPO}/pull/23`;
 const PR23_BRANCH = PREVIEW;
 
 const spec = (section, anchor) => ({ label: `Spec ${section}`, href: `${MAIN}/spec/v1alpha3/README.md#${anchor}` });
 const aep = (n, slug) => ({ label: `AEP-${n}`, href: `${MAIN}/aep/${n}-${slug}.md` });
-const aep23 = (n, slug) => ({ label: `AEP-${n} (PR #23)`, href: `${PREVIEW}/aep/${n}-${slug}.md` });
+const AEP_PR = { '0021': 24, '0022': 24, '0024': 24, '0025': 24, '0023': 25 };
+const aep23 = (n, slug) => ({ label: `AEP-${n} (PR #${AEP_PR[n] ?? 26})`, href: `${PREVIEW}/aep/${n}-${slug}.md` });
 
 const ISOLATION = aep23('0023', 'step-isolation');
 const TRIGGERS = aep23('0024', 'event-triggers');
@@ -26,7 +26,7 @@ const EVENTS = aep('0004', 'event-references');
 const RUNAEP = aep('0019', 'workflow-run-and-status');
 const SESSION = aep23('0026', 'interactive-execution');
 const ENGINE = aep23('0027', 'agent-engine');
-const FEEDBACK = { label: 'runtime-feedback.md (PR #23)', href: `${PR23_BRANCH}/docs/runtime-feedback.md` };
+const FEEDBACK = { label: 'runtime-feedback.md (PR #24)', href: `${PR23_BRANCH}/docs/runtime-feedback.md` };
 const CHECKER = { label: 'Reference checker', href: `${MAIN}/conformance/README.md` };
 
 const V3 = 'awp.agenticworkflowprotocol.org/v1alpha3';
@@ -35,7 +35,7 @@ const DIGEST = 'sha256:162c964d9ab8c11b0b2014a92860d99384acfa28652e515cafa7d554e
 // Status of a piece of AWP, used by the lifecycle, the tables and the badges.
 export const STATUS = {
   v3: { label: 'in v1alpha3', cls: 'st-v3', title: 'In the v1alpha3 draft on main (Draft, not accepted)' },
-  pr23: { label: 'PR #23', cls: 'st-pr', title: 'Proposed in spec pull request #23 (draft, not merged)' },
+  pr23: { label: 'PR #24–26', cls: 'st-pr', title: 'Proposed in spec pull requests #24 to #26 (stacked drafts, not merged)' },
   planned: { label: 'planned', cls: 'st-planned', title: 'Planned pull request: apply AEP-0004 and amend AEP-0019 (not started, no draft text)' },
   platform: { label: 'platform only', cls: 'st-platform', title: 'Not AWP: how a runtime or platform does it is its own choice' },
 };
@@ -46,9 +46,9 @@ export const page = {
   title: 'AWP v1alpha3: How It Fits Together',
   description: 'Getting started with the Agentic Workflow Protocol v1alpha3 draft: the resources and how they relate, the lifecycle from manifest to finished run, worked examples, what the open spec pull requests add, what is still open, and how to adopt it.',
   h1: 'AWP v1alpha3: how it fits together',
-  lede: 'The Agentic Workflow Protocol describes what an agentic workflow does, what it may do and how it is governed and audited. This page explains the current draft for readers who did not follow the discussion: which manifests you write, how they relate, what happens from applying a manifest to a finished run, what the open spec pull request #23 adds, and how to start as a workflow author or as a runtime implementer.',
-  notice: '<strong>This site shows the open spec pull request #23, not merged text.</strong> Every spec and AEP link goes to the branch <a href="' + REPO + '/tree/' + PREVIEW_BRANCH + '"><code>' + PREVIEW_BRANCH + '</code></a> at <code>' + PREVIEW_REF + '</code>: main of the specification repository with pull request <a href="' + PR23 + '">#23</a> on top, as the spec will look once it is merged. #23 combines the former pull requests #20 (related work, D21) and #19 (runtime feedback G41 to G61, AEP-0023 to AEP-0025) and adds what a platform with interactive coding agent sessions found: G62 to G87, extensions of AEP-0023, two new AEPs (0026 interactive execution, 0027 agent engine) and amendments to existing AEPs. <strong>Status.</strong> <code>v1alpha3</code> is the current draft on main of the specification repository (decision D20: pull request #16 was merged as <code>v1alpha3</code>; <code>v1alpha2</code> is the step iteration draft of D19). Nothing in it is accepted except step iteration. Pull request #23 is an open draft, and its AEPs are Draft and not applied to the v1alpha3 text; a third pull request for event data (AEP-0004) is planned and has no text yet. Every piece below carries its status: <span class="st st-v3">in v1alpha3</span> <span class="st st-pr">PR #23</span> <span class="st st-planned">planned</span> <span class="st st-platform">platform only</span>. Manifests marked <span class="verified">valid</span> or <span class="verified">rejected by checker</span> were run through the reference checker at <code>' + SPEC_REF + '</code> (the schema is the same as on main); proposals are marked <span class="unchecked">not checked</span>.',
-  footer: `Sources: the <a href="${MAIN}/spec/v1alpha3/README.md">v1alpha3 specification</a>, the <a href="${MAIN}/docs/decisions.md">decision log</a> and the AEPs on the branch <code>${PREVIEW_BRANCH}</code> (main plus pull request <a href="${PR23}">#23</a>), in <a href="${REPO}">agenticworkflowprotocol.org</a>. This page is generated from <a href="https://github.com/agenticworkflowprotocol/awp-v1alpha2-draft">awp-v1alpha2-draft</a>; corrections are welcome as issues or pull requests.`,
+  lede: 'The Agentic Workflow Protocol describes what an agentic workflow does, what it may do and how it is governed and audited. This page explains the current draft for readers who did not follow the discussion: which manifests you write, how they relate, what happens from applying a manifest to a finished run, what the open spec pull requests #24 to #26 add, and how to start as a workflow author or as a runtime implementer.',
+  notice: '<strong>This site shows the open spec pull requests #24 to #26, not merged text.</strong> Every spec and AEP link goes to the branch <a href="' + REPO + '/tree/' + PREVIEW_BRANCH + '"><code>' + PREVIEW_BRANCH + '</code></a> at <code>' + PREVIEW_REF + '</code>: main of the specification repository with the three stacked pull requests on top, as the spec will look once they are merged: <a href="' + REPO + '/pull/24">#24</a> (runtime feedback G41 to G87, related work D21, AEP-0024 events, AEP-0025 state), <a href="' + REPO + '/pull/25">#25</a> (AEP-0023 step isolation) and <a href="' + REPO + '/pull/26">#26</a> (AEP-0026 sessions and AEP-0027 engine as concepts, amendments to existing AEPs). They replace #19, #20 and #23. <strong>Status.</strong> <code>v1alpha3</code> is the current draft on main of the specification repository (decision D20: pull request #16 was merged as <code>v1alpha3</code>; <code>v1alpha2</code> is the step iteration draft of D19). Nothing in it is accepted except step iteration. The pull requests are open drafts, and their AEPs are Draft and not applied to the v1alpha3 text; a third pull request for event data (AEP-0004) is planned and has no text yet. Every piece below carries its status: <span class="st st-v3">in v1alpha3</span> <span class="st st-pr">PR #24–26</span> <span class="st st-planned">planned</span> <span class="st st-platform">platform only</span>. Manifests marked <span class="verified">valid</span> or <span class="verified">rejected by checker</span> were run through the reference checker at <code>' + SPEC_REF + '</code> (the schema is the same as on main); proposals are marked <span class="unchecked">not checked</span>.',
+  footer: `Sources: the <a href="${MAIN}/spec/v1alpha3/README.md">v1alpha3 specification</a>, the <a href="${MAIN}/docs/decisions.md">decision log</a> and the AEPs on the branch <code>${PREVIEW_BRANCH}</code> (main plus pull requests <a href="${REPO}/pull/24">#24</a> to <a href="${REPO}/pull/26">#26</a>), in <a href="${REPO}">agenticworkflowprotocol.org</a>. This page is generated from <a href="https://github.com/agenticworkflowprotocol/awp-v1alpha2-draft">awp-v1alpha2-draft</a>; corrections are welcome as issues or pull requests.`,
 };
 
 // ------------------------------------------------------------------ start here
@@ -56,7 +56,7 @@ export const page = {
 export const start = [
   { title: 'Author', text: 'Write a `Workflow` (and optionally `Agent` and `Policy` manifests), validate it with the reference checker, pick the profiles. Read [the examples](#examples) and [the author checklist](#adopt).' },
   { title: 'Runtime implementer', text: 'Read [the lifecycle](#lifecycle) with its MUST rules, [what a Kubernetes runtime can map it to](#k8s-mapping) and [the implementer checklist](#adopt-runtime).' },
-  { title: 'Reviewer', text: 'Read [what flowed in](#inflow) from pull request #23 and [what is still open](#open); details per gap are on the [gaps page](gaps.html).' },
+  { title: 'Reviewer', text: 'Read [what flowed in](#inflow) from pull requests #24 to #26 and [what is still open](#open); details per gap are on the [gaps page](gaps.html).' },
 ];
 
 // ------------------------------------------------------------------ resource map
@@ -124,7 +124,7 @@ export const resourceMap = {
 
 export const legend = [
   { cls: 'kind', text: 'AWP kind in v1alpha3' },
-  { cls: 'proposal', text: 'proposed (PR #23)' },
+  { cls: 'proposal', text: 'proposed (PRs #24 to #26)' },
   { cls: 'platform', text: 'platform or runtime, not AWP' },
   { cls: 'external', text: 'external system, other protocol' },
   { cls: 'output', text: 'what an execution leaves behind' },
@@ -137,7 +137,7 @@ export const kinds = [
   { kind: '`Policy`', status: 'v3', writer: 'A governance or platform team.', refs: 'Nothing; rules on actions, data class, destination, model, actor. Only `deny` and `requireApproval`: policies restrict, permissions grant.', reader: 'The runtime decision algorithm (spec 8.4), under the governance profile.' },
   { kind: '`WorkflowRun`', status: 'v3', writer: 'A client for a manual start, or the runtime itself for schedule and event triggers.', refs: 'One `Workflow` by `name` in the same namespace; `version` and `digest` are assertions, not selectors.', reader: 'The runtime starts at most one execution from it and writes `status`; people and tools read the status.' },
   { kind: '`spec.state` (a field)', status: 'pr23', writer: 'The workflow author.', refs: 'Named stores, shared by workflows of the same owner in the same namespace.', reader: 'The runtime, which exposes only declared stores. AEP-0025 proposes `spec.state`; its own kind is the alternative under review.' },
-  { kind: '`AgentSession`', status: 'pr23', writer: 'A person, through a console or `kubectl create`, for interactive use of an agent.', refs: 'One `Agent` by `name` (only if the agent opts in with `sessions`); a model and tool sources selected from what the agent allows.', reader: 'The runtime: one execution with pause and resume; autonomy capped by the agent\'s `maxAutonomy` and the platform ceiling. AEP-0026.' },
+  { kind: '`AgentSession`', status: 'pr23', writer: 'A person, through a console or `kubectl create`, for interactive use of an agent.', refs: 'One `Agent` by `name` (only if the agent opts in with `sessions`); a model and tool sources selected from what the agent allows.', reader: 'The runtime: one execution with pause and resume; a level above the agent\'s `maxAutonomy` or the platform ceiling is rejected. AEP-0026.' },
   { kind: 'Conformance statement', status: 'v3', writer: 'The runtime implementer (not a manifest).', refs: 'Profiles, limitations, limits, `executionObjects`.', reader: 'Operators and authors who choose a runtime.' },
   { kind: 'Binding, trigger object, tenant, sandbox profile', status: 'platform', writer: 'The operator, in a kind of the runtime.', refs: 'A `Workflow` or an `Agent` (`targetRefs` in the AEP-0021 concept); a sandbox profile is what `agents[].isolation` (AEP-0023) maps to.', reader: 'The runtime only. Placement, images, volumes, model endpoints, secret mapping.' },
 ];
@@ -183,7 +183,7 @@ export const lifecycle = [
     title: 'Admit the execution',
     items: [
       { status: 'v3', text: 'Before anything runs: inputs are validated (a schedule uses defaults), every model is checked against `modelPolicy`, the environment must be allowed, and a `critical` risk level needs an approval of the execution itself. A run that cannot start gets `phase: rejected` and emits no `workflow.started`.' },
-      { status: 'pr23', text: 'AEP-0023: if the platform ceiling does not allow a destination the manifest needs, or the runtime cannot enforce a network rule for a step type, the runtime rejects before any step runs.' },
+      { status: 'pr23', text: 'AEP-0023: a platform ceiling never adjusts a manifest. If the manifest asks for more than a ceiling allows (a destination, a model, a budget), or the runtime cannot enforce a network rule for a step type, the runtime rejects before any step runs.' },
     ],
     refs: [spec('5.3', '53-inputs'), spec('7.4', '74-model-governance'), spec('7.10', '710-environments'), ISOLATION],
   },
@@ -198,8 +198,8 @@ export const lifecycle = [
     title: 'Run the steps, isolated',
     items: [
       { status: 'v3', text: 'Steps form a graph through `dependsOn`; ready steps run up to `maxConcurrency` (default 1), `forEach` fans out over a bounded list. Command steps run in an isolated environment with `permissions.network` and `permissions.filesystem` applied; `command` is never expression-enabled, values come through `env`. Every action goes through the decision: permissions, then deny rules, then approval. Budgets are checked before every model call and action.' },
-      { status: 'pr23', text: 'AEP-0023: one host syntax for `allowHosts` (name, `*.domain`, address, CIDR, optional port); effective network = manifest intersected with the platform ceiling; enforce or reject; under `security` `egress` defaults to `deny` and internal addresses are denied after resolution unless manifest and ceiling both allow them; model credentials are never visible to steps.' },
-      { status: 'pr23', text: 'AEP-0023: tool server credentials stay outside the step like model keys; an agent can require a minimum `isolation` (`container`, `sandbox`, `vm`), met or rejected. AEP-0027: an agent step can run with a coding agent as `engine`; refused calls fail the step, subagents share budget and permissions, workspace configuration is off by default.' },
+      { status: 'pr23', text: 'AEP-0023: `allowTo` objects (`host` or `cidr`, `ports`) instead of `allowHosts`; enforce or reject; under `security` `egress` defaults to `deny` and internal addresses are reachable only through a `cidr` entry that the platform ceiling also allows; credentials are never visible to steps.' },
+      { status: 'pr23', text: 'AEP-0023: tool server credentials stay outside the step like model keys; an agent can require a minimum `isolation` (`container`, `sandbox`, `vm`), met or rejected. AEP-0027: an agent step can run with a coding agent as `engine`; permissions, budget and audit stay in force, subagents share them, repository configuration is off by default. What leaves the sandbox is enforced outside, what stays inside is bounded by the isolation class.' },
       { status: 'platform', text: 'The mechanism: an egress proxy, network policies, a sandbox, a model proxy, an MCP gateway.' },
     ],
     refs: [spec('5.6', '56-workflow-steps'), spec('7.5', '75-tool-governance-permissions'), spec('8.4', '84-decision-combination'), ISOLATION, ENGINE],
@@ -216,7 +216,7 @@ export const lifecycle = [
     items: [
       { status: 'v3', text: 'Input steps and agents with `humanInput` ask named people and wait (`waitingForInput`, profile `interaction`). Approvals gate actions or steps (`waitingForApproval`, profile `governance`); only an authenticated human can approve, an answer is never an approval, and `separationOfDuties` keeps the initiator from approving.' },
       { status: 'pr23', text: 'AEP-0024: in a run started by an event, the attested person counts as the initiator, so the rule binds the person who wrote the message, not only the bridge.' },
-      { status: 'pr23', text: 'AEP-0023 7.6.1: approvals and confirmations are decided outside the execution environment, from an authenticated person; nothing that carries a decision is readable inside. AEP-0026: in an interactive session the person confirms single actions (`allowOnce`, `allowForSession`, `refuse`); a confirmation is not an approval.' },
+      { status: 'pr23', text: 'AEP-0023: approvals and confirmations are decided outside the execution environment, from an authenticated person; nothing that carries a decision is readable inside. AEP-0026: in an interactive session the person confirms actions according to the autonomy level; a confirmation is not an approval.' },
     ],
     refs: [spec('5.8', '58-human-input'), spec('7.6', '76-human-approval'), spec('7.8', '78-separation-of-duties'), TRIGGERS, SESSION],
   },
@@ -324,12 +324,14 @@ const scoutB = scoutA
 const scoutB19 = scoutB.replace(`      allowHosts:
         - venue.example.org
         - hooks.example.net
-`, `      allowHosts:                 # syntax of AEP-0023 7.5.5
-        - venue.example.org
-        - "*.cdn.example.org:443"   # subdomain wildcard with port
-        - hooks.example.net
-        - 10.20.0.15              # internal ticket API: allowed only if
-                                  # the platform ceiling allows it too
+`, `      allowTo:                    # replaces allowHosts (AEP-0023)
+        - host: venue.example.org
+          ports:
+            - port: 443
+        - host: "*.cdn.example.org" # subdomain wildcard
+        - host: hooks.example.net
+        - cidr: 10.20.0.15/32     # internal ticket API: only a cidr entry
+                                  # can open it, and the ceiling must too
 `);
 
 const chatC = `apiVersion: ${V3}
@@ -376,8 +378,8 @@ spec:
       filter:                       # equality, all entries must match
         data.channel: concerts
         data.mentions: concert-scout
-      concurrencyPolicy: allow      # PR #23: default for events
-      rateLimit:                    # PR #23
+      concurrencyPolicy: allow      # PR #24: default for events
+      rateLimit:                    # PR #24
         maxExecutions: 20
         period: 1h
       classification: internal     # planned: AEP-0004
@@ -462,7 +464,7 @@ spec:
 const scoutD19 = scoutD
   .replace('  version: 0.2.0\n', '  version: 0.3.0\n')
   .replace(`  agents:
-    - id: curator`, `  state:                          # PR #23: AEP-0025
+    - id: curator`, `  state:                          # PR #24: AEP-0025
     - name: seen-concerts
       retention: 180d
       maxSize: 64Mi
@@ -481,7 +483,7 @@ spec:
   owner:
     team: music-fans                # same owner and namespace: shared
   classification: internal
-  state:                            # PR #23: AEP-0025
+  state:                            # PR #24: AEP-0025
     - name: preferences             # "no more jazz, please"
       access: readWrite
     - name: seen-concerts
@@ -551,7 +553,7 @@ const newsletterE19 = newsletterE
       filter:
         data.channel: newsletter
 `)
-  .replace('        - initiatorCannotApprove: true\n', '        - initiatorCannotApprove: true   # PR #23: binds the\n                                         # attested actor\n');
+  .replace('        - initiatorCannotApprove: true\n', '        - initiatorCannotApprove: true   # PR #24: binds the\n                                         # attested actor\n');
 
 const policyE19 = `apiVersion: ${V3}
 kind: Policy
@@ -564,7 +566,7 @@ spec:
   rules:
     - id: require-attested-actor
       when:
-        trigger.attested:           # PR #23: condition of AEP-0024,
+        trigger.attested:           # PR #24: condition of AEP-0024,
           equals: "false"           # the operator shape is a sketch
       effect: deny`;
 
@@ -580,6 +582,166 @@ spec:
     venues:
       - https://club.example.org/events`;
 
+
+// ------------------------------------------------------------------ examples 6 and 7 (PR #25, PR #26)
+
+const reviewerF = `apiVersion: ${V3}
+kind: Agent
+metadata:
+  name: scout-maintainer
+spec:
+  version: 0.1.0
+  description: Helps the music fans keep the concert scout's scrapers working.
+  owner:
+    team: music-fans
+  classification: internal
+  model:
+    provider: example-provider
+    name: example-model
+  instructions: You maintain the scrapers of the concert scout. Explain before you change.
+  permissions:
+    default: deny
+    tools:
+      shell.execute:
+        allow: true
+        resources:
+          - git *
+          - npm test
+  budget:
+    maxCostUsd: 5`;
+
+const reviewerF26 = reviewerF
+  .replace(`  model:
+    provider: example-provider
+    name: example-model
+`, `  model:
+    provider: example-provider
+    name: example-model
+  isolation: sandbox             # AEP-0023: at least a sandbox
+  sessions:                      # AEP-0026: may run interactively
+    maxAutonomy: ask             # never "auto"
+    models:                      # the only alternatives
+      - provider: example-provider
+        name: example-model-large
+`)
+  .replace(`  budget:
+    maxCostUsd: 5`, `  actionGroups:                  # AEP-0002: rules on git.push also
+    git.push:                    # apply to "git push" in a shell
+      - action: shell.execute
+        resources: ["git push*"]
+  budget:
+    maxCostUsd: 5`);
+
+const sessionF26 = `apiVersion: ${V3}
+kind: AgentSession                # AEP-0026, next to WorkflowRun
+metadata:
+  generateName: fix-venue-scraper-
+  namespace: music
+spec:
+  agentRef:
+    name: scout-maintainer
+  autonomy: ask                   # "auto" would be rejected
+  model:
+    provider: example-provider
+    name: example-model-large
+  initialPrompt: The scraper for venue.example.org returns no events since Monday. Find out why.
+status:
+  phase: waiting                  # a confirmation is pending
+  autonomy: ask
+  usage: {costUsd: "0.31", modelCalls: 6}`;
+
+const fixerG = `apiVersion: ${V3}
+kind: Workflow
+metadata:
+  name: scraper-check
+spec:
+  version: 0.1.0
+  description: Every night a coding agent runs the scraper tests and reports what broke.
+  owner:
+    team: music-fans
+  classification: internal
+  triggers:
+    - type: schedule
+      cron: "0 3 * * *"
+      timezone: Europe/Berlin
+  budget:
+    maxCostUsd: 1
+  agents:
+    - id: checker
+      model:
+        provider: example-provider
+        name: example-model
+      extensions:
+        x-example-engine:          # runtime-specific: another runtime
+          repository: https://git.example.com/scout/scrapers.git
+  permissions:
+    default: deny
+    tools:
+      shell.execute:
+        allow: true
+    network:
+      egress: deny
+      allowHosts:
+        - git.example.com
+        - venue.example.org
+  workflow:
+    - id: check
+      agent: checker
+      task: Run the scraper tests and report which venues fail and why. Do not change files.
+      outputs:
+        - name: summary`;
+
+const fixerG26 = `apiVersion: ${V3}
+kind: Workflow
+metadata:
+  name: scraper-check
+spec:
+  version: 0.2.0
+  description: Every night a coding agent runs the scraper tests and reports what broke.
+  owner:
+    team: music-fans
+  classification: internal
+  triggers:
+    - type: schedule
+      cron: "0 3 * * *"
+      timezone: Europe/Berlin
+  budget:
+    maxCostUsd: 1                  # must be declared under a budget ceiling
+  agents:
+    - id: checker
+      isolation: sandbox           # AEP-0023
+      engine:                      # AEP-0027: unknown type -> rejected
+        type: example.com/coding-agent
+        workspace:
+          repositories:
+            - url: https://git.example.com/scout/scrapers.git
+              ref: main
+              path: scrapers
+          trustRepositoryConfig: [] # no AGENTS.md, skills, commands
+      model:
+        provider: example-provider
+        name: example-model
+  permissions:
+    default: deny
+    tools:
+      shell.execute:
+        allow: true
+    network:
+      egress: deny
+      allowTo:                     # AEP-0023
+        - host: git.example.com
+          ports:
+            - port: 443
+        - host: venue.example.org
+          ports:
+            - port: 443
+  workflow:
+    - id: check
+      agent: checker
+      task: Run the scraper tests and report which venues fail and why. Do not change files.
+      outputs:
+        - name: summary`;
+
 export const examples = [
   {
     id: 'ex-scheduled', title: 'A scheduled agent workflow with outputs',
@@ -594,22 +756,22 @@ export const examples = [
     id: 'ex-network', title: 'The same workflow under the security profile', profiles: 'core,security',
     intro: 'The same workflow, reviewed for the `security` profile: images pinned by digest and outbound network limited to the venue site and the webhook. The right side shows what AEP-0023 adds.',
     left: { check: 'v2', label: 'v1alpha3 (core, security)', code: scoutB },
-    right: { label: 'PR #23: AEP-0023 host syntax and internal destinations', code: scoutB19 },
+    right: { label: 'PR #25: AEP-0023 structured destinations', code: scoutB19 },
     extra: [
       { check: 'v2-invalid', expect: 'security.image-not-pinned', label: 'Example 1 under security: rejected', lang: 'text', doc: scoutA, code: `$ node conformance/awp-check.mjs check --profiles core,security concert-scout.yaml
 concert-scout.yaml:45:14 error security.image-not-pinned /spec/workflow/0/image
 concert-scout.yaml:64:14 error security.image-not-pinned /spec/workflow/2/image
 invalid` },
     ],
-    what: 'v1alpha3 already has `egress: deny` with `allowHosts` and requires digests under `security`; a tag is rejected (bottom). AEP-0023 defines the entry forms, makes the effective network the intersection of the manifest and a platform ceiling, requires the runtime to enforce it or reject the run before any step, denies loopback, private, link-local and CGNAT addresses after resolution unless both manifest and ceiling allow them, and keeps model credentials out of every step.',
-    why: 'Without a syntax the same list means different things on different runtimes; without enforce-or-reject a runtime may silently ignore `allowHosts` for command steps (G10, G51); an allowed host that resolves to a metadata address is an SSRF hole (G50). Under `security`, AEP-0023 also changes the default of `egress` to `deny`.',
+    what: 'v1alpha3 already has `egress: deny` with `allowHosts` and requires digests under `security`; a tag is rejected (bottom). AEP-0023 replaces `allowHosts` with objects (`host` or `cidr`, `ports`), requires the runtime to enforce the rules or reject before any step, opens internal addresses only through a `cidr` entry that the platform ceiling also allows, rejects anything above a ceiling, and keeps credentials and approvals out of every step.',
+    why: 'Without a syntax the same list means different things on different runtimes, and a port after an IPv6 address is ambiguous (G49); without enforce-or-reject a runtime may silently ignore the rules for command steps (G10, G51); an allowed host that resolves to a metadata address is an SSRF hole (G50), which is why a `host` entry never opens an internal address. Under `security`, AEP-0023 also changes the default of `egress` to `deny`.',
     refs: [spec('7.5', '75-tool-governance-permissions'), spec('9.4', '94-dependencies'), ISOLATION],
   },
   {
     id: 'ex-event', title: 'An event-triggered workflow',
-    intro: 'A chat message in the concerts channel starts a run that answers it. v1alpha3 can start the run but not pass the message; PR #23 defines the event model, the planned AEP-0004 pull request makes the data reachable.',
+    intro: 'A chat message in the concerts channel starts a run that answers it. v1alpha3 can start the run but not pass the message; PR #24 defines the event model, the planned AEP-0004 pull request makes the data reachable.',
     left: { check: 'v2', label: 'v1alpha3: event trigger', code: chatC },
-    right: { label: 'PR #23 (AEP-0024) and planned (AEP-0004)', code: chatC19 },
+    right: { label: 'PR #24 (AEP-0024) and planned (AEP-0004)', code: chatC19 },
     extra: [
       { label: 'Planned: a replay run that carries its event (field names are a sketch)', code: replayC },
     ],
@@ -621,61 +783,76 @@ invalid` },
     id: 'ex-state', title: 'State between runs',
     intro: 'The scout should report each concert once. Today that memory is a file on a volume the runtime provides, invisible in the manifest. AEP-0025 declares it.',
     left: { check: 'v2', label: 'v1alpha3: state is not visible', code: scoutD },
-    right: { label: 'PR #23: AEP-0025 declared stores', code: scoutD19 },
+    right: { label: 'PR #24: AEP-0025 declared stores', code: scoutD19 },
     extra: [
-      { label: 'PR #23: a second workflow of the same owner shares the stores', code: chatD19 },
+      { label: 'PR #24: a second workflow of the same owner shares the stores', code: chatD19 },
     ],
-    what: 'Each store has a name, an access mode, a classification (default: the workflow\'s) and a retention. Command steps find it at `$AWP_STATE_DIR/<name>`; agent steps only through granted tools. Workflows of the same owner in the same namespace share a store of the same name, the strictest classification applies to every reader, writes are atomic, and the runtime states whether concurrent writers are serialised.',
-    why: 'Reviewers cannot see that a workflow keeps data, which class it has or how long it is kept (G03, G53). Content written by one run is read by the next: PR #23 also changes spec 12, so state is untrusted input and a stored chat message cannot become a standing instruction (G58).',
-    refs: [STATE, { label: 'Spec 12 (PR #23)', href: `${PR23_BRANCH}/spec/v1alpha3/README.md#12-security-considerations` }],
+    what: 'Each store has a name, an access mode, a classification (default: the workflow\'s) and a retention. Command steps find it at `$AWP_STATE_DIR/<name>`; agent steps only through granted tools. Workflows of the same owner in the same namespace share a store of the same name, the strictest classification applies to every reader, writes are atomic, `retention` and `maxSize` must be equal in every declaration of a shared store, and the runtime states whether concurrent writers are serialised.',
+    why: 'Reviewers cannot see that a workflow keeps data, which class it has or how long it is kept (G03, G53). Content written by one run is read by the next: PR #24 also changes spec 12, so state is untrusted input and a stored chat message cannot become a standing instruction (G58).',
+    refs: [STATE, { label: 'Spec 12 (PR #24)', href: `${PR23_BRANCH}/spec/v1alpha3/README.md#12-security-considerations` }],
   },
   {
     id: 'ex-approval', title: 'Human approval and the initiator rule', profiles: 'core,governance',
     intro: 'A newsletter is drafted by an agent and sent only after an editor approves it, and the person who started the run cannot approve it. Approval belongs to the `governance` profile.',
     left: { check: 'v2', label: 'v1alpha3 (core, governance)', code: newsletterE },
-    right: { label: 'PR #23: started by a chat message', code: newsletterE19 },
+    right: { label: 'PR #24: started by a chat message', code: newsletterE19 },
     extra: [
-      { label: 'PR #23: a policy that requires an attested person', code: policyE19 },
+      { label: 'PR #24: a policy that requires an attested person', code: policyE19 },
       { check: 'v2-invalid', expect: 'profile.unsupported', profiles: 'core', label: 'Left side on a core-only runtime: rejected', lang: 'text', doc: newsletterE, code: `$ node conformance/awp-check.mjs check --profiles core concert-newsletter.yaml
 concert-newsletter.yaml:13:5 error profile.unsupported /spec/approval
 concert-newsletter.yaml:35:7 error profile.unsupported /spec/workflow/1
 invalid` },
     ],
-    what: 'The approval step pauses the run in `waitingForApproval` until an authenticated editor approves; an agent can never approve, and an answer to an input request never counts as one. `initiatorCannotApprove` rejects an approval by whoever created the `WorkflowRun`. With PR #23, a run started by a chat message has the bridge as actor and the attested author as `attestedActor`, and the rule binds that author; a policy can refuse event runs without an attested person.',
+    what: 'The approval step pauses the run in `waitingForApproval` until an authenticated editor approves; an agent can never approve, and an answer to an input request never counts as one. `initiatorCannotApprove` rejects an approval by whoever created the `WorkflowRun`. With PR #24, a run started by a chat message has the bridge as actor and the attested author as `attestedActor`, and the rule binds that author; a policy can refuse event runs without an attested person.',
     why: 'In v1alpha3 every event start has the actor type `system`, so a person could start a run by message and approve its request (G44, raised to must). A runtime without the governance profile must reject the manifest instead of running it without approvals (bottom).',
     refs: [spec('7.6', '76-human-approval'), spec('7.8', '78-separation-of-duties'), spec('3.3', '33-unknown-fields-and-extensions'), TRIGGERS],
+  },
+  {
+    id: 'ex-session', title: 'An agent people use interactively',
+    intro: 'A music fan opens a session with a coding agent to find out why one scraper broke. v1alpha3 can only describe the agent; PRs #25 and #26 let the author allow interactive use, cap autonomy and require a sandbox, and add the session object.',
+    left: { check: 'v2', label: 'v1alpha3: Agent', code: reviewerF },
+    right: { label: 'PR #26 (AEP-0026, AEP-0002) and PR #25 (AEP-0023)', code: reviewerF26 },
+    extra: [
+      { label: 'PR #26: the session a person starts', code: sessionF26 },
+    ],
+    what: 'Without `sessions` the agent cannot run interactively. The person picks `readOnly` or `ask`; `auto` is rejected because the author capped it, and a level above the platform ceiling would be rejected too. Every allowed action asks first at `ask`; the confirmation comes from the person through the runtime\'s interface, decided outside the sandbox. `git push` in the shell counts as `git.push`, so rules on pushing apply. The budget covers the whole session across pauses.',
+    why: 'Interactive use is the most common use of coding agents, but v1alpha3 can only run an agent as a one-step workflow (G62). The author should decide whether the agent may work without asking (G63), and confirmations only protect if the agent cannot give them itself (G64, shown in the proof of concept). Confirmation per action and governance without a workflow are open questions of AEP-0026.',
+    refs: [SESSION, ISOLATION, { label: 'AEP-0002 (PR #26)', href: `${PREVIEW}/aep/0002-tool-argument-constraints.md` }],
+  },
+  {
+    id: 'ex-engine', title: 'A coding agent as engine, with network rules',
+    intro: 'Every night a coding agent runs the scraper tests and reports what broke. In v1alpha3 the engine is an extension field another runtime may ignore; PR #26 names it, PR #25 structures the network rules.',
+    left: { check: 'v2', label: 'v1alpha3: engine as an extension', code: fixerG },
+    right: { label: 'PR #26 (AEP-0027) and PR #25 (AEP-0023)', code: fixerG26 },
+    what: 'A runtime without `example.com/coding-agent` rejects the workflow instead of running its own loop. Permissions, budget and audit apply to the engine; its model calls are metered outside it. The repository is cloned before the engine starts, and its instruction files, skills and commands are not loaded. `allowTo` limits the network to two hosts on port 443; if either name resolves to an internal address, the connection is denied.',
+    why: 'An ignored extension means a different loop with different tools that still reports success (G65). Repository content can change what the agent does before any permission applies (G81). Typed outputs, repositories from events and pushing are open questions of AEP-0027, so the step only reports.',
+    refs: [ENGINE, ISOLATION],
   },
 ];
 
 // ------------------------------------------------------------------ what flowed in
 
 export const inflow = [
-  { pr: 23, change: 'Runtime feedback G41 to G61 (event triggers, the concept review, models) with target AEP and evidence; questions 8 and 9 recorded as decided on 2026-11-22. The file already exists on main with G01 to G40.', file: FEEDBACK, gaps: 'G41 to G61' },
-  { pr: 23, change: 'AEP-0023 step isolation: `allowHosts` syntax, platform ceiling intersected with the manifest, enforce or reject, internal destinations after resolution, `egress: deny` default and model credentials outside steps under `security`.', file: ISOLATION, gaps: 'G10, G47, G49, G50, G51, G61' },
-  { pr: 23, change: 'AEP-0024 event triggers with CloudEvents: equality filters on attributes and `data.<path>`, dedup by `source` and `id`, `concurrencyPolicy`, `rateLimit`, attested actor bound by the approval rules, conversation context as untrusted data, delivery guarantee in the conformance statement.', file: TRIGGERS, gaps: 'G42 to G46, G54, G56' },
-  { pr: 23, change: 'AEP-0025 state: declared stores with classification, retention and access mode, sharing within one owner, atomic writes, state as untrusted input.', file: STATE, gaps: 'G03, G53, G58' },
-  { pr: 23, change: 'AEP-0021 B4: `triggers[].source` is no domain-prefixed value space but the CloudEvents `source` of the producer.', file: { label: 'AEP-0021 (PR #23)', href: `${PR23_BRANCH}/aep/0021-extension-model.md` }, gaps: 'G52, G54' },
-  { pr: 23, change: 'Spec 12: content kept between executions (state) is untrusted input. The only change to the v1alpha3 text in this pull request.', file: { label: 'Spec 12 (PR #23)', href: `${PR23_BRANCH}/spec/v1alpha3/README.md#12-security-considerations` }, gaps: 'G58' },
-  { pr: 23, change: 'Prior art under D21: agent-sandbox in AEP-0023, the `listen` task of the Open Workflow Specification in AEP-0024. AEP index rows 0023 to 0025, changelog.', file: { label: 'spec/README.md (PR #23)', href: `${PR23_BRANCH}/spec/README.md` }, gaps: '-' },
-  { pr: 23, change: 'Decision D21 (refines D17): open specifications and vendor-neutral foundation or SIG projects may be named as prior art, never as dependencies; runtimes, products and vendors stay unnamed outside the implementations list.', file: { label: 'decisions.md (PR #23)', href: `${PR23_BRANCH}/docs/decisions.md#d21-open-specifications-and-foundation-projects-may-be-named-as-prior-art` }, gaps: '-' },
-  { pr: 23, change: 'Spec 1.2 related work: the Open Workflow Specification describes control flow, AWP what an agent may do plus governance and audit; agent-sandbox is one platform-side isolation mechanism. Same paragraph in the README.', file: { label: 'Spec 1.2 (PR #23)', href: `${PR23_BRANCH}/spec/v1alpha3/README.md#12-relationship-to-other-protocols` }, gaps: '-' },
-  { pr: 23, change: 'AEP-0022 prior art: the `for` task of the Open Workflow Specification (`in`, `each`, `at`, `while`) as the closest counterpart of `forEach`.', file: { label: 'AEP-0022 (PR #23)', href: `${PR23_BRANCH}/aep/0022-step-iteration.md` }, gaps: '-' },
-  { pr: 23, change: 'Runtime feedback section 10: G62 to G87 from a platform with interactive coding agent sessions, a coding agent as engine of workflow steps, model and MCP gateways outside the sandbox, tenants and gateway audit. With a proposal which platform objects become AWP kinds (extends K).', file: FEEDBACK, gaps: 'G62 to G87' },
-  { pr: 23, change: 'AEP-0023 extended by the cases that share its reason: tool server credentials outside steps, approval authority outside the execution environment (new 7.6.1), a minimum `isolation` class on agents, one rule for ceilings (permissions, models, tool servers, autonomy and isolation reject; budgets cap).', file: ISOLATION, gaps: 'G64, G67, G68, G69' },
-  { pr: 23, change: 'New AEP-0026 interactive execution: kind `AgentSession`, `sessions` opt-in on `Agent` with `maxAutonomy`, autonomy levels `readOnly`, `ask`, `auto`, `confirm` per permission entry, narrowing of tool sources and model, lifecycle, budget across pauses, session events. Number to be confirmed.', file: SESSION, gaps: 'G62, G63, G73, G82, G85' },
-  { pr: 23, change: 'New AEP-0027 agent engine: `agents[].engine` with workspace repositories from inputs or events, workspace configuration off by default, declared outputs filled by the engine, subagents share budget and permissions. Number to be confirmed.', file: ENGINE, gaps: 'G65, G66, G81, G83' },
-  { pr: 23, change: 'Amendments: AEP-0007 server prompts and resources as allow lists with default none, server requests answered by the runtime, resolution order; AEP-0002 resource scope of `shell.execute`; AEP-0005 prompts as session tasks; AEP-0009 origin of events, tool arguments and session history as content; AEP-0013 budgets during streaming; AEP-0017 agent requests in sessions; AEP-0021 B6 bindings for `Agent`.', file: { label: 'CHANGELOG.md (PR #23)', href: `${PR23_BRANCH}/CHANGELOG.md` }, gaps: 'G70 to G78, G84' },
+  { pr: 24, change: 'Decision D21 (refines D17): open specifications and vendor-neutral foundation or SIG projects may be named as prior art, never as dependencies. Spec 1.2 and the README name the Open Workflow Specification and agent-sandbox; AEP-0022 names the `for` task as prior art. Commits of the former #20, unchanged.', file: { label: 'decisions.md (PR #24)', href: `${PR23_BRANCH}/docs/decisions.md#d21-open-specifications-and-foundation-projects-may-be-named-as-prior-art` }, gaps: '-' },
+  { pr: 24, change: 'Runtime feedback G41 to G87 with home, evidence and status: event triggers, the concept review, models, and section 10 from a platform with interactive coding agent sessions. Section 10 also states what goes into AWP (what a reviewer must know, what must mean the same everywhere) and which platform objects should become AWP kinds.', file: FEEDBACK, gaps: 'G41 to G87' },
+  { pr: 24, change: 'AEP-0024 event triggers with CloudEvents: equality filters, deduplication per workflow by `source` and `id`, `concurrencyPolicy`, `rateLimit`, attested actor bound by the approval rules, conversation context as untrusted data.', file: TRIGGERS, gaps: 'G42 to G46, G54, G56' },
+  { pr: 24, change: 'AEP-0025 state: declared stores with classification, retention and access mode, sharing within one owner with equal `retention` and `maxSize`, atomic writes, state as untrusted input (spec 12).', file: STATE, gaps: 'G03, G53, G58' },
+  { pr: 24, change: 'AEP-0021: B4 `triggers[].source` is the CloudEvents `source`; B6 bindings may also target an `Agent`.', file: { label: 'AEP-0021 (PR #24)', href: `${PR23_BRANCH}/aep/0021-extension-model.md` }, gaps: 'G52, G54' },
+  { pr: 25, change: 'AEP-0023 step isolation: `allowTo` objects (`host` or `cidr`, `ports`) instead of `allowHosts`, enforce or reject, internal addresses only through a `cidr` entry, ceilings reject and never adjust (spec 5.7 amended), credentials and approvals outside the execution environment, minimum `isolation`. Address normalisation, proxies and gateways are informative implementer guidance.', file: ISOLATION, gaps: 'G10, G47, G49 to G51, G61, G64, G67 to G69' },
+  { pr: 26, change: 'AEP-0026 interactive execution (concept, number to be confirmed): kind `AgentSession`, `sessions` opt-in with `maxAutonomy` and model alternatives, three autonomy levels. Confirmation per action, governance without a workflow, questions, history, events and time limits are open questions.', file: SESSION, gaps: 'G62, G63, G73, G82' },
+  { pr: 26, change: 'AEP-0027 agent engine (concept, number to be confirmed): `agents[].engine` with a domain-prefixed type and fixed repositories, repository configuration off by default. Outputs, repositories from events, push and a runtime profile are open questions.', file: ENGINE, gaps: 'G65, G81' },
+  { pr: 26, change: 'Amendments: AEP-0007 server prompts and resources as allow lists, `prompts.get` reserved, sampling and roots declined; AEP-0002 shell resources and command mapping through `actionGroups`; AEP-0005 prompts as session tasks; AEP-0009 `origin` of events; AEP-0013 budgets during streaming.', file: { label: 'CHANGELOG.md (PR #26)', href: `${PR23_BRANCH}/CHANGELOG.md` }, gaps: 'G71, G72, G74 to G76, G78' },
   { pr: 'planned', change: 'Apply AEP-0004 to v1alpha3: `${{ event.* }}` as its own root with `dataSchema` and `classification`, no mapping to inputs (D7). Amend AEP-0019 open question 1: the run object carries the event (`spec.event` with `origin: ingress` or `replay`).', file: EVENTS, gaps: 'G41, G48, G57' },
 ];
 
-export const inflowNote = 'PR #23 supersedes #19 and #20: their commits are included unchanged, rebased on main, so D21 and the prior-art notes that cite it now land together. None of the AEPs (0023 to 0027, and the amendments) is applied to the v1alpha3 text yet: they are Draft AEPs next to it, and the schema and the checker do not know their fields. Details per change with examples: the [side-by-side page](compare.html#isolation).';
+export const inflowNote = 'Three stacked drafts replace #19, #20 and #23: #24 on main, #25 on #24, #26 on #25. #23 had grown to 20 files and two reviews kept adding rules; the split keeps each part reviewable, moves hardening into implementer guidance and leaves finer points of the new concepts as open questions. None of the AEPs is applied to the v1alpha3 text yet, and the schema and the checker do not know their fields. Details with examples: the [side-by-side page](compare.html#isolation).';
 
 // ------------------------------------------------------------------ still open
 
-// Open after pull request #23 and the planned AEP-0004 pull request (runtime-feedback.md, status overview on PR #23).
+// Open after pull requests #24 to #26 and the planned AEP-0004 pull request (runtime-feedback.md, status overview).
 export const open = [
-  { title: 'Decisions for the maintainer in PR #23', text: 'Confirm the numbers AEP-0026 and AEP-0027 (question 10 of the runtime feedback); approval authority, isolation class, ceilings and tool server credentials as part of AEP-0023 rather than an own AEP (question 10); which platform objects become AWP kinds: `AgentSession` new, `Prompt` and `McpCatalog` as proposed, tenants, sandbox profiles and bindings left to the runtime (question 11).' },
-  { title: 'Drafted, but not applied or accepted', text: 'AEP-0023 to AEP-0027 are Draft. AEP-0026 open: `confirm` for workflow runs, a `readOnly` action group, retention of session history (G85), sessions started by events (G86). AEP-0027 open: a registry of engine names, whether `tools` must list everything an engine offers. AEP-0023 to AEP-0025 are Draft. They change nothing in v1alpha3 until they are applied to the text, the schema and the conformance suite, and none can become Accepted without an external reviewer (D16). Their open questions: whether authors can see the platform ceiling and whether MCP over `streamable-http` falls under the network rules (0023); the 24 hour dedup window, `attestedActor` for manual starts (0024); `spec.state` as proposed or its own kind as the alternative under review, the sharing boundary, a state tool for agent steps (0025).' },
+  { title: 'Decisions for the maintainer', text: 'Confirm the numbers AEP-0026 and AEP-0027; whether approval authority stays in AEP-0023 or becomes its own AEP; which platform objects become AWP kinds (runtime feedback section 10: `AgentSession` new, `Prompt` and `McpCatalog` as proposed, tenants, sandbox profiles and bindings left to the runtime).' },
+  { title: 'Drafted, but not applied or accepted', text: 'AEP-0023 to AEP-0027 are Draft and change nothing in v1alpha3 until applied, and none can become Accepted without an external reviewer (D16). Open questions: AEP-0023 visibility of ceilings, `host` entries for internal names, isolation classes, separation of duties; AEP-0024 the carrier of the attested actor and the dedup window; AEP-0025 its own kind and the ownership boundary; AEP-0026 confirmation per action, governance without a workflow, questions, history, events, time limits, naming; AEP-0027 outputs, repositories from events, push, registry, runtime profile.' },
   { title: 'Covered by an existing AEP that is not applied', text: 'G02 (typed outputs, AEP-0003 and AEP-0014), G04 (conditional steps, AEP-0001), G06 and G55 (tool steps and the identity a step acts as, AEP-0012), G22 (array item schemas, AEP-0014), G52 (runtime trigger objects, AEP-0021 B6), G59 and G60 (catalog limits and capabilities, AEP-0008, after the current draft).' },
   { title: 'Open, no AEP yet', text: 'G05 (secret scopes per step, a must), G09 (unknown fields pass strict apply), G11 (origin marking of untrusted outputs), G12 (where command code comes from), G13 (`finally` steps), G16 to G21, G24 to G39 (mostly clarifications: defaults, retries, budget units, model parameters, runtime neutrality) and K (a Kubernetes mapping, normative or informative). From section 10: G77 (data flow to tool sources), G79 and G80 (secrets supplied at start, secret scope of a standalone agent).' },
 ];
@@ -694,7 +871,7 @@ export const related = {
     },
     {
       name: 'Open Workflow Specification', href: 'https://github.com/open-workflow-specification/specification',
-      what: 'A DSL for the control flow of workflows: tasks `call`, `do`, `emit`, `for`, `fork`, `listen`, `raise`, `run`, `set`, `switch`, `try`, `wait`, with runtime expressions, CloudEvents, schedules by cron or event, retries and timeouts. A CNCF project; spec 1.2 in PR #23 calls it formerly Serverless Workflow, and its own README still links the CNCF Serverless Working Group.',
+      what: 'A DSL for the control flow of workflows: tasks `call`, `do`, `emit`, `for`, `fork`, `listen`, `raise`, `run`, `set`, `switch`, `try`, `wait`, with runtime expressions, CloudEvents, schedules by cron or event, retries and timeouts. A CNCF project; spec 1.2 in PR #24 calls it formerly Serverless Workflow, and its own README still links the CNCF Serverless Working Group.',
       layer: 'Control flow',
       overlap: 'Iteration (`for` with `in`, `each`, `at`, `while` against `forEach`), event triggers (`listen` filters with `with` on attributes and `data`, regular and runtime expressions, `correlate`), schedules, running containers and scripts (`run`).',
       relation: 'Prior art under D21. AEP-0022 names `for`, AEP-0024 names `listen` and keeps its CloudEvents attribute names but restricts the manifest filter to equality. No dependency; AWP aligns wording where both cover the same ground.',
@@ -760,13 +937,13 @@ export const kubernetes = {
     { piece: 'Admission rule on runs', does: 'Only the runtime may set trigger type and filter on a run; a client cannot claim to be an event.', rule: 'Spec 10.8 (client runs are manual); the trusted ingress of the planned AEP-0019 amendment (G48).', status: 'planned' },
     { piece: 'One Job (or Sandbox) per step', does: 'Each step runs in its own pod; the runner process is not dumpable, so the step ticket cannot be read through `/proc`.', rule: 'Spec 5.6.2: command steps in an isolated environment; AEP-0023: credentials not visible to steps.', status: 'pr23' },
     { piece: 'Per-attempt ticket, model proxy', does: 'Model keys live only in the operator namespace. A step gets a short-lived ticket per attempt; the model proxy checks the ticket, the budget and a provider profile per model API protocol (local models allowed) and calls the provider.', rule: 'AEP-0023 change to 7.9 (G61); budgets checked before each model call (5.7); `modelPolicy` (7.4).', status: 'pr23' },
-    { piece: 'Tool proxy with SSRF checks', does: 'Checks the address actually connected to, at connection time, which covers redirects and DNS changes.', rule: 'AEP-0023 7.5.6: internal destinations denied after resolution unless manifest and ceiling allow them (G50).', status: 'pr23' },
-    { piece: 'Egress proxy, default-deny policy', does: 'A forward proxy per agent with a domain allowlist derived from `allowHosts`, plus a default-deny NetworkPolicy that lets the pod reach only that proxy. NetworkPolicy needs a network plugin that enforces it; some local development clusters do not.', rule: 'AEP-0023: effective network = manifest intersected with the ceiling (the namespace policy is the ceiling); enforce or reject, so on a cluster that does not enforce NetworkPolicy the runtime must reject.', status: 'pr23' },
+    { piece: 'Tool proxy with SSRF checks', does: 'Checks the address actually connected to, at connection time, which covers redirects and DNS changes.', rule: 'AEP-0023 implementer guidance: check the address actually connected to. Normative: internal destinations only through a `cidr` entry that the ceiling also allows (G50).', status: 'pr23' },
+    { piece: 'Egress proxy, default-deny policy', does: 'A forward proxy per agent with a domain allowlist derived from `allowHosts`, plus a default-deny NetworkPolicy that lets the pod reach only that proxy. NetworkPolicy needs a network plugin that enforces it; some local development clusters do not.', rule: 'AEP-0023: the namespace policy is a ceiling; a manifest that needs more is rejected; enforce or reject, so on a cluster that does not enforce NetworkPolicy the runtime must reject.', status: 'pr23' },
     { piece: 'Broker and event router', does: 'A chat bridge publishes each message as a CloudEvent to an MQTT broker; an event router with one filter object per workflow creates runs. No model takes part in routing, so a message cannot redirect it by prompt. The router subscribes with QoS 0 and keeps ids only briefly, so the operator deduplicates itself.', rule: 'AEP-0024: router filters may only narrow the manifest filter; dedup by `source` and `id`; `concurrencyPolicy`, `rateLimit`; delivery guarantee per source in the conformance statement (G56).', status: 'pr23' },
     { piece: 'Attested author', does: 'The bridge is the only identity allowed to publish on the topic and reads the author from the chat system: attestation through transport authorisation, not end to end.', rule: 'AEP-0024: `attestedActor` only from sources configured as trusted; approval rules treat it as the initiator (G44).', status: 'pr23' },
-    { piece: 'Decision proxy next to the coding agent', does: 'In interactive sessions every tool call goes to a separate container with its own process namespace, which decides by mode, permissions and command allow list and asks the person through the console; grants are signed. The coding agent\'s own permission system is not trusted: a command of the same user ID read its server password and answered its own requests.', rule: 'AEP-0023 7.6.1 (approval authority outside the execution environment), AEP-0026 (autonomy and `confirm`).', status: 'pr23' },
+    { piece: 'Decision proxy next to the coding agent', does: 'In interactive sessions every tool call goes to a separate container with its own process namespace, which decides by mode, permissions and command allow list and asks the person through the console; grants are signed. The coding agent\'s own permission system is not trusted: a command of the same user ID read its server password and answered its own requests.', rule: 'AEP-0023 (approvals outside the execution environment), AEP-0026 (autonomy and `confirm`).', status: 'pr23' },
     { piece: 'MCP gateway with tickets', does: 'MCP servers are reachable only through a gateway of the operator (network policy). It accepts a session or step ticket, adds the server credential, filters tools, prompts and resources to the catalog, answers sampling and roots itself and audits every call.', rule: 'AEP-0023 (tool server credentials outside steps), AEP-0007 rules 3, 7, 9 to 12.', status: 'pr23' },
-    { piece: 'Tenant ceilings and sandbox profiles', does: 'A tenant object limits models, hosts, MCP servers, modes and cost; a sandbox profile maps an isolation class to a runtime class. Both stay kinds of the runtime.', rule: 'AEP-0023 7.5.7 (ceilings reject, budgets cap) and `agents[].isolation`.', status: 'pr23' },
+    { piece: 'Tenant ceilings and sandbox profiles', does: 'A tenant object limits models, hosts, MCP servers, modes and cost; a sandbox profile maps an isolation class to a runtime class. Both stay kinds of the runtime.', rule: 'AEP-0023 7.5.10 (ceilings reject, budgets too) and `agents[].isolation`.', status: 'pr23' },
     { piece: 'Sanitized chat replies', does: 'A step posts the reply in the originating thread after sanitizing it (no mentions or markup the model was not meant to send).', rule: 'No AWP rule yet: delivery of replies is the job of a step (AEP-0024); the identity a step posts as is open (G55, AEP-0012).', status: 'platform' },
   ],
   // What the runtime creates, and when, for the worked examples.
@@ -805,7 +982,7 @@ export const runtimeChecklist = [
   'Pick the profiles you can meet completely and publish a conformance statement (spec 11.3): `limitations`, `limits`, `executionObjects`. A profile with one unmet MUST cannot be claimed.',
   'Reject, never run partially: an unsupported `apiVersion` or `kind`, unknown fields, `x-` keys outside `extensions`, fields of profiles you do not support, literal credentials, invalid inputs, models outside `modelPolicy`, digest mismatches, images that cannot be resolved, `image` steps if you cannot run containers.',
   'Enforce at run time: the decision algorithm for every action (8.4), budgets before every model call and action, isolated command steps with `network` and `filesystem` applied, no expressions in `command`, the output rules (no symlinks, minimum sizes, no truncation, failed attempts discarded), pinning, approvals only by authenticated humans, the actor of a run from an authenticated source, no secret values to models, logs or audit.',
-  'Prepare for PR #23: decide confirmations and approvals outside the execution environment, keep tool server credentials in a gateway, honour a required `isolation` class or reject; enforce the effective network or reject before the first step, check resolved addresses, keep model keys out of steps, deduplicate events by `source` and `id` for at least 24 hours, write state atomically, treat state and conversation context as untrusted input.',
+  'Prepare for PRs #24 to #26: decide confirmations and approvals outside the execution environment, keep tool server credentials in a gateway, honour a required `isolation` class or reject; enforce the effective network or reject before the first step, check resolved addresses, keep model keys out of steps, deduplicate events by `source` and `id` for at least 24 hours, write state atomically, treat state and conversation context as untrusted input.',
   'Test your validator with the conformance suite: `npm test` in the spec repository runs every case, and `conformance/v1alpha3/index.json` lists expected accept or reject, code and path for your own validator. A runtime test suite is planned; until then conformance statements are self-declarations.',
   'Report gaps the way `docs/runtime-feedback.md` does: one entry per gap with severity, the proposal and the evidence from your runtime, as an issue or an AEP in the spec repository (D18). The spec repository names no runtime (D17); the implementations list shows projects that published a conformance statement.',
 ];

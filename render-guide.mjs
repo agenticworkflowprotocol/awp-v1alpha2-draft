@@ -91,7 +91,7 @@ function renderLifecycle(g) {
     <ul class="tl-items">${step.items.map((item) => `<li>${badge(g.STATUS, item.status)}<p>${inline(item.text)}</p></li>`).join('')}</ul>
     <footer class="refs">${renderRefs(step.refs)}</footer>
   </li>`).join('\n');
-  return section('lifecycle', 'Lifecycle: from a manifest to a finished run', 'What happens when, and who decides. Each line says whether it is in v1alpha3, proposed in PR #23, planned with the AEP-0004 pull request, or left to the platform.', `<ol class="timeline">${steps}</ol>`);
+  return section('lifecycle', 'Lifecycle: from a manifest to a finished run', 'What happens when, and who decides. Each line says whether it is in v1alpha3, proposed in PRs #24 to #26, planned with the AEP-0004 pull request, or left to the platform.', `<ol class="timeline">${steps}</ol>`);
 }
 
 /** Statuses an example touches, read from its panes. */
@@ -100,7 +100,7 @@ function exampleStatuses(example) {
   const found = new Set();
   for (const p of all) {
     if (p.check) found.add('v3');
-    if (!p.check && /PR #23/.test(p.label)) found.add('pr23');
+    if (!p.check && /PR #2[456]/.test(p.label)) found.add('pr23');
     if (!p.check && /[Pp]lanned/.test(p.label + p.code)) found.add('planned');
   }
   return [...found];
@@ -131,26 +131,26 @@ function renderExample(g, example, number) {
 
 function renderExamples(g) {
   const body = g.examples.map((e, i) => renderExample(g, e, i + 1)).join('\n');
-  return section('examples', 'Worked examples', `Five small manifests in one neutral domain (a concert scout), each building on the one before. Left panes are v1alpha3 and were run through the reference checker at <code>${g.SPEC_REF}</code>; right panes mark what a proposal adds and are not checked.`, body);
+  return section('examples', 'Worked examples', `Seven small manifests in one neutral domain (a concert scout): five build on each other, the last two show what interactive use and a coding agent engine look like with PRs #25 and #26. Left panes are v1alpha3 and were run through the reference checker at <code>${g.SPEC_REF}</code>; right panes mark what a proposal adds and are not checked.`, body);
 }
 
 function renderInflow(g) {
   const pr = (n) => (n === 'planned' ? badge(g.STATUS, 'planned') : `<a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/pull/${n}">#${n}</a>`);
   const rows = g.inflow.map((r) => [pr(r.pr), inline(r.change), renderRefs([r.file]), escapeHtml(r.gaps)]);
-  return section('inflow', 'What flowed in from pull request #23', 'Pull request #23 is a draft and not merged; it supersedes #19 and #20. The AEP-0004 pull request is planned and has no text yet.',
+  return section('inflow', 'What flowed in from pull requests #24 to #26', 'Three stacked drafts, not merged; they supersede #19, #20 and #23. The AEP-0004 pull request is planned and has no text yet.',
     `${table('inflow-table', ['PR', 'Change', 'File', 'Gaps'], rows)}<p class="note">${inline(g.inflowNote)}</p>`);
 }
 
 function renderOpen(g, decisions) {
   const cards = g.open.map((o) => `<div class="card"><h3>${inline(o.title)}</h3><p>${inline(o.text)}</p></div>`).join('');
   const decide = `<div class="card card-decisions"><h3>Open maintainer decisions</h3><ul>${decisions.map((d) => `<li>${inline(d)}</li>`).join('')}</ul></div>`;
-  return section('open', 'Still open', 'What remains after pull request #23 and the planned AEP-0004 pull request. Each gap G41 to G87 with the draft text, a proposal sketch and the evidence is on the <a href="gaps.html">gaps page</a>; G01 to G40 are in <a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/docs/runtime-feedback.md">runtime-feedback.md</a>.',
+  return section('open', 'Still open', 'What remains after pull requests #24 to #26 and the planned AEP-0004 pull request. Each gap G41 to G87 with the draft text, a proposal sketch and the evidence is on the <a href="gaps.html">gaps page</a>; G01 to G40 are in <a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/docs/runtime-feedback.md">runtime-feedback.md</a>.',
     `<div class="cards">${decide}${cards}</div><p class="note">${inline(g.openNote)}</p>`);
 }
 
 function renderRelated(g) {
   const rows = g.related.rows.map((r) => [`<a href="${r.href}">${escapeHtml(r.name)}</a>`, inline(r.what), inline(r.layer), inline(r.overlap), inline(r.relation)]);
-  return section('related', 'AWP and related work', 'Spec 1.2 in PR #23 names two projects AWP takes ideas from. Decision D21 allows naming open specifications and foundation or SIG projects as prior art, never as dependencies.',
+  return section('related', 'AWP and related work', 'Spec 1.2 in PR #24 names two projects AWP takes ideas from. Decision D21 allows naming open specifications and foundation or SIG projects as prior art, never as dependencies.',
     `${table('related-table', ['Project', 'What it describes', 'Layer', 'Overlap with AWP', 'How AWP relates'], rows)}<p class="note">${inline(g.related.verified)}</p>`);
 }
 

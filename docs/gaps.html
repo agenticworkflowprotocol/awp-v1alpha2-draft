@@ -327,8 +327,8 @@ main {
   <a class="brand" href="#top">AWP <span>v1alpha3</span><span class="brand-tail"> draft</span></a>
   <span class="spacer"></span>
   <nav class="pagenav" aria-label="Pages"><a href="index.html">Guide</a><a href="compare.html">Side by side</a><a href="gaps.html" aria-current="page">Open gaps</a></nav>
-  <a class="ext" href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md">Spec v1alpha3</a>
-  <a class="ext" href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/docs/v1alpha3-review-guide.md">Review guide</a>
+  <a class="ext" href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md">Spec v1alpha3</a>
+  <a class="ext" href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/docs/v1alpha3-review-guide.md">Review guide</a>
   <button id="toc-toggle" type="button" aria-expanded="false" aria-controls="toc">Contents</button>
 </header>
 <div class="layout">
@@ -337,7 +337,7 @@ main {
     <section class="intro">
       <h1>Runtime feedback: open gaps in the v1alpha3 draft</h1>
       <p class="lede">What a Kubernetes runtime proof of concept, its extension to a platform with interactive coding agent sessions, and a reference concept still miss in the v1alpha3 draft: 47 gaps, each with what the draft says today on the left, a sketch of the proposal on the right, and what happened in the proof of concept.</p>
-      <p class="notice">These are <strong>proposals from one runtime</strong>, not accepted specification and not part of the draft. The classification, verdicts and targets are agreed between the runtime side and the spec side; the maintainer still decides. AEP-0023 to AEP-0025, the new drafts AEP-0026 (interactive execution) and AEP-0027 (agent engine, numbers to be confirmed) and amendments to AEP-0002, 0005, 0007, 0009, 0013, 0017 and 0021 are written and open for review in spec pull request #23 (not merged), which supersedes #19 and #20; <a href="index.html#inflow">the guide</a> summarises what they add. Everything is compared against the v1alpha3 draft (formerly the v1alpha2 draft, <code>b8a0ee8</code>) as previewed on the spec branch <code>docs/v1alpha3-runtime-feedback</code>: main plus pull request #23, not merged text. Pull request #16 was merged as v1alpha3 by decision D20, v1alpha2 is now the step iteration draft (D19). Gaps the draft already resolves (G01, G07, G08, G40) are on the <a href="compare.html">side-by-side page</a>. Left snippets marked <span class="verified">valid</span> or <span class="verified">rejected by checker</span> were run through the reference checker; proposals are marked <span class="unchecked">not checked</span>, and their field names are sketches unless the source names them.</p>
+      <p class="notice">These are <strong>proposals from one runtime</strong>, not accepted specification and not part of the draft. The classification, verdicts and targets are agreed between the runtime side and the spec side; the maintainer still decides. The AEPs are written and open for review in three stacked spec pull requests (not merged) that replace #19, #20 and #23: #24 (this feedback list, AEP-0024, AEP-0025), #25 (AEP-0023) and #26 (the concepts AEP-0026 interactive execution and AEP-0027 agent engine, numbers to be confirmed, and amendments to AEP-0002, 0005, 0007, 0009 and 0013). Many details of the new concepts are open questions there rather than rules; <a href="index.html#inflow">the guide</a> summarises what they add. Everything is compared against the v1alpha3 draft (formerly the v1alpha2 draft, <code>b8a0ee8</code>) as previewed on the spec branch <code>docs/aep-0026-0027-sessions-engine</code>: main plus pull requests #24 to #26, not merged text. Pull request #16 was merged as v1alpha3 by decision D20, v1alpha2 is now the step iteration draft (D19). Gaps the draft already resolves (G01, G07, G08, G40) are on the <a href="compare.html">side-by-side page</a>. Left snippets marked <span class="verified">valid</span> or <span class="verified">rejected by checker</span> were run through the reference checker; proposals are marked <span class="unchecked">not checked</span>, and their field names are sketches unless the source names them.</p>
       <ul class="yardstick"><li><span class="cat cat-a" title="Category A">A</span><span>Belongs in AWP: what a workflow needs and may do, and what its fields mean, portable across runtimes.</span></li><li><span class="cat cat-b" title="Category B">B</span><span>An AWP rule enforced by the platform: the spec says &quot;MUST enforce or reject&quot; in one sentence and names no mechanism, so the platform picks it (NetworkPolicy, Istio, an egress proxy, an operator).</span></li><li><span class="cat cat-c" title="Category C">C</span><span>Platform only: an implementation detail, at most an informative note.</span></li></ul>
       <div class="summary">
         <p class="counts"><span><span class="cat cat-a" title="Category A">A</span> 28</span><span><span class="cat cat-b" title="Category B">B</span> 9</span><span><span class="cat cat-c" title="Category C">C</span> 2</span><span><span class="cat cat-mixed" title="Category mixed">mixed</span> 8</span></p>
@@ -365,39 +365,39 @@ main {
         <tr><td><a href="#g50">G50</a></td><td><span class="cat cat-b" title="Category B">B</span></td><td>Allowed hosts that resolve to private addresses</td><td>must (security profile)</td><td>AEP-0023: private destinations denied by default after resolution, unless allowed explicitly</td></tr>
         <tr><td><a href="#g51">G51</a></td><td><span class="cat cat-c" title="Category C">C</span></td><td>How network rules are enforced for command steps</td><td>informative</td><td>AEP-0023 informative section; G10 merges in</td></tr>
         <tr><td><a href="#g61">G61</a></td><td><span class="cat cat-b" title="Category B">B</span></td><td>Where model credentials live</td><td>must (security profile)</td><td>AEP-0023 or spec 9, the current draft (not AEP-0008)</td></tr>
-        <tr><td><a href="#g64">G64</a></td><td><span class="cat cat-b" title="Category B">B</span></td><td>Approval authority inside the execution environment</td><td>must (security profile)</td><td>AEP-0023, new section 7.6.1 (PR #23)</td></tr>
-        <tr><td><a href="#g67">G67</a></td><td><span class="cat cat-mixed" title="Category A + B">A + B</span></td><td>The manifest cannot require an isolation class</td><td>should</td><td>AEP-0023, <code>agents[].isolation</code> (PR #23)</td></tr>
-        <tr><td><a href="#g68">G68</a></td><td><span class="cat cat-b" title="Category B">B</span></td><td>Do ceilings reject or cap?</td><td>should</td><td>AEP-0023, new section 7.5.7 (PR #23)</td></tr>
-        <tr><td><a href="#g69">G69</a></td><td><span class="cat cat-b" title="Category B">B</span></td><td>MCP credentials reach the agent</td><td>should (security profile)</td><td>AEP-0023, changes to 5.5.1 (PR #23)</td></tr>
+        <tr><td><a href="#g64">G64</a></td><td><span class="cat cat-b" title="Category B">B</span></td><td>Approval authority inside the execution environment</td><td>must (security profile)</td><td>AEP-0023, credentials and approvals outside the execution environment (PR #25)</td></tr>
+        <tr><td><a href="#g67">G67</a></td><td><span class="cat cat-mixed" title="Category A + B">A + B</span></td><td>The manifest cannot require an isolation class</td><td>should</td><td>AEP-0023, <code>agents[].isolation</code> (PR #25)</td></tr>
+        <tr><td><a href="#g68">G68</a></td><td><span class="cat cat-b" title="Category B">B</span></td><td>Do ceilings reject or cap?</td><td>should</td><td>AEP-0023, section 7.5.10 (PR #25)</td></tr>
+        <tr><td><a href="#g69">G69</a></td><td><span class="cat cat-b" title="Category B">B</span></td><td>MCP credentials reach the agent</td><td>should (security profile)</td><td>AEP-0023, credentials outside the execution environment (PR #25)</td></tr>
       </tbody>
       <tbody>
         <tr class="gap-table-chapter"><th colspan="5" scope="colgroup"><a href="#sessions">Interactive execution</a></th></tr>
-        <tr><td><a href="#g62">G62</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>No interactive execution form</td><td>must</td><td>new AEP-0026 (PR #23, number to be confirmed)</td></tr>
-        <tr><td><a href="#g63">G63</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Only allow or deny, no &quot;ask&quot;</td><td>must</td><td>AEP-0026: autonomy levels, <code>maxAutonomy</code>, <code>confirm</code></td></tr>
+        <tr><td><a href="#g62">G62</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>No interactive execution form</td><td>must</td><td>new AEP-0026, a small concept (PR #26, number to be confirmed)</td></tr>
+        <tr><td><a href="#g63">G63</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Only allow or deny, no &quot;ask&quot;</td><td>must</td><td>AEP-0026: autonomy levels and <code>maxAutonomy</code>; <code>confirm</code> per action is open question 1</td></tr>
         <tr><td><a href="#g73">G73</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Tool sources per execution</td><td>should</td><td>spec 5.5, AEP-0026 <code>toolSources</code></td></tr>
         <tr><td><a href="#g82">G82</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>One model per agent</td><td>should</td><td>AEP-0026 <code>sessions.models</code>, spec 7.4</td></tr>
-        <tr><td><a href="#g84">G84</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Questions of the agent during a session</td><td>should</td><td>AEP-0017 amendment (PR #23)</td></tr>
-        <tr><td><a href="#g85">G85</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>History after a session ends</td><td>should</td><td>AEP-0009 rule 8, AEP-0026 open question 3</td></tr>
+        <tr><td><a href="#g84">G84</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Questions of the agent during a session</td><td>should</td><td>AEP-0026 open question 4 (PR #26)</td></tr>
+        <tr><td><a href="#g85">G85</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>History after a session ends</td><td>should</td><td>open question 5 of AEP-0026; AEP-0009</td></tr>
         <tr><td><a href="#g86">G86</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Actor of a session started by an event</td><td>should</td><td>AEP-0024 with G44 and G48</td></tr>
       </tbody>
       <tbody>
         <tr class="gap-table-chapter"><th colspan="5" scope="colgroup"><a href="#engine">Agent engine and workspace</a></th></tr>
-        <tr><td><a href="#g65">G65</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>No field for the engine of an agent</td><td>must</td><td>new AEP-0027 (PR #23, number to be confirmed)</td></tr>
-        <tr><td><a href="#g66">G66</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Engine steps are dead ends</td><td>should</td><td>AEP-0027 with AEP-0003 and AEP-0018</td></tr>
+        <tr><td><a href="#g65">G65</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>No field for the engine of an agent</td><td>must</td><td>new AEP-0027, a small concept (PR #26, number to be confirmed)</td></tr>
+        <tr><td><a href="#g66">G66</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Engine steps are dead ends</td><td>should</td><td>AEP-0027 open questions 1 and 2, with AEP-0003 and AEP-0018</td></tr>
         <tr><td><a href="#g81">G81</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Repository content as instructions</td><td>must</td><td>AEP-0027 <code>trustRepositoryConfig</code>, spec 12</td></tr>
         <tr><td><a href="#g83">G83</a></td><td><span class="cat cat-mixed" title="Category A + B">A + B</span></td><td>Workspace repositories and their credentials</td><td>should</td><td>AEP-0027, with G12</td></tr>
         <tr><td><a href="#g87">G87</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Shared workspace of several steps</td><td>should</td><td>AEP-0025</td></tr>
       </tbody>
       <tbody>
         <tr class="gap-table-chapter"><th colspan="5" scope="colgroup"><a href="#tools">Tool sources, MCP and audit</a></th></tr>
-        <tr><td><a href="#g70">G70</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Resolving MCP servers from runtime configuration</td><td>should</td><td>AEP-0007 rule 11 (PR #23)</td></tr>
-        <tr><td><a href="#g71">G71</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Tools a server adds after the review</td><td>should</td><td>AEP-0007 rule 12 (PR #23)</td></tr>
-        <tr><td><a href="#g72">G72</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>MCP prompts, resources and server requests</td><td>should</td><td>AEP-0007 rules 7, 9, 10 (PR #23); answers its open question 3</td></tr>
-        <tr><td><a href="#g74">G74</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Resource scope of shell commands</td><td>should</td><td>AEP-0002, new section 7.5.7 (PR #23)</td></tr>
-        <tr><td><a href="#g75">G75</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Reusable prompts outside workflow steps</td><td>minor</td><td>AEP-0005 amendment (PR #23)</td></tr>
-        <tr><td><a href="#g76">G76</a></td><td><span class="cat cat-mixed" title="Category A + B">A + B</span></td><td>Where audit events come from</td><td>should</td><td>AEP-0009 rules 5 and 6 (PR #23)</td></tr>
-        <tr><td><a href="#g77">G77</a></td><td><span class="cat cat-mixed" title="Category A + C">A + C</span></td><td>Data sent to tool servers</td><td>should</td><td>open (5.5, 7.2); AEP-0009 rule 7 in part</td></tr>
-        <tr><td><a href="#g78">G78</a></td><td><span class="cat cat-b" title="Category B">B</span></td><td>Budgets during streaming</td><td>should</td><td>AEP-0013 item 1 (PR #23)</td></tr>
+        <tr><td><a href="#g70">G70</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Resolving MCP servers from runtime configuration</td><td>should</td><td>AEP-0007 open question 6 (PR #26)</td></tr>
+        <tr><td><a href="#g71">G71</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Tools a server adds after the review</td><td>should</td><td>AEP-0007 rule 11 (PR #26)</td></tr>
+        <tr><td><a href="#g72">G72</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>MCP prompts, resources and server requests</td><td>should</td><td>AEP-0007 rules 7, 9, 10 (PR #26); answers its open question 3</td></tr>
+        <tr><td><a href="#g74">G74</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Resource scope of shell commands</td><td>should</td><td>AEP-0002, new section 7.5.7 (PR #26)</td></tr>
+        <tr><td><a href="#g75">G75</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Reusable prompts outside workflow steps</td><td>minor</td><td>AEP-0005 amendment (PR #26)</td></tr>
+        <tr><td><a href="#g76">G76</a></td><td><span class="cat cat-mixed" title="Category A + B">A + B</span></td><td>Where audit events come from</td><td>should</td><td>AEP-0009 rule 5 (PR #26)</td></tr>
+        <tr><td><a href="#g77">G77</a></td><td><span class="cat cat-mixed" title="Category A + C">A + C</span></td><td>Data sent to tool servers</td><td>should</td><td>open (5.5, 7.2); open point in AEP-0009</td></tr>
+        <tr><td><a href="#g78">G78</a></td><td><span class="cat cat-b" title="Category B">B</span></td><td>Budgets during streaming</td><td>should</td><td>AEP-0013 item 1 (PR #26)</td></tr>
         <tr><td><a href="#g79">G79</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Secrets brought by a person at start</td><td>should</td><td>spec 7.9, with G05 and G36</td></tr>
         <tr><td><a href="#g80">G80</a></td><td><span class="cat cat-a" title="Category A">A</span></td><td>Secret scope in a standalone Agent</td><td>minor</td><td>spec 7.9</td></tr>
       </tbody>
@@ -422,12 +422,12 @@ main {
     <h2>Proposed order</h2>
     <p class="chapter-intro">AEP-0023 to AEP-0025 are assigned numbers; the AEP drafts are open for review in the spec pull request below.</p>
   </header>
-  <ol class="order"><li>Now, in the current draft: apply AEP-0004 and amend AEP-0019 for its open question 1 (G48, G57). Small, and it unblocks event runs.</li><li>AEP-0023 &quot;Step isolation: network, credentials and approvals&quot; (G10, G47, G49, G50, G51, G61, and since PR #23 G64, G67, G68, G69). G50, G61 and G64 are security holes, so early.</li><li>AEP-0024 &quot;Event triggers with CloudEvents&quot; (G42 to G46, G54, G56), using AEP-0004 and AEP-0019; G52 through AEP-0021.</li><li>AEP-0025 &quot;State&quot; (G03, G53, G58), once state is wanted in the current draft.</li><li>Into existing AEPs: G52 into AEP-0021, G55 into AEP-0012, G59 and G60 into AEP-0008 (after the current draft), G34 earlier, in the current draft.</li><li>AEP-0026 &quot;Interactive execution&quot; (G62, G63, G73, G82) and AEP-0027 &quot;Agent engine&quot; (G65, G66, G81, G83): new drafts in PR #23, numbers to be confirmed.</li><li>Amendments in PR #23 to existing AEPs: G70 to G72 into AEP-0007, G74 into AEP-0002, G75 into AEP-0005, G76 into AEP-0009, G78 into AEP-0013, G84 into AEP-0017.</li><li>Fix now: the <code>triggers[].source</code> row in AEP-0021 B4 (G54), and state as untrusted input in spec 12 (G58).</li></ol>
-  <p class="pull-requests" id="pull-requests"><strong>Spec pull requests:</strong> <a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/pull/23">#23 (draft): G41 to G87, related work (D21), AEP-0023 to AEP-0027 and amendments; supersedes #19 and #20</a></p>
+  <ol class="order"><li>Now, in the current draft: apply AEP-0004 and amend AEP-0019 for its open question 1 (G48, G57). Small, and it unblocks event runs.</li><li>AEP-0023 &quot;Step isolation: network, credentials and approvals&quot; (G10, G47, G49, G50, G51, G61, and since PR #25 G64, G67, G68, G69). G50, G61 and G64 are security holes, so early.</li><li>AEP-0024 &quot;Event triggers with CloudEvents&quot; (G42 to G46, G54, G56), using AEP-0004 and AEP-0019; G52 through AEP-0021.</li><li>AEP-0025 &quot;State&quot; (G03, G53, G58), once state is wanted in the current draft.</li><li>Into existing AEPs: G52 into AEP-0021, G55 into AEP-0012, G59 and G60 into AEP-0008 (after the current draft), G34 earlier, in the current draft.</li><li>AEP-0026 &quot;Interactive execution&quot; (G62, G63, G73, G82) and AEP-0027 &quot;Agent engine&quot; (G65, G81): small concepts in PR #26, numbers to be confirmed; G66, G83 to G87 are open questions there.</li><li>Amendments in PR #26 to existing AEPs: G71 and G72 into AEP-0007, G74 into AEP-0002, G75 into AEP-0005, G76 into AEP-0009, G78 into AEP-0013. G70 and G77 are open questions.</li><li>Fix now: the <code>triggers[].source</code> row in AEP-0021 B4 (G54), and state as untrusted input in spec 12 (G58).</li></ol>
+  <p class="pull-requests" id="pull-requests"><strong>Spec pull requests:</strong> <a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/pull/24">#24 (draft): runtime feedback G41 to G87, related work (D21), AEP-0024, AEP-0025</a>, <a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/pull/25">#25 (draft, on #24): AEP-0023 step isolation</a>, <a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/pull/26">#26 (draft, on #25): AEP-0026 and AEP-0027 as concepts, amendments to AEP-0002, 0005, 0007, 0009, 0013; #19, #20 and #23 are superseded</a></p>
 </section>
 <section class="chapter" id="events">
   <header class="chapter-head">
-    <p class="eyebrow"><span class="chip chip-concept">Proposal</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0004-event-references.md">AEP-0004</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0019-workflow-run-and-status.md">AEP-0019</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0024-event-triggers.md">AEP-0024 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0021-extension-model.md">AEP-0021</a></p>
+    <p class="eyebrow"><span class="chip chip-concept">Proposal</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0004-event-references.md">AEP-0004</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0019-workflow-run-and-status.md">AEP-0019</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0024-event-triggers.md">AEP-0024 (PR #24)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0021-extension-model.md">AEP-0021</a></p>
     <h2>Events and triggers</h2>
     <p class="chapter-intro">Event triggers exist in spec 5.2, but the event itself does not reach the execution, and filters, duplicates, actors and run objects for events are undefined. The proof of concept starts runs from chat mentions, webhooks and MQTT through an event router.</p>
   </header>
@@ -453,7 +453,7 @@ main {
     <div><h4>Why: in the proof of concept</h4><p>Chat mentions, webhook payloads and MQTT messages started executions in the proof of concept. With no event context, it maps event fields to workflow inputs, which hides that the value comes from an external sender.</p></div>
     <div><h4>Status against the draft</h4><p>Decided by D7: events are not mapped to inputs. AEP-0004 (Review) replaces the input mapping but is not applied to the spec yet. The proof of concept still maps to inputs (concept E22).</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0004-event-references.md">AEP-0004</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#39-expressions">Spec 3.9</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#52-triggers">Spec 5.2</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0004-event-references.md">AEP-0004</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#39-expressions">Spec 3.9</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#52-triggers">Spec 5.2</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
 </article>
 <article class="example gap" id="g42">
   <header class="example-head">
@@ -475,9 +475,9 @@ main {
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>The concept filters chat events with the key <code>data.user</code>. Because its meaning is open, the manifest filter is only descriptive there and the event router does the real filtering.</p></div>
-    <div><h4>Status against the draft</h4><p>Open. Equality and AND are the portable floor; richer conditions stay in a runtime trigger object (G52) and may only narrow the filter.</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0024 (PR #24). Equality and AND are the portable floor; richer conditions stay in a runtime trigger object (G52) and may only narrow the filter.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#52-triggers">Spec 5.2</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0021-extension-model.md">AEP-0021</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#52-triggers">Spec 5.2</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0021-extension-model.md">AEP-0021</a></footer>
 </article>
 <article class="example gap" id="g43">
   <header class="example-head">
@@ -499,9 +499,9 @@ main {
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>The proof of concept rejected a real duplicate as <code>DuplicateEvent</code>. Concurrency control for event-triggered runs is still missing there.</p></div>
-    <div><h4>Status against the draft</h4><p>Open. The manifest fields are category A; deduplication is category B: the spec states the rule, the platform implements it.</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0024 (PR #24), deduplication per workflow. The manifest fields are category A; deduplication is category B: the spec states the rule, the platform implements it.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#52-triggers">Spec 5.2</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#52-triggers">Spec 5.2</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
 </article>
 <article class="example gap" id="g44">
   <header class="example-head">
@@ -523,9 +523,9 @@ main {
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>The trust chain in the proof of concept is only the broker ACLs: only the bridge may publish, and the event carries no signature. The bridge attests &quot;message from slauger&quot;, but the run records the actor <code>system</code>.</p></div>
-    <div><h4>Status against the draft</h4><p>Open, raised from should to must. Spec 5.2 gives every event start the actor type <code>system</code>, which cannot hold together with an attested person.</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0024 (PR #24), raised from should to must; the attribute that carries the attested actor is open question 4. Spec 5.2 gives every event start the actor type <code>system</code>, which cannot hold together with an attested person.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#52-triggers">Spec 5.2</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#108-kind-workflowrun">Spec 10.8</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0019-workflow-run-and-status.md">AEP-0019</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#52-triggers">Spec 5.2</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#108-kind-workflowrun">Spec 10.8</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0019-workflow-run-and-status.md">AEP-0019</a></footer>
 </article>
 <article class="example gap" id="g48">
   <header class="example-head">
@@ -549,7 +549,7 @@ main {
     <div><h4>Why: in the proof of concept</h4><p>In the proof of concept an Argo Events sensor creates runs with <code>spec.trigger.type: event</code>, which is non-conforming; the runtime therefore keeps its own run kind instead of the AWP <code>WorkflowRun</code>.</p></div>
     <div><h4>Status against the draft</h4><p>Open, merged with G57 as AEP-0019 open question 1. The runtime also plans to create event runs itself from a generated trigger object (G52); the ingress origin stays relevant for routers outside the runtime.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#108-kind-workflowrun">Spec 10.8</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0019-workflow-run-and-status.md">AEP-0019</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#108-kind-workflowrun">Spec 10.8</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0019-workflow-run-and-status.md">AEP-0019</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
 </article>
 <article class="example gap" id="g52">
   <header class="example-head">
@@ -573,7 +573,7 @@ main {
     <div><h4>Why: in the proof of concept</h4><p>The proof of concept routes events with an Argo Events sensor written by hand. Nothing ties it to the trigger entry it serves, and it reports no status.</p></div>
     <div><h4>Status against the draft</h4><p>Concept. The object stays implementation-specific; the attachment rules (<code>targetRefs</code> with the trigger index, may only narrow, <code>Accepted</code>) are AWP rules.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0021-extension-model.md">AEP-0021</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0021-extension-model.md">AEP-0021</a></footer>
 </article>
 <article class="example gap" id="g54">
   <header class="example-head">
@@ -597,7 +597,7 @@ main {
     <div><h4>Why: in the proof of concept</h4><p>The proof of concept used <code>source</code> as the name of its event source adapter, while the events it receives carry a CloudEvents <code>source</code> of their own. Both readings are plausible from the draft.</p></div>
     <div><h4>Status against the draft</h4><p>Contradiction confirmed in AEP-0021: B4 lists <code>triggers[].source</code> as a domain-prefixed name, while events carry a CloudEvents <code>source</code>. Agreed: <code>source</code> is the CloudEvents attribute, and the row leaves B4.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#52-triggers">Spec 5.2</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0004-event-references.md">AEP-0004</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0021-extension-model.md">AEP-0021</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#52-triggers">Spec 5.2</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0004-event-references.md">AEP-0004</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0021-extension-model.md">AEP-0021</a></footer>
 </article>
 <article class="example gap" id="g56">
   <header class="example-head">
@@ -619,9 +619,9 @@ main {
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>The Argo Events MQTT event source used by the proof of concept subscribes with QoS 0, which silently downgrades delivery to at most once.</p></div>
-    <div><h4>Status against the draft</h4><p>Open. The other side of G43: at-least-once delivery needs deduplication, at-most-once loses events.</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0024 (PR #24), conformance statement. The other side of G43: at-least-once delivery needs deduplication, at-most-once loses events.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#113-conformance-statement">Spec 11.3</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#113-conformance-statement">Spec 11.3</a></footer>
 </article>
 <article class="example gap" id="g57">
   <header class="example-head">
@@ -645,14 +645,14 @@ main {
     <div><h4>Why: in the proof of concept</h4><p>Found while writing the reference concept: an event-only workflow such as the chat workflow cannot be started with a sample event in a conforming way.</p></div>
     <div><h4>Status against the draft</h4><p>Open, merged with G48: the same <code>spec.event</code>, with the origin replay.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0004-event-references.md">AEP-0004</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0019-workflow-run-and-status.md">AEP-0019</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0004-event-references.md">AEP-0004</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0019-workflow-run-and-status.md">AEP-0019</a></footer>
 </article>
 </section>
 <section class="chapter" id="isolation">
   <header class="chapter-head">
-    <p class="eyebrow"><span class="chip chip-concept">Proposal</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0023-step-isolation.md">AEP-0023 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#75-tool-governance-permissions">Spec 7.5</a></p>
+    <p class="eyebrow"><span class="chip chip-concept">Proposal</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0023-step-isolation.md">AEP-0023 (PR #25)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#75-tool-governance-permissions">Spec 7.5</a></p>
     <h2>Step isolation: network, credentials and approvals</h2>
-    <p class="chapter-intro">What <code>permissions.network</code> means and how its host list is written, how a platform enforces it, where model credentials live, and since PR #23 who approves, which isolation class a step needs, and how ceilings combine. Covered by AEP-0023, together with G10. The common question: does something live inside or outside the execution environment?</p>
+    <p class="chapter-intro">What <code>permissions.network</code> means and how its host list is written, how a platform enforces it, where model credentials live, and since PR #25 who approves, which isolation class a step needs, and that ceilings reject. Covered by AEP-0023, together with G10. The common question: does something live inside or outside the execution environment?</p>
   </header>
   <article class="example gap" id="g47">
   <header class="example-head">
@@ -669,14 +669,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span><span class="tok-key">permissions</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">default</span>:<span class="tok-value"> deny</span></span><span>  <span class="tok-key">tools</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">shell.execute</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">allow</span>:<span class="tok-value"> true</span></span><span class="line-add">  <span class="tok-key">network</span>:<span class="tok-value">             </span><span class="tok-comment"> # a requirement the runtime enforces</span></span><span class="line-add">    <span class="tok-key">egress</span>:<span class="tok-value"> deny       </span><span class="tok-comment"> # default under the security profile?</span></span><span class="line-add">    <span class="tok-key">allowHosts</span>:<span class="tok-value"></span></span><span class="line-add">      - api.example.com</span><span><span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> fetch</span></span><span>    <span class="tok-key">type</span>:<span class="tok-value"> command</span></span><span>    <span class="tok-key">command</span>:<span class="tok-value"> ./fetch.sh</span></span><span class="line-add"><span class="tok-comment"># The deployment MAY restrict further. If its ceiling</span></span><span class="line-add"><span class="tok-comment"># is narrower, or the rule cannot be enforced for a</span></span><span class="line-add"><span class="tok-comment"># step type: reject before any execution.</span></span></code></pre>
+  <pre><code><span><span class="tok-key">permissions</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">default</span>:<span class="tok-value"> deny</span></span><span>  <span class="tok-key">tools</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">shell.execute</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">allow</span>:<span class="tok-value"> true</span></span><span class="line-add">  <span class="tok-key">network</span>:<span class="tok-value">             </span><span class="tok-comment"> # a requirement the runtime enforces</span></span><span class="line-add">    <span class="tok-key">egress</span>:<span class="tok-value"> deny       </span><span class="tok-comment"> # default under security (AEP-0023)</span></span><span class="line-add">    <span class="tok-key">allowTo</span>:<span class="tok-value"></span></span><span class="line-add">      <span class="tok-dash">- </span><span class="tok-key">host</span>:<span class="tok-value"> api.example.com</span></span><span class="line-add">        <span class="tok-key">ports</span>:<span class="tok-value"> [{port: 443}]</span></span><span><span class="tok-key">workflow</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> fetch</span></span><span>    <span class="tok-key">type</span>:<span class="tok-value"> command</span></span><span>    <span class="tok-key">command</span>:<span class="tok-value"> ./fetch.sh</span></span><span class="line-add"><span class="tok-comment"># AEP-0023 7.5.9/7.5.10: a rule the runtime cannot</span></span><span class="line-add"><span class="tok-comment"># enforce for a step type, or a destination above the</span></span><span class="line-add"><span class="tok-comment"># platform ceiling -&gt; reject before any execution.</span></span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>The proof of concept cannot restrict command-step egress by host name without a proxy and rejects such manifests. Namespaces that deny egress by default do not give what a manifest without <code>network</code> claims, so the concept writes <code>network</code> into every manifest.</p></div>
-    <div><h4>Status against the draft</h4><p>Open. The rule &quot;reject if the platform cannot enforce it&quot; from G51 belongs here.</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0023 (PR #25): enforce or reject (7.5.9), ceilings reject (7.5.10), <code>egress: deny</code> by default under security when <code>permissions</code> exist.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#75-tool-governance-permissions">Spec 7.5</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#562-command-steps">Spec 5.6.2</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0023-step-isolation.md">AEP-0023 (PR #25)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#75-tool-governance-permissions">Spec 7.5</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#562-command-steps">Spec 5.6.2</a></footer>
 </article>
 <article class="example gap" id="g49">
   <header class="example-head">
@@ -693,14 +693,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span><span class="tok-key">network</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">egress</span>:<span class="tok-value"> deny</span></span><span>  <span class="tok-key">allowHosts</span>:<span class="tok-value"></span></span><span class="line-add">    - api.example.com      <span class="tok-comment"> # exact host</span></span><span class="line-add">    - &quot;*.example.org&quot;      <span class="tok-comment"> # subdomains</span></span><span class="line-add">    - api.example.com:8443 <span class="tok-comment"> # optional port</span></span><span class="line-add"><span class="tok-comment"># Whether IP literals and CIDRs are allowed:</span></span><span class="line-add"><span class="tok-comment"># to be decided.</span></span></code></pre>
+  <pre><code><span><span class="tok-key">network</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">egress</span>:<span class="tok-value"> deny</span></span><span class="line-add">  <span class="tok-key">allowTo</span>:<span class="tok-value">                 </span><span class="tok-comment"> # AEP-0023 7.5.8, replaces allowHosts</span></span><span class="line-add">    <span class="tok-dash">- </span><span class="tok-key">host</span>:<span class="tok-value"> api.example.com</span><span class="tok-comment"> # exact host</span></span><span class="line-add">      <span class="tok-key">ports</span>:<span class="tok-value"></span></span><span class="line-add">        <span class="tok-dash">- </span><span class="tok-key">port</span>:<span class="tok-value"> 8443</span></span><span class="line-add">    <span class="tok-dash">- </span><span class="tok-key">host</span>:<span class="tok-value"> &quot;*.example.org&quot;</span><span class="tok-comment"> # subdomains, not example.org</span></span><span class="line-add">    <span class="tok-dash">- </span><span class="tok-key">cidr</span>:<span class="tok-value"> 10.0.0.0/8     </span><span class="tok-comment"> # ranges; a single address is /32</span></span><span class="line-add">      <span class="tok-key">ports</span>:<span class="tok-value"></span></span><span class="line-add">        <span class="tok-dash">- </span><span class="tok-key">port</span>:<span class="tok-value"> 8000</span></span><span class="line-add">          <span class="tok-key">endPort</span>:<span class="tok-value"> 8080</span></span><span class="line-add"><span class="tok-comment"># Objects as in network policy egress rules: no port</span></span><span class="line-add"><span class="tok-comment"># in a string, so IPv6 with ports is unambiguous.</span></span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>The proof of concept enforces <code>allowHosts</code> with Squid and uses its notation <code>.example.org</code> and a CIDR mode. The concept marks both as runtime-specific until the spec defines a syntax.</p></div>
-    <div><h4>Status against the draft</h4><p>Open.</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0023 (PR #25), revised after review from a string syntax to <code>allowTo</code> objects.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#75-tool-governance-permissions">Spec 7.5</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0023-step-isolation.md">AEP-0023 (PR #25)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#75-tool-governance-permissions">Spec 7.5</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
 </article>
 <article class="example gap" id="g50">
   <header class="example-head">
@@ -717,14 +717,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span><span class="tok-key">network</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">egress</span>:<span class="tok-value"> deny</span></span><span>  <span class="tok-key">allowHosts</span>:<span class="tok-value"></span></span><span class="line-add">    - news.example.com     <span class="tok-comment"> # public: allowed</span></span><span class="line-add">    - wiki.internal.example<span class="tok-comment"> # internal service: allowed</span></span><span class="line-add">                           <span class="tok-comment"> # explicitly, if the platform</span></span><span class="line-add">                           <span class="tok-comment"> # ceiling (G47) permits it</span></span><span class="line-add"><span class="tok-comment"># Security profile: after DNS resolution, loopback,</span></span><span class="line-add"><span class="tok-comment"># private, link-local and CGNAT destinations are</span></span><span class="line-add"><span class="tok-comment"># denied by default, unless the manifest allows them</span></span><span class="line-add"><span class="tok-comment"># explicitly (address or host, syntax: G49) and the</span></span><span class="line-add"><span class="tok-comment"># platform ceiling permits it.</span></span></code></pre>
+  <pre><code><span><span class="tok-key">network</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">egress</span>:<span class="tok-value"> deny</span></span><span class="line-add">  <span class="tok-key">allowTo</span>:<span class="tok-value"></span></span><span class="line-add">    <span class="tok-dash">- </span><span class="tok-key">host</span>:<span class="tok-value"> news.example.com </span><span class="tok-comment"> # public; if it resolves to an</span></span><span class="line-add">                             <span class="tok-comment"> # internal address: denied</span></span><span class="line-add">    <span class="tok-dash">- </span><span class="tok-key">cidr</span>:<span class="tok-value"> 10.20.0.0/16     </span><span class="tok-comment"> # internal service: only a cidr</span></span><span class="line-add">                             <span class="tok-comment"> # entry opens it, and only if</span></span><span class="line-add">                             <span class="tok-comment"> # the platform ceiling allows it</span></span><span class="line-add"><span class="tok-comment"># Security profile (AEP-0023 7.5.9): loopback, private,</span></span><span class="line-add"><span class="tok-comment"># link-local and shared addresses are denied unless a</span></span><span class="line-add"><span class="tok-comment"># cidr entry contains them; a host entry never does.</span></span><span class="line-add"><span class="tok-comment"># The check applies to the address actually connected</span></span><span class="line-add"><span class="tok-comment"># to. Normalising IPv4-mapped IPv6, NAT64 and 6to4 is</span></span><span class="line-add"><span class="tok-comment"># informative implementer guidance.</span></span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>The tool proxy of the proof of concept had exactly this hole. It now checks the resolved address at connect time, which covers DNS rebinding by construction.</p></div>
-    <div><h4>Status against the draft</h4><p>Open, for the security profile. Not a blanket ban: agents sometimes need internal services, so an explicit allow in the manifest, within the platform ceiling, still works.</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0023 (PR #25). Not a blanket ban: a <code>cidr</code> entry within the platform ceiling opens an internal service. Open question 2 there: a <code>host</code> entry marked as internal for services addressed by name.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#75-tool-governance-permissions">Spec 7.5</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#12-security-considerations">Spec 12</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0023-step-isolation.md">AEP-0023 (PR #25)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#75-tool-governance-permissions">Spec 7.5</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#12-security-considerations">Spec 12</a></footer>
 </article>
 <article class="example gap" id="g51">
   <header class="example-head">
@@ -741,14 +741,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span><span class="tok-comment"># Informative: one conforming enforcement.</span></span><span><span class="tok-comment"># A per-workload egress proxy with an allowlist</span></span><span><span class="tok-comment"># derived from allowHosts, and a network policy</span></span><span><span class="tok-comment"># that allows only that proxy:</span></span><span><span class="tok-key">apiVersion</span>:<span class="tok-value"> networking.k8s.io/v1</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> NetworkPolicy</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> fetch-egress</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">podSelector</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">matchLabels</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">app</span>:<span class="tok-value"> fetch-step</span></span><span>  <span class="tok-key">policyTypes</span>:<span class="tok-value"> [Egress]</span></span><span>  <span class="tok-key">egress</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">to</span>:<span class="tok-value"></span></span><span>        <span class="tok-dash">- </span><span class="tok-key">podSelector</span>:<span class="tok-value"></span></span><span>            <span class="tok-key">matchLabels</span>:<span class="tok-value"></span></span><span>              <span class="tok-key">app</span>:<span class="tok-value"> egress-proxy</span></span><span><span class="tok-comment"># A runtime that cannot enforce a rule rejects</span></span><span><span class="tok-comment"># the workflow.</span></span></code></pre>
+  <pre><code><span><span class="tok-comment"># Informative: one conforming enforcement.</span></span><span><span class="tok-comment"># A per-workload egress proxy with an allowlist</span></span><span><span class="tok-comment"># derived from allowTo host entries, and a network policy</span></span><span><span class="tok-comment"># that allows only that proxy:</span></span><span><span class="tok-key">apiVersion</span>:<span class="tok-value"> networking.k8s.io/v1</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> NetworkPolicy</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> fetch-egress</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">podSelector</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">matchLabels</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">app</span>:<span class="tok-value"> fetch-step</span></span><span>  <span class="tok-key">policyTypes</span>:<span class="tok-value"> [Egress]</span></span><span>  <span class="tok-key">egress</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">to</span>:<span class="tok-value"></span></span><span>        <span class="tok-dash">- </span><span class="tok-key">podSelector</span>:<span class="tok-value"></span></span><span>            <span class="tok-key">matchLabels</span>:<span class="tok-value"></span></span><span>              <span class="tok-key">app</span>:<span class="tok-value"> egress-proxy</span></span><span><span class="tok-comment"># A runtime that cannot enforce a rule rejects</span></span><span><span class="tok-comment"># the workflow.</span></span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>The proof of concept runs an egress proxy per agent workload, fed from <code>allowHosts</code>, and a NetworkPolicy that only allows that proxy. Without the proxy it rejects host-based rules for command steps (G47).</p></div>
-    <div><h4>Status against the draft</h4><p>Open. Informative only; G10 merges in, and the rejection rule belongs to G47.</p></div>
+    <div><h4>Status against the draft</h4><p>Informative implementer guidance in AEP-0023 (PR #25); G10 merges in, the rejection rule is 7.5.9.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#562-command-steps">Spec 5.6.2</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#75-tool-governance-permissions">Spec 7.5</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#562-command-steps">Spec 5.6.2</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#75-tool-governance-permissions">Spec 7.5</a></footer>
 </article>
 <article class="example gap" id="g61">
   <header class="example-head">
@@ -770,9 +770,9 @@ main {
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>The proof of concept enforces budgets in a model proxy. Whether the key stays there or reaches the step is not covered by the draft, and the proof of concept already found a provider key leak through a model <code>baseURL</code> in its binding.</p></div>
-    <div><h4>Status against the draft</h4><p>Open, for the security profile. Not AEP-0008: its non-goals exclude credentials.</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0023 (PR #25), together with tool server credentials (G69); the proxy design is informative implementer guidance. Not AEP-0008: its non-goals exclude credentials.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#543-model-object">Spec 5.4.3</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#79-secrets">Spec 7.9</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0023-step-isolation.md">AEP-0023 (PR #25)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#543-model-object">Spec 5.4.3</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#79-secrets">Spec 7.9</a></footer>
 </article>
 <article class="example gap" id="g64">
   <header class="example-head">
@@ -780,7 +780,7 @@ main {
     <h3>Approval authority inside the execution environment</h3>
     <span class="cat cat-b" title="Category B">B</span>
   </header>
-  <dl class="verdict"><div><dt>Verdict</dt><dd>must (security profile)</dd></div><div><dt>Target</dt><dd>AEP-0023, new section 7.6.1 (PR #23)</dd></div></dl>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>must (security profile)</dd></div><div><dt>Target</dt><dd>AEP-0023, credentials and approvals outside the execution environment (PR #25)</dd></div></dl>
   <p class="problem">Confirmations and approvals are only worth something if the step cannot give them itself. The draft does not say where the component that asks for and records a decision runs.</p>
   <div class="panes">
     <figure class="pane pane-left">
@@ -789,14 +789,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span class="line-add">AEP-0023 7.6.1 (proposed, security profile):</span><span> </span><span class="line-add">- The component that decides whether an</span><span class="line-add">  action may run, and records approvals and</span><span class="line-add">  confirmations, runs OUTSIDE the execution</span><span class="line-add">  environment.</span><span class="line-add">- It accepts a decision only from an</span><span class="line-add">  authenticated identity, over a channel the</span><span class="line-add">  environment cannot reach.</span><span class="line-add">- Nothing that carries or proves a decision</span><span class="line-add">  (passwords, tokens, signing keys, pending</span><span class="line-add">  requests) is readable or writable inside.</span><span class="line-add">- The engine's own permission system may</span><span class="line-add">  enforce in addition, never alone.</span></code></pre>
+  <pre><code><span class="line-add">AEP-0023 (proposed, security profile):</span><span> </span><span class="line-add">- Approvals and confirmations are decided</span><span class="line-add">  OUTSIDE the execution environment, from an</span><span class="line-add">  authenticated identity, over a channel the</span><span class="line-add">  environment cannot reach; nothing that</span><span class="line-add">  carries a decision is readable inside.</span><span class="line-add">- What LEAVES the environment is enforced</span><span class="line-add">  outside: model calls, tool server calls,</span><span class="line-add">  network, pushes, approvals.</span><span class="line-add">- What stays inside (local commands, file</span><span class="line-add">  changes) is bounded by the isolation</span><span class="line-add">  class; the engine's own permission system</span><span class="line-add">  is an additional check, not enforcement.</span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Shown in the proof of concept: the coding agent and its commands shared a user ID, a command read the agent server password from the process environment, and a process in the sandbox sent a prompt in autonomous mode and answered every permission request itself. The attack failed only after the decision moved to a separate container with its own process namespace and signed grants; the same command through the console asked once and ran after &quot;allow once&quot;.</p></div>
-    <div><h4>Status against the draft</h4><p>Drafted in AEP-0023 (PR #23). Open question 4 there: here or its own AEP, since it also applies to approval steps without a sandbox.</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0023 (PR #25). Open questions 4 and 5 there: its own AEP, since it also applies to approval steps without a sandbox; separation of duties against the authenticated identity. The decision component is informative implementer guidance.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0023-step-isolation.md">AEP-0023 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#76-human-approval">Spec 7.6</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/docs/runtime-feedback.md#10-from-interactive-sessions-and-a-coding-agent-engine">runtime-feedback.md section 10 (PR #23)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0023-step-isolation.md">AEP-0023 (PR #25)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#76-human-approval">Spec 7.6</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/docs/runtime-feedback.md#10-from-interactive-sessions-and-a-coding-agent-engine">runtime-feedback.md section 10 (PR #24)</a></footer>
 </article>
 <article class="example gap" id="g67">
   <header class="example-head">
@@ -804,7 +804,7 @@ main {
     <h3>The manifest cannot require an isolation class</h3>
     <span class="cat cat-mixed" title="Category A + B">A + B</span>
   </header>
-  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0023, <code>agents[].isolation</code> (PR #23)</dd></div></dl>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0023, <code>agents[].isolation</code> (PR #25)</dd></div></dl>
   <p class="problem">An agent that runs commands on untrusted repositories needs more than a container (a user-space kernel or a virtual machine). The manifest cannot ask for it; the choice sits in a runtime binding that reviewers do not see.</p>
   <div class="panes">
     <figure class="pane pane-left">
@@ -813,14 +813,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span><span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> reviewer</span></span><span>    <span class="tok-key">isolation</span>:<span class="tok-value"> sandbox  </span><span class="tok-comment"> # process &lt; container &lt; sandbox &lt; vm</span></span><span>    <span class="tok-key">model</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">provider</span>:<span class="tok-value"> example-provider</span></span><span>      <span class="tok-key">name</span>:<span class="tok-value"> example-model</span></span><span><span class="tok-comment"># A runtime that offers only containers rejects</span></span><span><span class="tok-comment"># this agent before any step runs. Which mechanism</span></span><span><span class="tok-comment"># provides &quot;sandbox&quot; (gVisor, ...) is platform</span></span><span><span class="tok-comment"># configuration; the conformance statement says.</span></span></code></pre>
+  <pre><code><span><span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> reviewer</span></span><span>    <span class="tok-key">isolation</span>:<span class="tok-value"> sandbox  </span><span class="tok-comment"> # process &lt; container &lt; sandbox &lt; vm</span></span><span>    <span class="tok-key">model</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">provider</span>:<span class="tok-value"> example-provider</span></span><span>      <span class="tok-key">name</span>:<span class="tok-value"> example-model</span></span><span><span class="tok-comment"># A minimum: a runtime runs it with at least this</span></span><span><span class="tok-comment"># class or rejects the manifest; a stronger class is</span></span><span><span class="tok-comment"># no deviation. Which mechanism provides &quot;sandbox&quot;</span></span><span><span class="tok-comment"># (gVisor, ...) is platform configuration.</span></span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>The proof of concept keeps the runtime class in a sandbox profile referenced from its binding, outside the reviewed manifest. The mapping is implemented; only <code>container</code> is deployed, so no stronger class is shown.</p></div>
-    <div><h4>Status against the draft</h4><p>Drafted in AEP-0023 (PR #23). Open question 3 there: four classes, and whether <code>sandbox</code> should be defined by a property instead of an example.</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0023 (PR #25). Open question 3 there: four classes, and whether <code>sandbox</code> should be defined by a property instead of an example.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0023-step-isolation.md">AEP-0023 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/docs/runtime-feedback.md#10-from-interactive-sessions-and-a-coding-agent-engine">runtime-feedback.md section 10 (PR #23)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0023-step-isolation.md">AEP-0023 (PR #25)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/docs/runtime-feedback.md#10-from-interactive-sessions-and-a-coding-agent-engine">runtime-feedback.md section 10 (PR #24)</a></footer>
 </article>
 <article class="example gap" id="g68">
   <header class="example-head">
@@ -828,23 +828,23 @@ main {
     <h3>Do ceilings reject or cap?</h3>
     <span class="cat cat-b" title="Category B">B</span>
   </header>
-  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0023, new section 7.5.7 (PR #23)</dd></div></dl>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0023, section 7.5.10 (PR #25)</dd></div></dl>
   <p class="problem">AEP-0023 defines a network ceiling but not the rule for other ceilings. A platform limits models, tool servers, autonomy, isolation and cost per tenant; whether a manifest that asks for more is rejected or silently reduced is undefined.</p>
   <div class="panes">
     <figure class="pane pane-left">
-  <figcaption><span class="pane-label">AEP-0023 before PR #23</span></figcaption>
+  <figcaption><span class="pane-label">AEP-0023 as first drafted (PR #19)</span></figcaption>
   <pre><code><span>7.5.6: effective network = manifest</span><span>intersected with the platform ceiling;</span><span>reject if the manifest needs more.</span><span> </span><span>(Models, tool servers, autonomy,</span><span>isolation and budgets: not covered.)</span></code></pre>
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span class="line-add">AEP-0023 7.5.7 (proposed):</span><span> </span><span class="line-add">- Permissions, models, tool servers,</span><span class="line-add">  autonomy, isolation: intersection;</span><span class="line-add">  if the manifest REQUIRES more than the</span><span class="line-add">  ceiling allows -&gt; reject before start,</span><span class="line-add">  with a reason naming the rule.</span><span class="line-add">- Budgets: the ceiling CAPS the manifest;</span><span class="line-add">  a manifest without a limit gets the</span><span class="line-add">  ceiling; never rejected for a higher</span><span class="line-add">  budget alone.</span><span class="line-add">- Report the effect where the author can</span><span class="line-add">  see it (status, validation).</span></code></pre>
+  <pre><code><span class="line-add">AEP-0023 7.5.10 (proposed):</span><span> </span><span class="line-add">A ceiling never changes a manifest.</span><span class="line-add">- Anything above a ceiling (model, tool</span><span class="line-add">  server, destination, autonomy, isolation</span><span class="line-add">  the platform cannot provide, budget)</span><span class="line-add">  -&gt; reject before start, ceilingExceeded.</span><span class="line-add">- Under a budget ceiling the manifest MUST</span><span class="line-add">  declare the limit; missing -&gt; reject.</span><span class="line-add">- A stronger isolation class than required</span><span class="line-add">  is no deviation.</span><span class="line-add">- Spec 5.7 &quot;MAY enforce stricter limits&quot;</span><span class="line-add">  becomes &quot;MUST reject&quot;.</span></code></pre>
 </figure>
   </div>
   <div class="explain">
-    <div><h4>Why: in the proof of concept</h4><p>Shown in the proof of concept: models, hosts and MCP servers outside the tenant ceiling make the agent invalid in that tenant, while a cost limit above the ceiling is lowered to it and an agent without a limit gets the tenant budget.</p></div>
-    <div><h4>Status against the draft</h4><p>Drafted in AEP-0023 (PR #23).</p></div>
+    <div><h4>Why: in the proof of concept</h4><p>Partly shown in the proof of concept: models, hosts and MCP servers outside the tenant ceiling make the agent invalid in that tenant. A cost limit above the ceiling is still lowered to it, unlike the revised proposal: silent changes make the run differ from the reviewed manifest.</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0023 (PR #25), revised after review: reject everything, budgets included. Open question 1 there: how authors see ceilings before they apply.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0023-step-isolation.md">AEP-0023 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/docs/runtime-feedback.md#10-from-interactive-sessions-and-a-coding-agent-engine">runtime-feedback.md section 10 (PR #23)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0023-step-isolation.md">AEP-0023 (PR #25)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/docs/runtime-feedback.md#10-from-interactive-sessions-and-a-coding-agent-engine">runtime-feedback.md section 10 (PR #24)</a></footer>
 </article>
 <article class="example gap" id="g69">
   <header class="example-head">
@@ -852,7 +852,7 @@ main {
     <h3>MCP credentials reach the agent</h3>
     <span class="cat cat-b" title="Category B">B</span>
   </header>
-  <dl class="verdict"><div><dt>Verdict</dt><dd>should (security profile)</dd></div><div><dt>Target</dt><dd>AEP-0023, changes to 5.5.1 (PR #23)</dd></div></dl>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>should (security profile)</dd></div><div><dt>Target</dt><dd>AEP-0023, credentials outside the execution environment (PR #25)</dd></div></dl>
   <p class="problem"><code>auth.secretRef</code> of an MCP server hands the credential to the MCP client. When the client is a coding agent inside the sandbox, the agent and every command it runs can read the credential.</p>
   <div class="panes">
     <figure class="pane pane-left">
@@ -861,21 +861,21 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span class="line-add">AEP-0023 5.5.1 (proposed, security profile):</span><span class="line-add"> </span><span class="line-add">- Tool server credentials MUST NOT be</span><span class="line-add">  visible to the step (like model</span><span class="line-add">  credentials, G61).</span><span class="line-add">- The step reaches the server through a</span><span class="line-add">  component outside it that adds the</span><span class="line-add">  credential and authenticates the step</span><span class="line-add">  with a short-lived ticket per execution</span><span class="line-add">  or attempt.</span><span class="line-add">- That component also enforces which tools</span><span class="line-add">  are listed and which calls are allowed.</span><span class="line-add">- auth MAY be satisfied by the runtime</span><span class="line-add">  (catalog, binding) instead of a secret.</span></code></pre>
+  <pre><code><span class="line-add">AEP-0023 (proposed, security profile):</span><span class="line-add"> </span><span class="line-add">- Model and tool server credentials MUST NOT</span><span class="line-add">  be visible to a step (environment, files,</span><span class="line-add">  arguments).</span><span class="line-add">- auth of an MCP server MAY be satisfied by</span><span class="line-add">  the runtime instead of a manifest secret.</span><span class="line-add"> </span><span class="line-add">Implementer guidance (informative): a gateway</span><span class="line-add">outside the step adds the credential,</span><span class="line-add">authenticates the step with a short-lived</span><span class="line-add">ticket and enforces tool permissions.</span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Shown in the proof of concept: a static analysis server over MCP is reachable only through the MCP gateway of the runtime (network policy); the gateway accepts a session ticket or a step ticket, adds the credential, hides uncatalogued tools, counts calls against the budget and audits arguments and results.</p></div>
-    <div><h4>Status against the draft</h4><p>Drafted in AEP-0023 (PR #23); answers its open question 2 (MCP over streamable-http).</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0023 (PR #25); the gateway design is informative implementer guidance.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0023-step-isolation.md">AEP-0023 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#55-tools-and-action-identifiers">Spec 5.5</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#79-secrets">Spec 7.9</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0023-step-isolation.md">AEP-0023 (PR #25)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#55-tools-and-action-identifiers">Spec 5.5</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#79-secrets">Spec 7.9</a></footer>
 </article>
 </section>
 <section class="chapter" id="sessions">
   <header class="chapter-head">
-    <p class="eyebrow"><span class="chip chip-concept">Proposal</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0026-interactive-execution.md">AEP-0026 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#6-kind-agent">Spec 6</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0017-human-input.md">AEP-0017 (PR #23)</a></p>
+    <p class="eyebrow"><span class="chip chip-concept">Proposal</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0026-interactive-execution.md">AEP-0026 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#6-kind-agent">Spec 6</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0017-human-input.md">AEP-0017</a></p>
     <h2>Interactive execution</h2>
-    <p class="chapter-intro">People use agents interactively: a session with a coding agent, prompts over hours, confirmation of single tool calls, pause and resume. The draft knows only workflow runs. Found when the proof of concept became a platform with a browser console; mostly covered by the new AEP-0026.</p>
+    <p class="chapter-intro">People use agents interactively: a session with a coding agent, prompts over hours, confirmation of single tool calls, pause and resume. The draft knows only workflow runs. Found when the proof of concept became a platform with a browser console; covered by the small concept AEP-0026, with many details as open questions.</p>
   </header>
   <article class="example gap" id="g62">
   <header class="example-head">
@@ -883,7 +883,7 @@ main {
     <h3>No interactive execution form</h3>
     <span class="cat cat-a" title="Category A">A</span>
   </header>
-  <dl class="verdict"><div><dt>Verdict</dt><dd>must</dd></div><div><dt>Target</dt><dd>new AEP-0026 (PR #23, number to be confirmed)</dd></div></dl>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>must</dd></div><div><dt>Target</dt><dd>new AEP-0026, a small concept (PR #26, number to be confirmed)</dd></div></dl>
   <p class="problem">A session has no task and no outputs: a person sends prompts for hours, the session pauses when idle, resumes, and ends when the person stops it. Its lifecycle, budget scope and audit events are undefined; spec 6 only allows a single agent as a workflow with one step.</p>
   <div class="panes">
     <figure class="pane pane-left">
@@ -892,14 +892,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha3</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> AgentSession             </span><span class="tok-comment"> # sibling of WorkflowRun</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">generateName</span>:<span class="tok-value"> security-review-</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">agentRef</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">name</span>:<span class="tok-value"> security-reviewer    </span><span class="tok-comment"> # needs spec.sessions on the Agent</span></span><span>  <span class="tok-key">autonomy</span>:<span class="tok-value"> ask</span></span><span>  <span class="tok-key">initialPrompt</span>:<span class="tok-value"> Review the repository for injection flaws.</span></span><span>  <span class="tok-key">paused</span>:<span class="tok-value"> false</span></span><span><span class="tok-key">status</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">phase</span>:<span class="tok-value"> waiting               </span><span class="tok-comment"> # a confirmation is pending</span></span><span>  <span class="tok-key">executionId</span>:<span class="tok-value"> awp-exec-01J... </span><span class="tok-comment"> # one id for the whole session</span></span><span>  <span class="tok-key">usage</span>:<span class="tok-value"> { costUsd: &quot;0.54&quot; }   </span><span class="tok-comment"> # summed across pauses</span></span></code></pre>
+  <pre><code><span><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha3</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> AgentSession             </span><span class="tok-comment"> # sibling of WorkflowRun</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">generateName</span>:<span class="tok-value"> security-review-</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">agentRef</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">name</span>:<span class="tok-value"> security-reviewer    </span><span class="tok-comment"> # needs spec.sessions on the Agent</span></span><span>  <span class="tok-key">autonomy</span>:<span class="tok-value"> ask</span></span><span>  <span class="tok-key">toolSources</span>:<span class="tok-value"> [code-scanner]</span></span><span>  <span class="tok-key">initialPrompt</span>:<span class="tok-value"> Review the repository for injection flaws.</span></span><span><span class="tok-key">status</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">phase</span>:<span class="tok-value"> waiting               </span><span class="tok-comment"> # a confirmation is pending</span></span><span>  <span class="tok-key">autonomy</span>:<span class="tok-value"> ask</span></span><span><span class="tok-comment"># One session is one execution: permissions, the</span></span><span><span class="tok-comment"># budget (summed across pauses) and audit apply.</span></span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Shown in the proof of concept: its own session object, treated as one execution for permissions, budget and audit; pause on idle, resume, stop; runtime events for created, ready, idle, resumed and &quot;waiting for a person&quot;.</p></div>
-    <div><h4>Status against the draft</h4><p>Drafted as AEP-0026 (PR #23).</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted as the concept AEP-0026 (PR #26). Open questions there: events (8), time limits (9), naming (7).</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0026-interactive-execution.md">AEP-0026 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#6-kind-agent">Spec 6</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/docs/runtime-feedback.md#10-from-interactive-sessions-and-a-coding-agent-engine">runtime-feedback.md section 10 (PR #23)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0026-interactive-execution.md">AEP-0026 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#6-kind-agent">Spec 6</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/docs/runtime-feedback.md#10-from-interactive-sessions-and-a-coding-agent-engine">runtime-feedback.md section 10 (PR #24)</a></footer>
 </article>
 <article class="example gap" id="g63">
   <header class="example-head">
@@ -907,7 +907,7 @@ main {
     <h3>Only allow or deny, no &quot;ask&quot;</h3>
     <span class="cat cat-a" title="Category A">A</span>
   </header>
-  <dl class="verdict"><div><dt>Verdict</dt><dd>must</dd></div><div><dt>Target</dt><dd>AEP-0026: autonomy levels, <code>maxAutonomy</code>, <code>confirm</code></dd></div></dl>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>must</dd></div><div><dt>Target</dt><dd>AEP-0026: autonomy levels and <code>maxAutonomy</code>; <code>confirm</code> per action is open question 1</dd></div></dl>
   <p class="problem">In a session a person confirms single tool calls and switches between read-only, confirm-each-call and autonomous. The draft has neither a confirmation effect, nor a way for the author to forbid autonomy, nor audit events for confirmations and mode changes.</p>
   <div class="panes">
     <figure class="pane pane-left">
@@ -916,14 +916,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span><span class="tok-comment"># Agent manifest (AEP-0026, proposed)</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">sessions</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">maxAutonomy</span>:<span class="tok-value"> ask         </span><span class="tok-comment"> # a person choosing auto gets ask</span></span><span>  <span class="tok-key">permissions</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">default</span>:<span class="tok-value"> deny</span></span><span>    <span class="tok-key">tools</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">code-scanner.scan</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">allow</span>:<span class="tok-value"> true</span></span><span>        <span class="tok-key">confirm</span>:<span class="tok-value"> never       </span><span class="tok-comment"> # runs without asking at ask and auto</span></span><span>      <span class="tok-key">git.push</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">allow</span>:<span class="tok-value"> true</span></span><span>        <span class="tok-key">confirm</span>:<span class="tok-value"> always      </span><span class="tok-comment"> # asks even at auto; denied in workflow runs</span></span></code></pre>
+  <pre><code><span><span class="tok-comment"># Agent manifest (AEP-0026, proposed)</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">sessions</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">maxAutonomy</span>:<span class="tok-value"> ask         </span><span class="tok-comment"> # readOnly | ask | auto</span></span><span>  <span class="tok-key">permissions</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">default</span>:<span class="tok-value"> deny</span></span><span>    <span class="tok-key">tools</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">code-scanner.scan</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">allow</span>:<span class="tok-value"> true</span></span><span><span class="tok-comment"># readOnly: changing actions denied, others ask</span></span><span><span class="tok-comment"># ask: every allowed action asks</span></span><span><span class="tok-comment"># auto: allowed actions run without asking</span></span><span><span class="tok-comment"># Selecting auto here is rejected (above maxAutonomy).</span></span><span><span class="tok-comment"># Open question: confirm: always | never per action.</span></span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Shown in the proof of concept: modes plan, ask and auto, switched in the console only by people who may control the session, each change audited; confirmations once, for the session, or refuse. The binding, not the author, decides whether auto exists; <code>confirm</code> per action and the author ceiling are not built.</p></div>
-    <div><h4>Status against the draft</h4><p>Drafted in AEP-0026 (PR #23).</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0026 (PR #26). Open questions 1 and 2 there: <code>confirm</code> per action and a grant for the rest of the session.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0026-interactive-execution.md">AEP-0026 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#75-tool-governance-permissions">Spec 7.5</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0026-interactive-execution.md">AEP-0026 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#75-tool-governance-permissions">Spec 7.5</a></footer>
 </article>
 <article class="example gap" id="g73">
   <header class="example-head">
@@ -940,14 +940,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span><span class="tok-key">kind</span>:<span class="tok-value"> AgentSession</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">agentRef</span>:<span class="tok-value"> { name: assistant }</span></span><span>  <span class="tok-key">toolSources</span>:<span class="tok-value"> [code-host]  </span><span class="tok-comment"> # absent: all; []: none</span></span><span><span class="tok-comment"># A runtime MAY narrow, never widen. Calls to a</span></span><span><span class="tok-comment"># source that is not enabled are refused; the</span></span><span><span class="tok-comment"># narrowing is audited.</span></span></code></pre>
+  <pre><code><span><span class="tok-key">kind</span>:<span class="tok-value"> AgentSession</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">agentRef</span>:<span class="tok-value"> { name: assistant }</span></span><span>  <span class="tok-key">toolSources</span>:<span class="tok-value"> [code-host]  </span><span class="tok-comment"> # by server or name; absent: all</span></span><span><span class="tok-comment"># Never more than the agent declares. Calls to a</span></span><span><span class="tok-comment"># source that is not enabled are refused.</span></span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Shown in the proof of concept: a session selects a subset of the agent MCP servers; the MCP gateway refuses the others; a name that is no tool source is ignored and reported; a change on a running session needs a restart and is reported as a condition.</p></div>
-    <div><h4>Status against the draft</h4><p>Drafted in AEP-0026 (PR #23).</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0026 (PR #26).</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0026-interactive-execution.md">AEP-0026 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#55-tools-and-action-identifiers">Spec 5.5</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0026-interactive-execution.md">AEP-0026 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#55-tools-and-action-identifiers">Spec 5.5</a></footer>
 </article>
 <article class="example gap" id="g82">
   <header class="example-head">
@@ -964,14 +964,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">model</span>:<span class="tok-value"> { provider: example-provider, name: example-model }</span></span><span>  <span class="tok-key">sessions</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">models</span>:<span class="tok-value"></span></span><span>      - { provider: example-provider, name: example-model-large }</span><span><span class="tok-comment"># AgentSession.spec.model picks model or one of</span></span><span><span class="tok-comment"># sessions.models; intersected with the ceiling.</span></span></code></pre>
+  <pre><code><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">model</span>:<span class="tok-value"> { provider: example-provider, name: example-model }</span></span><span>  <span class="tok-key">sessions</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">models</span>:<span class="tok-value"></span></span><span>      - { provider: example-provider, name: example-model-large }</span><span><span class="tok-comment"># AgentSession.spec.model picks model or one of</span></span><span><span class="tok-comment"># sessions.models; anything else is rejected, and so</span></span><span><span class="tok-comment"># is a model outside the platform ceiling.</span></span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Implemented in the proof of concept: model alternatives per binding and tenant, a model per session.</p></div>
-    <div><h4>Status against the draft</h4><p>Drafted in AEP-0026 (PR #23).</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0026 (PR #26).</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0026-interactive-execution.md">AEP-0026 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#74-model-governance">Spec 7.4</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0026-interactive-execution.md">AEP-0026 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#74-model-governance">Spec 7.4</a></footer>
 </article>
 <article class="example gap" id="g84">
   <header class="example-head">
@@ -979,7 +979,7 @@ main {
     <h3>Questions of the agent during a session</h3>
     <span class="cat cat-a" title="Category A">A</span>
   </header>
-  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0017 amendment (PR #23)</dd></div></dl>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0026 open question 4 (PR #26)</dd></div></dl>
   <p class="problem">A coding agent asks the person questions while it works. Who may answer in a session, and what happens without a person, is undefined.</p>
   <div class="panes">
     <figure class="pane pane-left">
@@ -988,14 +988,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span class="line-add">AEP-0017 item 9 (proposed):</span><span class="line-add">- In an AgentSession, requests go to the</span><span class="line-add">  identities that may control the session.</span><span class="line-add">- Answered in the session UI, same audit</span><span class="line-add">  events, session shows &quot;waiting&quot;.</span><span class="line-add">- An answer is never a confirmation or an</span><span class="line-add">  approval.</span><span class="line-add">- Without a person: declined.</span></code></pre>
+  <pre><code><span class="line-add">AEP-0026 open question 4:</span><span class="line-add">Human input requires answerers; in a session</span><span class="line-add">the person is there. Does the question tool</span><span class="line-add">exist without humanInput?</span><span class="line-add"> </span><span class="line-add">Proposal sketch: requests go to the</span><span class="line-add">identities that may control the session; an</span><span class="line-add">answer is never a confirmation or approval.</span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Implemented in the proof of concept: question cards with choices and free text, each answer audited; <code>humanInput</code> on session agents is rejected; MCP elicitation is declined at the gateway.</p></div>
-    <div><h4>Status against the draft</h4><p>Amendment in AEP-0017 (PR #23).</p></div>
+    <div><h4>Status against the draft</h4><p>Open question 4 of AEP-0026 (PR #26). An amendment to AEP-0017 was drafted and dropped when the concepts were cut down.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0017-human-input.md">AEP-0017 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#58-human-input">Spec 5.8</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0026-interactive-execution.md">AEP-0026 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0017-human-input.md">AEP-0017</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#58-human-input">Spec 5.8</a></footer>
 </article>
 <article class="example gap" id="g85">
   <header class="example-head">
@@ -1003,7 +1003,7 @@ main {
     <h3>History after a session ends</h3>
     <span class="cat cat-a" title="Category A">A</span>
   </header>
-  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0009 rule 8, AEP-0026 open question 3</dd></div></dl>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>open question 5 of AEP-0026; AEP-0009</dd></div></dl>
   <p class="problem">After a session ends, the engine is gone. What is kept of history, decisions and diff, for how long, and who may read it is undefined.</p>
   <div class="panes">
     <figure class="pane pane-left">
@@ -1012,14 +1012,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span class="line-add">AEP-0009 rule 8 (proposed):</span><span class="line-add">The history of an interactive execution is</span><span class="line-add">content: it follows contentRetention; read</span><span class="line-add">access is limited to identities that could</span><span class="line-add">control the session and documented auditors.</span></code></pre>
+  <pre><code><span class="line-add">Open (AEP-0026 question 5, AEP-0009):</span><span class="line-add">what is kept (history, workspace, diff), for</span><span class="line-add">how long, who may read it.</span><span class="line-add"> </span><span class="line-add">Proposal sketch: history is content under</span><span class="line-add">contentRetention; read access for those who</span><span class="line-add">could control the session and auditors.</span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>In progress in the proof of concept: an archive of the transcript; people asked to see stopped sessions.</p></div>
-    <div><h4>Status against the draft</h4><p>Amendment in AEP-0009 (PR #23); open question 3 of AEP-0026.</p></div>
+    <div><h4>Status against the draft</h4><p>Open question 5 of AEP-0026 and open point in AEP-0009 (PR #26).</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0009-audit-payload-levels.md">AEP-0009 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0026-interactive-execution.md">AEP-0026 (PR #23)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0009-audit-payload-levels.md">AEP-0009 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0026-interactive-execution.md">AEP-0026 (PR #26)</a></footer>
 </article>
 <article class="example gap" id="g86">
   <header class="example-head">
@@ -1041,16 +1041,16 @@ main {
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Concept only in the proof of concept; not built.</p></div>
-    <div><h4>Status against the draft</h4><p>Evidence paragraph in AEP-0024 (PR #23); open question 4 of AEP-0026.</p></div>
+    <div><h4>Status against the draft</h4><p>Evidence paragraph in AEP-0024 (PR #24); open question 6 of AEP-0026 (PR #26).</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0024-event-triggers.md">AEP-0024 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0026-interactive-execution.md">AEP-0026 (PR #23)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0024-event-triggers.md">AEP-0024 (PR #24)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0026-interactive-execution.md">AEP-0026 (PR #26)</a></footer>
 </article>
 </section>
 <section class="chapter" id="engine">
   <header class="chapter-head">
-    <p class="eyebrow"><span class="chip chip-concept">Proposal</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0027-agent-engine.md">AEP-0027 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0025-state.md">AEP-0025 (PR #23)</a></p>
+    <p class="eyebrow"><span class="chip chip-concept">Proposal</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0027-agent-engine.md">AEP-0027 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0025-state.md">AEP-0025 (PR #24)</a></p>
     <h2>Agent engine and workspace</h2>
-    <p class="chapter-intro">A coding agent brings its own tool loop, file editing, shell and subagents. The draft assumes the runtime runs the loop. The proof of concept runs workflow agent steps and sessions with a coding agent as engine; covered by the new AEP-0027.</p>
+    <p class="chapter-intro">A coding agent brings its own tool loop, file editing, shell and subagents. The draft assumes the runtime runs the loop. The proof of concept runs workflow agent steps and sessions with a coding agent as engine; covered by the small concept AEP-0027; outputs, push and repositories from events are open questions.</p>
   </header>
   <article class="example gap" id="g65">
   <header class="example-head">
@@ -1058,23 +1058,23 @@ main {
     <h3>No field for the engine of an agent</h3>
     <span class="cat cat-a" title="Category A">A</span>
   </header>
-  <dl class="verdict"><div><dt>Verdict</dt><dd>must</dd></div><div><dt>Target</dt><dd>new AEP-0027 (PR #23, number to be confirmed)</dd></div></dl>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>must</dd></div><div><dt>Target</dt><dd>new AEP-0027, a small concept (PR #26, number to be confirmed)</dd></div></dl>
   <p class="problem">A coding agent brings its own tool loop. No field says which engine runs an agent, what it receives and produces, how permissions map to it, or whether its subagents share permissions and budget. A runtime without the engine would run a different loop and still report success.</p>
   <div class="panes">
     <figure class="pane pane-left">
   <figcaption><span class="pane-label">v1alpha3 draft: only an extension field</span></figcaption>
-  <pre><code><span>agents:</span><span>  - id: scanner</span><span>    extensions:</span><span>      x-example-engine:       # runtime-specific;</span><span>        type: opencode        # ignored elsewhere</span><span>        repositories: [...]</span></code></pre>
+  <pre><code><span>agents:</span><span>  - id: scanner</span><span>    extensions:</span><span>      x-example-engine:       # runtime-specific;</span><span>        type: coding-agent    # ignored elsewhere</span><span>        repositories: [...]</span></code></pre>
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span><span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> scanner</span></span><span>    <span class="tok-key">engine</span>:<span class="tok-value">                  </span><span class="tok-comment"> # AEP-0027, profile engine</span></span><span>      <span class="tok-key">type</span>:<span class="tok-value"> opencode         </span><span class="tok-comment"> # unknown type -&gt; reject</span></span><span>      <span class="tok-key">runtimeProfile</span>:<span class="tok-value"> default</span></span><span>      <span class="tok-key">workspace</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">repositories</span>:<span class="tok-value"></span></span><span>          <span class="tok-dash">- </span><span class="tok-key">url</span>:<span class="tok-value"> https://git.example.com/app.git</span></span><span>            <span class="tok-key">ref</span>:<span class="tok-value"> main</span></span><span>            <span class="tok-key">path</span>:<span class="tok-value"> repo</span></span><span>      <span class="tok-key">push</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">repository</span>:<span class="tok-value"> repo</span></span><span>        <span class="tok-key">branch</span>:<span class="tok-value"> review/${{ execution.id }}</span></span><span><span class="tok-comment"># Unattended: allow or deny only; a refused call</span></span><span><span class="tok-comment"># fails the step; subagents share budget and</span></span><span><span class="tok-comment"># permissions.</span></span></code></pre>
+  <pre><code><span><span class="tok-key">agents</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">id</span>:<span class="tok-value"> scanner</span></span><span>    <span class="tok-key">engine</span>:<span class="tok-value">                  </span><span class="tok-comment"> # AEP-0027, profile engine</span></span><span>      <span class="tok-key">type</span>:<span class="tok-value"> example.com/coding-agent  </span><span class="tok-comment"> # unknown -&gt; reject</span></span><span>      <span class="tok-key">workspace</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">repositories</span>:<span class="tok-value"></span></span><span>          <span class="tok-dash">- </span><span class="tok-key">url</span>:<span class="tok-value"> https://git.example.com/app.git  </span><span class="tok-comment"> # fixed</span></span><span>            <span class="tok-key">ref</span>:<span class="tok-value"> main</span></span><span>            <span class="tok-key">path</span>:<span class="tok-value"> repo</span></span><span><span class="tok-comment"># Permissions, budget and audit stay in force;</span></span><span><span class="tok-comment"># unattended: allow or deny only; subagents share</span></span><span><span class="tok-comment"># budget and permissions. Open: push, outputs,</span></span><span><span class="tok-comment"># repositories from events, runtimeProfile.</span></span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Shown in the proof of concept: a security scan workflow ran its review step with a coding agent as engine, started by hand and by a CloudEvent; the engine called a static analysis server through the MCP gateway with a step ticket, and the calls counted against the run budget.</p></div>
-    <div><h4>Status against the draft</h4><p>Drafted as AEP-0027 (PR #23). Until applied: <code>extensionRef</code> under AEP-0021 B3.</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted as the concept AEP-0027 (PR #26). Open questions there: push (3), registry (4), failure semantics (6), runtime profile (7). Until applied: <code>extensionRef</code> under AEP-0021 B3.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0027-agent-engine.md">AEP-0027 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0021-extension-model.md">AEP-0021</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0027-agent-engine.md">AEP-0027 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0021-extension-model.md">AEP-0021</a></footer>
 </article>
 <article class="example gap" id="g66">
   <header class="example-head">
@@ -1082,7 +1082,7 @@ main {
     <h3>Engine steps are dead ends</h3>
     <span class="cat cat-a" title="Category A">A</span>
   </header>
-  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0027 with AEP-0003 and AEP-0018</dd></div></dl>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0027 open questions 1 and 2, with AEP-0003 and AEP-0018</dd></div></dl>
   <p class="problem">The engine produces only a summary and a diff, so a step cannot declare <code>critical</code> and <code>high</code> for a following condition. Its repositories are fixed, so an event cannot say which repository to scan.</p>
   <div class="panes">
     <figure class="pane pane-left">
@@ -1091,14 +1091,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span><span class="tok-key">engine</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">type</span>:<span class="tok-value"> opencode</span></span><span>  <span class="tok-key">workspace</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">repositories</span>:<span class="tok-value"></span></span><span>      <span class="tok-dash">- </span><span class="tok-key">url</span>:<span class="tok-value"> ${{ event.data.repository }}</span></span><span>        <span class="tok-key">ref</span>:<span class="tok-value"> ${{ event.data.ref }}</span></span><span><span class="tok-key">outputs</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> critical</span></span><span>    <span class="tok-key">type</span>:<span class="tok-value"> integer      </span><span class="tok-comment"> # filled by complete_step (AEP-0018)</span></span><span>  <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> high</span></span><span>    <span class="tok-key">type</span>:<span class="tok-value"> integer      </span><span class="tok-comment"> # typed (AEP-0003)</span></span></code></pre>
+  <pre><code><span><span class="tok-comment"># Open questions of AEP-0027, sketch:</span></span><span><span class="tok-key">engine</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">type</span>:<span class="tok-value"> example.com/coding-agent</span></span><span>  <span class="tok-key">workspace</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">repositories</span>:<span class="tok-value"></span></span><span>      <span class="tok-dash">- </span><span class="tok-key">url</span>:<span class="tok-value"> ${{ event.data.repository }} </span><span class="tok-comment"> # needs a clone</span></span><span>        <span class="tok-key">ref</span>:<span class="tok-value"> ${{ event.data.ref }}        </span><span class="tok-comment"> # credential bound</span></span><span><span class="tok-key">outputs</span>:<span class="tok-value">                                    </span><span class="tok-comment"> # to a host pattern</span></span><span>  <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> critical</span></span><span>    <span class="tok-key">type</span>:<span class="tok-value"> integer      </span><span class="tok-comment"> # filled by complete_step (AEP-0018)</span></span><span>  <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> high</span></span><span>    <span class="tok-key">type</span>:<span class="tok-value"> integer      </span><span class="tok-comment"> # typed (AEP-0003)</span></span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Shown in the proof of concept: validation rejects outputs <code>report</code>, <code>critical</code> and <code>high</code> of the scan step; the scanned repository is fixed.</p></div>
-    <div><h4>Status against the draft</h4><p>Drafted in AEP-0027 (PR #23).</p></div>
+    <div><h4>Status against the draft</h4><p>Open questions 1 and 2 of AEP-0027 (PR #26): outputs through AEP-0018, and repositories from events, which would need a clone credential bound to a host so that a sender cannot redirect it.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0027-agent-engine.md">AEP-0027 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0003-typed-handoffs.md">AEP-0003</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0018-step-outputs.md">AEP-0018</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0027-agent-engine.md">AEP-0027 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0003-typed-handoffs.md">AEP-0003</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0018-step-outputs.md">AEP-0018</a></footer>
 </article>
 <article class="example gap" id="g81">
   <header class="example-head">
@@ -1115,14 +1115,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span><span class="tok-key">engine</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">type</span>:<span class="tok-value"> opencode</span></span><span>  <span class="tok-key">workspace</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">trustRepositoryConfig</span>:<span class="tok-value"> []  </span><span class="tok-comment"> # default: none</span></span><span>   <span class="tok-comment"> # allowed kinds: instructions, skills,</span></span><span>   <span class="tok-comment"> # commands, toolchain; loaded kinds are</span></span><span>   <span class="tok-comment"> # untrusted input and grant nothing</span></span></code></pre>
+  <pre><code><span><span class="tok-key">engine</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">type</span>:<span class="tok-value"> example.com/coding-agent</span></span><span>  <span class="tok-key">workspace</span>:<span class="tok-value"></span></span><span>    <span class="tok-key">trustRepositoryConfig</span>:<span class="tok-value"> []  </span><span class="tok-comment"> # default: none</span></span><span>   <span class="tok-comment"> # allowed kinds: instructions, skills,</span></span><span>   <span class="tok-comment"> # commands, toolchain; loaded kinds are</span></span><span>   <span class="tok-comment"> # untrusted input and grant nothing</span></span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Implemented in the proof of concept: project configuration and external skills of the coding agent are disabled for sessions and engine steps.</p></div>
-    <div><h4>Status against the draft</h4><p>Drafted in AEP-0027 (PR #23).</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0027 (PR #26).</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0027-agent-engine.md">AEP-0027 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#12-security-considerations">Spec 12</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0027-agent-engine.md">AEP-0027 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#12-security-considerations">Spec 12</a></footer>
 </article>
 <article class="example gap" id="g83">
   <header class="example-head">
@@ -1139,14 +1139,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span class="line-add">AEP-0027 (proposed):</span><span class="line-add">- engine.workspace.repositories with url,</span><span class="line-add">  ref, path; the start commit is recorded.</span><span class="line-add">- Clone and push credentials are workflow</span><span class="line-add">  secrets; under security they MUST NOT be</span><span class="line-add">  visible to the engine (clone and push</span><span class="line-add">  outside, or remove before start).</span></code></pre>
+  <pre><code><span class="line-add">AEP-0027 (proposed):</span><span class="line-add">- engine.workspace.repositories with a fixed</span><span class="line-add">  url, ref, path; the start commit is</span><span class="line-add">  recorded.</span><span class="line-add">- Clone credentials are workflow secrets;</span><span class="line-add">  under security they are not visible to</span><span class="line-add">  the engine.</span><span class="line-add">- Push: open question 3.</span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Implemented in the proof of concept: clone credentials per repository, deleted after the session is ready, push through the console. Private repositories are not shown on the test installation.</p></div>
-    <div><h4>Status against the draft</h4><p>Drafted in AEP-0027 (PR #23).</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0027 (PR #26); push is open question 3 there.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0027-agent-engine.md">AEP-0027 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#79-secrets">Spec 7.9</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0027-agent-engine.md">AEP-0027 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#79-secrets">Spec 7.9</a></footer>
 </article>
 <article class="example gap" id="g87">
   <header class="example-head">
@@ -1168,16 +1168,16 @@ main {
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Concept: asked for during the proof of concept; not built.</p></div>
-    <div><h4>Status against the draft</h4><p>Evidence paragraph in AEP-0025 (PR #23).</p></div>
+    <div><h4>Status against the draft</h4><p>Evidence paragraph in AEP-0025 (PR #24).</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0025-state.md">AEP-0025 (PR #23)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0025-state.md">AEP-0025 (PR #24)</a></footer>
 </article>
 </section>
 <section class="chapter" id="tools">
   <header class="chapter-head">
-    <p class="eyebrow"><span class="chip chip-concept">Proposal</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0007-mcp-connection-catalog.md">AEP-0007 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0002-tool-argument-constraints.md">AEP-0002 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0005-prompt-kind.md">AEP-0005 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0009-audit-payload-levels.md">AEP-0009 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0013-runtime-clarifications.md">AEP-0013 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#79-secrets">Spec 7.9</a></p>
+    <p class="eyebrow"><span class="chip chip-concept">Proposal</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0007-mcp-connection-catalog.md">AEP-0007 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0002-tool-argument-constraints.md">AEP-0002 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0005-prompt-kind.md">AEP-0005 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0009-audit-payload-levels.md">AEP-0009 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0013-runtime-clarifications.md">AEP-0013 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#79-secrets">Spec 7.9</a></p>
     <h2>Tool sources, MCP and audit</h2>
-    <p class="chapter-intro">What an MCP gateway outside the sandbox had to decide that the draft leaves open: server prompts and resources, tools added later, command allow lists, reusable prompts, where audit events come from, data sent to tool servers, budgets during streaming and secrets supplied at start. Mostly amendments to existing AEPs in PR #23.</p>
+    <p class="chapter-intro">What an MCP gateway outside the sandbox had to decide that the draft leaves open: server prompts and resources, tools added later, command allow lists, reusable prompts, where audit events come from, data sent to tool servers, budgets during streaming and secrets supplied at start. Mostly amendments to existing AEPs in PR #26; some are open questions.</p>
   </header>
   <article class="example gap" id="g70">
   <header class="example-head">
@@ -1185,7 +1185,7 @@ main {
     <h3>Resolving MCP servers from runtime configuration</h3>
     <span class="cat cat-a" title="Category A">A</span>
   </header>
-  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0007 rule 11 (PR #23)</dd></div></dl>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0007 open question 6 (PR #26)</dd></div></dl>
   <p class="problem">Spec 5.5.1 lets a runtime resolve a server from its own configuration, but not in which order, whether a declaration may be partial, or whether the runtime may substitute a different server of the same name.</p>
   <div class="panes">
     <figure class="pane pane-left">
@@ -1194,14 +1194,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span class="line-add">AEP-0007 rule 11 (proposed):</span><span class="line-add">order: declaration, binding, catalog;</span><span class="line-add">a declaration and the resolved server</span><span class="line-add">(transport, URL, catalog digest) MUST NOT</span><span class="line-add">contradict -&gt; reject, never substitute;</span><span class="line-add">a platform ceiling MAY restrict servers.</span></code></pre>
+  <pre><code><span class="line-add">AEP-0007 open question 6, sketch:</span><span class="line-add">order: declaration, binding, catalog;</span><span class="line-add">a declaration and the resolved server</span><span class="line-add">(transport, URL, catalog digest) MUST NOT</span><span class="line-add">contradict -&gt; reject, never substitute;</span><span class="line-add">a platform ceiling MAY restrict servers.</span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Implemented in the proof of concept (integration tests): resolution by name against a cluster-wide catalog, name mapping in the binding, tenant ceiling.</p></div>
-    <div><h4>Status against the draft</h4><p>Amendment in AEP-0007 (PR #23).</p></div>
+    <div><h4>Status against the draft</h4><p>Open question 6 of AEP-0007 (PR #26); the ceiling for servers is AEP-0023 7.5.10.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0007-mcp-connection-catalog.md">AEP-0007 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#55-tools-and-action-identifiers">Spec 5.5</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0007-mcp-connection-catalog.md">AEP-0007 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#55-tools-and-action-identifiers">Spec 5.5</a></footer>
 </article>
 <article class="example gap" id="g71">
   <header class="example-head">
@@ -1209,7 +1209,7 @@ main {
     <h3>Tools a server adds after the review</h3>
     <span class="cat cat-a" title="Category A">A</span>
   </header>
-  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0007 rule 12 (PR #23)</dd></div></dl>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0007 rule 11 (PR #26)</dd></div></dl>
   <p class="problem"><code>server.*</code> also allows tools that the server adds after the manifest was reviewed. In an unattended step nobody sees them run, so a read-only use case grows into write access when the server ships a delete tool.</p>
   <div class="panes">
     <figure class="pane pane-left">
@@ -1218,14 +1218,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span class="line-add">AEP-0007 (proposed):</span><span class="line-add">- unattended executions SHOULD list tools</span><span class="line-add">  explicitly;</span><span class="line-add">- under security, &lt;server&gt;.* grants only</span><span class="line-add">  catalogued tools (rule 3: uncatalogued</span><span class="line-add">  tools are not exposed);</span><span class="line-add">- tool annotations are not authority.</span></code></pre>
+  <pre><code><span class="line-add">AEP-0007 (proposed):</span><span class="line-add">- unattended executions SHOULD list tools</span><span class="line-add">  explicitly (rule 11);</span><span class="line-add">- &lt;server&gt;.* grants only catalogued tools</span><span class="line-add">  (rule 3: uncatalogued tools are not</span><span class="line-add">  exposed);</span><span class="line-add">- tool annotations are not authority.</span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Shown in the proof of concept: the catalog entry of a static analysis server leaves out two of its tools; the MCP gateway neither lists them nor lets them be called.</p></div>
-    <div><h4>Status against the draft</h4><p>Amendment in AEP-0007 (PR #23).</p></div>
+    <div><h4>Status against the draft</h4><p>Amendment in AEP-0007 (PR #26).</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0007-mcp-connection-catalog.md">AEP-0007 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#75-tool-governance-permissions">Spec 7.5</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0007-mcp-connection-catalog.md">AEP-0007 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#75-tool-governance-permissions">Spec 7.5</a></footer>
 </article>
 <article class="example gap" id="g72">
   <header class="example-head">
@@ -1233,7 +1233,7 @@ main {
     <h3>MCP prompts, resources and server requests</h3>
     <span class="cat cat-a" title="Category A">A</span>
   </header>
-  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0007 rules 7, 9, 10 (PR #23); answers its open question 3</dd></div></dl>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0007 rules 7, 9, 10 (PR #26); answers its open question 3</dd></div></dl>
   <p class="problem">MCP servers also offer prompts and resources, and may send sampling, roots and elicitation requests. The draft restricts only tools. A coding agent shows every server prompt as a command, so content of the server operator reaches the model without any manifest rule.</p>
   <div class="panes">
     <figure class="pane pane-left">
@@ -1242,14 +1242,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span><span class="tok-key">mcpServers</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> code-scanner</span></span><span>    <span class="tok-key">catalog</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">tools</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">scan</span>:<span class="tok-value"> { access: read }</span></span><span>      <span class="tok-key">prompts</span>:<span class="tok-value">                      </span><span class="tok-comment"> # default: none</span></span><span>        <span class="tok-key">security-check</span>:<span class="tok-value"> {}</span></span><span>      <span class="tok-key">resources</span>:<span class="tok-value">                    </span><span class="tok-comment"> # default: none</span></span><span>        <span class="tok-dash">- </span><span class="tok-key">uriTemplate</span>:<span class="tok-value"> rules://{ruleset}</span></span><span><span class="tok-comment"># prompts/get = code-scanner.prompts.get; content is</span></span><span><span class="tok-comment"># untrusted input. Sampling and roots are not relayed</span></span><span><span class="tok-comment"># unless allowed; the runtime answers them itself.</span></span></code></pre>
+  <pre><code><span><span class="tok-key">mcpServers</span>:<span class="tok-value"></span></span><span>  <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> code-scanner</span></span><span>    <span class="tok-key">catalog</span>:<span class="tok-value"></span></span><span>      <span class="tok-key">tools</span>:<span class="tok-value"></span></span><span>        <span class="tok-key">scan</span>:<span class="tok-value"> { access: read }</span></span><span>      <span class="tok-key">prompts</span>:<span class="tok-value">                      </span><span class="tok-comment"> # default: none</span></span><span>        <span class="tok-key">security-check</span>:<span class="tok-value"> {}</span></span><span>      <span class="tok-key">resources</span>:<span class="tok-value">                    </span><span class="tok-comment"> # default: none</span></span><span>        <span class="tok-dash">- </span><span class="tok-key">uriTemplate</span>:<span class="tok-value"> rules://{ruleset}</span></span><span><span class="tok-comment"># prompts/get = code-scanner.prompts.get (a tool named</span></span><span><span class="tok-comment"># prompts.get or resources.read is rejected); prompt</span></span><span><span class="tok-comment"># content is untrusted input. Sampling and roots are</span></span><span><span class="tok-comment"># always declined (opt-in: open question 5).</span></span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Shown in the proof of concept: the catalog allows one prompt and the rule resources of a static analysis server; the gateway filters the list operations, refuses everything else, and answers sampling, roots and elicitation itself.</p></div>
-    <div><h4>Status against the draft</h4><p>Amendment in AEP-0007 (PR #23).</p></div>
+    <div><h4>Status against the draft</h4><p>Amendment in AEP-0007 (PR #26).</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0007-mcp-connection-catalog.md">AEP-0007 (PR #23)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0007-mcp-connection-catalog.md">AEP-0007 (PR #26)</a></footer>
 </article>
 <article class="example gap" id="g74">
   <header class="example-head">
@@ -1257,7 +1257,7 @@ main {
     <h3>Resource scope of shell commands</h3>
     <span class="cat cat-a" title="Category A">A</span>
   </header>
-  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0002, new section 7.5.7 (PR #23)</dd></div></dl>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0002, new section 7.5.7 (PR #26)</dd></div></dl>
   <p class="problem">Spec 7.5.2 asks runtimes to document how they derive the resource of a call, but names no format for <code>shell.execute</code>. A command line chains, substitutes and nests commands, so <code>echo *</code> could also run <code>echo a; id</code>.</p>
   <div class="panes">
     <figure class="pane pane-left">
@@ -1266,14 +1266,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span>AEP-0002 7.5.7 (proposed):</span><span>- resources of a line = its simple commands</span><span>- every simple command must match a pattern</span><span>- lines that cannot be split ($(...), subshells,</span><span>  compound commands, leading assignments) are</span><span>  denied</span><span>- an allow list does not restrict what an</span><span>  allowed program runs (make, npm test)</span><span> </span><span>echo hello        -&gt; allowed</span><span>git --version     -&gt; allowed</span><span>echo a; id        -&gt; denied (id)</span><span>echo $(id)        -&gt; denied (substitution)</span><span>curl https://...  -&gt; denied</span></code></pre>
+  <pre><code><span>AEP-0002 7.5.7 (proposed):</span><span>- resources of a line = its simple commands</span><span>- every simple command must match a pattern</span><span>- lines that cannot be split ($(...), subshells,</span><span>  compound commands, leading assignments) are</span><span>  denied</span><span>- actionGroups entries {action, resources}</span><span>  map commands to well-known actions, so</span><span>  rules on git.push apply to &quot;git push&quot;:</span><span>    git.push:</span><span>      - action: shell.execute</span><span>        resources: [&quot;git push*&quot;]</span><span>- an allow list does not restrict what an</span><span>  allowed program runs (make, npm test)</span><span> </span><span>echo hello        -&gt; allowed</span><span>git --version     -&gt; allowed</span><span>echo a; id        -&gt; denied (id)</span><span>echo $(id)        -&gt; denied (substitution)</span><span>curl https://...  -&gt; denied</span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Shown in the proof of concept with exactly these patterns: <code>echo</code> and <code>git --version</code> ran; <code>curl</code>, <code>echo a; id</code> and <code>echo $(id)</code> were refused by a component outside the sandbox, and the model saw the reason.</p></div>
-    <div><h4>Status against the draft</h4><p>Amendment in AEP-0002 (PR #23).</p></div>
+    <div><h4>Status against the draft</h4><p>Amendment in AEP-0002 (PR #26).</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0002-tool-argument-constraints.md">AEP-0002 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#75-tool-governance-permissions">Spec 7.5</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0002-tool-argument-constraints.md">AEP-0002 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#75-tool-governance-permissions">Spec 7.5</a></footer>
 </article>
 <article class="example gap" id="g75">
   <header class="example-head">
@@ -1281,7 +1281,7 @@ main {
     <h3>Reusable prompts outside workflow steps</h3>
     <span class="cat cat-a" title="Category A">A</span>
   </header>
-  <dl class="verdict"><div><dt>Verdict</dt><dd>minor</dd></div><div><dt>Target</dt><dd>AEP-0005 amendment (PR #23)</dd></div></dl>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>minor</dd></div><div><dt>Target</dt><dd>AEP-0005 amendment (PR #26)</dd></div></dl>
   <p class="problem">People repeat the same requests (a security review, writing tests). The draft knows tasks only as workflow steps and agents only with standing instructions.</p>
   <div class="panes">
     <figure class="pane pane-left">
@@ -1290,14 +1290,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha3</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> Prompt</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> security-review</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">role</span>:<span class="tok-value"> user</span></span><span>  <span class="tok-key">title</span>:<span class="tok-value"> Security review</span></span><span>  <span class="tok-key">agents</span>:<span class="tok-value"> [security-reviewer]</span></span><span>  <span class="tok-key">suggestedAutonomy</span>:<span class="tok-value"> readOnly  </span><span class="tok-comment"> # a suggestion, capped</span></span><span>  <span class="tok-key">template</span>:<span class="tok-value"> Review {{ scope }} for injection flaws.</span></span><span>  <span class="tok-key">variables</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> scope</span></span><span>      <span class="tok-key">type</span>:<span class="tok-value"> string</span></span></code></pre>
+  <pre><code><span><span class="tok-key">apiVersion</span>:<span class="tok-value"> awp.agenticworkflowprotocol.org/v1alpha3</span></span><span><span class="tok-key">kind</span>:<span class="tok-value"> Prompt</span></span><span><span class="tok-key">metadata</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">name</span>:<span class="tok-value"> security-review</span></span><span><span class="tok-key">spec</span>:<span class="tok-value"></span></span><span>  <span class="tok-key">version</span>:<span class="tok-value"> 1.0.0</span></span><span>  <span class="tok-key">role</span>:<span class="tok-value"> user                   </span><span class="tok-comment"> # offered as a session task</span></span><span>  <span class="tok-key">template</span>:<span class="tok-value"> Review {{ scope }} for injection flaws.</span></span><span>  <span class="tok-key">variables</span>:<span class="tok-value"></span></span><span>    <span class="tok-dash">- </span><span class="tok-key">name</span>:<span class="tok-value"> scope</span></span><span>      <span class="tok-key">type</span>:<span class="tok-value"> string</span></span><span><span class="tok-comment"># Plain user input: runs with the session's</span></span><span><span class="tok-comment"># permissions, budget and level, grants nothing.</span></span><span><span class="tok-comment"># Open: title, fitting agents, suggested level.</span></span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Implemented in the proof of concept: a namespaced prompt library offered to sessions as commands of the coding agent, tenant entries override platform entries; no versions or digests yet.</p></div>
-    <div><h4>Status against the draft</h4><p>Amendment in AEP-0005 (PR #23).</p></div>
+    <div><h4>Status against the draft</h4><p>Amendment in AEP-0005 (PR #26); library fields are open there.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0005-prompt-kind.md">AEP-0005 (PR #23)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0005-prompt-kind.md">AEP-0005 (PR #26)</a></footer>
 </article>
 <article class="example gap" id="g76">
   <header class="example-head">
@@ -1305,7 +1305,7 @@ main {
     <h3>Where audit events come from</h3>
     <span class="cat cat-mixed" title="Category A + B">A + B</span>
   </header>
-  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0009 rules 5 and 6 (PR #23)</dd></div></dl>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0009 rule 5 (PR #26)</dd></div></dl>
   <p class="problem">What an agent did can be recorded by the engine (inside, the agent can influence it), by the user interface (it sees only what the engine reports) or by a gateway outside that holds the credentials. The draft does not say which source counts.</p>
   <div class="panes">
     <figure class="pane pane-left">
@@ -1314,14 +1314,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span class="line-add">AEP-0009 (proposed):</span><span class="line-add">- every event carries origin: runtime or</span><span class="line-add">  executionEnvironment;</span><span class="line-add">- under security, model calls, tool calls,</span><span class="line-add">  approvals and confirmations MUST have</span><span class="line-add">  origin runtime;</span><span class="line-add">- events from inside may be joined by tool</span><span class="line-add">  call id; disagreements flagged;</span><span class="line-add">- document which events cannot be verified.</span></code></pre>
+  <pre><code><span class="line-add">AEP-0009 rule 5 (proposed):</span><span class="line-add">- every event carries origin: runtime or</span><span class="line-add">  executionEnvironment;</span><span class="line-add">- under security, events about what leaves</span><span class="line-add">  the execution environment (model calls,</span><span class="line-add">  tool server calls, approvals and</span><span class="line-add">  confirmations) MUST have origin runtime;</span><span class="line-add">- the outcome of an action inside (a shell</span><span class="line-add">  command) keeps origin executionEnvironment;</span><span class="line-add">- document which events cannot be verified.</span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Shown in the proof of concept: conversations recorded at the model gateway with a hash chain per conversation, tool calls at the MCP gateway, egress at the tenant proxy; events of the coding agent joined by tool call id; all visible in the audit tab of the console.</p></div>
-    <div><h4>Status against the draft</h4><p>Amendment in AEP-0009 (PR #23).</p></div>
+    <div><h4>Status against the draft</h4><p>Amendment in AEP-0009 (PR #26).</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0009-audit-payload-levels.md">AEP-0009 (PR #23)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0009-audit-payload-levels.md">AEP-0009 (PR #26)</a></footer>
 </article>
 <article class="example gap" id="g77">
   <header class="example-head">
@@ -1329,7 +1329,7 @@ main {
     <h3>Data sent to tool servers</h3>
     <span class="cat cat-mixed" title="Category A + C">A + C</span>
   </header>
-  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>open (5.5, 7.2); AEP-0009 rule 7 in part</dd></div></dl>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>open (5.5, 7.2); open point in AEP-0009</dd></div></dl>
   <p class="problem">A scan tool receives source code as an argument. Nothing says which data classes may go to which tool server (inside the cluster or external), and the tool server own egress is outside <code>permissions.network</code>.</p>
   <div class="panes">
     <figure class="pane pane-left">
@@ -1338,14 +1338,14 @@ main {
 </figure>
     <figure class="pane pane-right">
   <figcaption><span class="pane-label">Proposal</span><span class="unchecked" title="A proposal, not valid against the draft schema">not checked</span></figcaption>
-  <pre><code><span class="line-add">Sketch:</span><span class="line-add">- allowed data classes per tool source,</span><span class="line-add">  with the operator of the source;</span><span class="line-add">- passed content logged with its own</span><span class="line-add">  retention (AEP-0009 rule 7);</span><span class="line-add">- the server's own egress limited by the</span><span class="line-add">  runtime and stated in the conformance</span><span class="line-add">  statement (informative).</span></code></pre>
+  <pre><code><span class="line-add">Sketch:</span><span class="line-add">- allowed data classes per tool source,</span><span class="line-add">  with the operator of the source;</span><span class="line-add">- passed content logged with its own</span><span class="line-add">  retention (open in AEP-0009);</span><span class="line-add">- the server's own egress limited by the</span><span class="line-add">  runtime and stated in the conformance</span><span class="line-add">  statement (informative).</span></code></pre>
 </figure>
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Shown in the proof of concept: a security review sends the scanned file to a static analysis server; the arguments are in the audit, and the server reaches the internet only through its own proxy with an allow list for the rule registry.</p></div>
-    <div><h4>Status against the draft</h4><p>Open; logging of passed content drafted in AEP-0009 (PR #23).</p></div>
+    <div><h4>Status against the draft</h4><p>Open; named as an open point in AEP-0009 (PR #26).</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0009-audit-payload-levels.md">AEP-0009 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0007-mcp-connection-catalog.md">AEP-0007 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#72-data-classification">Spec 7.2</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0009-audit-payload-levels.md">AEP-0009 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0007-mcp-connection-catalog.md">AEP-0007 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#72-data-classification">Spec 7.2</a></footer>
 </article>
 <article class="example gap" id="g78">
   <header class="example-head">
@@ -1353,7 +1353,7 @@ main {
     <h3>Budgets during streaming</h3>
     <span class="cat cat-b" title="Category B">B</span>
   </header>
-  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0013 item 1 (PR #23)</dd></div></dl>
+  <dl class="verdict"><div><dt>Verdict</dt><dd>should</dd></div><div><dt>Target</dt><dd>AEP-0013 item 1 (PR #26)</dd></div></dl>
   <p class="problem">Providers report usage only at the end of a streamed call. A runtime that stops at the limit has to estimate, so an execution can end slightly above <code>maxCostUsd</code>. The draft does not say whether that is allowed.</p>
   <div class="panes">
     <figure class="pane pane-left">
@@ -1367,9 +1367,9 @@ main {
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Implemented in the proof of concept: the model gateway estimates output tokens from the streamed text and ends the stream with an error event; the overshoot is not measured.</p></div>
-    <div><h4>Status against the draft</h4><p>Amendment in AEP-0013 (PR #23).</p></div>
+    <div><h4>Status against the draft</h4><p>Amendment in AEP-0013 (PR #26).</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0013-runtime-clarifications.md">AEP-0013 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#57-budgets-and-resources">Spec 5.7</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0013-runtime-clarifications.md">AEP-0013 (PR #26)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#57-budgets-and-resources">Spec 5.7</a></footer>
 </article>
 <article class="example gap" id="g79">
   <header class="example-head">
@@ -1393,7 +1393,7 @@ main {
     <div><h4>Why: in the proof of concept</h4><p>Shown in the proof of concept: a session adds usable secrets of its namespace as environment variables if template and tenant allow it; the model gateway replaces the value, so <code>token=$TOKEN</code> reaches the model as a placeholder.</p></div>
     <div><h4>Status against the draft</h4><p>Open, no AEP yet.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#79-secrets">Spec 7.9</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#79-secrets">Spec 7.9</a></footer>
 </article>
 <article class="example gap" id="g80">
   <header class="example-head">
@@ -1417,12 +1417,12 @@ main {
     <div><h4>Why: in the proof of concept</h4><p>Implemented in the proof of concept: <code>metadata.name</code> is used as the id for sessions.</p></div>
     <div><h4>Status against the draft</h4><p>Open, no AEP yet.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#79-secrets">Spec 7.9</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#6-kind-agent">Spec 6</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#79-secrets">Spec 7.9</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#6-kind-agent">Spec 6</a></footer>
 </article>
 </section>
 <section class="chapter" id="state">
   <header class="chapter-head">
-    <p class="eyebrow"><span class="chip chip-concept">Proposal</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0024-event-triggers.md">AEP-0024 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0025-state.md">AEP-0025 (PR #23)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0012-tool-steps.md">AEP-0012</a></p>
+    <p class="eyebrow"><span class="chip chip-concept">Proposal</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0024-event-triggers.md">AEP-0024 (PR #24)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0025-state.md">AEP-0025 (PR #24)</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0012-tool-steps.md">AEP-0012</a></p>
     <h2>Conversation, state and identity</h2>
     <p class="chapter-intro">Context that outlives one message or one execution: reply targets, chat threads, state shared between workflows, and the identity a workflow uses towards other systems.</p>
   </header>
@@ -1446,9 +1446,9 @@ main {
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>The proof of concept delivers chat answers with a command step, which needs the thread of the triggering message from the event data.</p></div>
-    <div><h4>Status against the draft</h4><p>Open. Becomes category A if AWP standardizes interaction event types.</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0024 (PR #24) as informative text. Becomes category A if AWP standardizes interaction event types.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0004-event-references.md">AEP-0004</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0004-event-references.md">AEP-0004</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
 </article>
 <article class="example gap" id="g46">
   <header class="example-head">
@@ -1472,7 +1472,7 @@ main {
     <div><h4>Why: in the proof of concept</h4><p>In the proof of concept the chat bridge attaches the earlier messages of the thread to the event. Every source with conversations needs the same, so a common shape keeps workflows independent of the source.</p></div>
     <div><h4>Status against the draft</h4><p>Informative in the current draft. Normative only: thread context belongs to <code>event.data</code>, is untrusted and classified, and contains personal data. A standard shape later, after the current draft.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0004-event-references.md">AEP-0004</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0004-event-references.md">AEP-0004</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
 </article>
 <article class="example gap" id="g53">
   <header class="example-head">
@@ -1494,9 +1494,9 @@ main {
   </div>
   <div class="explain">
     <div><h4>Why: in the proof of concept</h4><p>Derived from the scenario, no conflict observed: the concert scout and the chat workflow of the proof of concept would share already reported concerts and taste preferences.</p></div>
-    <div><h4>Status against the draft</h4><p>Open. Together with G03 and G58 in a state AEP.</p></div>
+    <div><h4>Status against the draft</h4><p>Drafted in AEP-0025 (PR #24), with G03 and G58; shared stores need equal retention and size.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#75-tool-governance-permissions">Spec 7.5</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#75-tool-governance-permissions">Spec 7.5</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
 </article>
 <article class="example gap" id="g55">
   <header class="example-head">
@@ -1520,7 +1520,7 @@ main {
     <div><h4>Why: in the proof of concept</h4><p>The notify step of the proof of concept sends a Telegram message as its own bot account (G06). Audit events show a shell command, not the account that spoke.</p></div>
     <div><h4>Status against the draft</h4><p>Open. The declaration of the identity is category A; the token or bot account behind it is platform (C).</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0012-tool-steps.md">AEP-0012</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#79-secrets">Spec 7.9</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0012-tool-steps.md">AEP-0012</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#79-secrets">Spec 7.9</a></footer>
 </article>
 <article class="example gap" id="g58">
   <header class="example-head">
@@ -1544,12 +1544,12 @@ main {
     <div><h4>Why: in the proof of concept</h4><p>Seen in the chat workflow of the proof of concept: what a chat message put into state reached later runs as data.</p></div>
     <div><h4>Status against the draft</h4><p>Editorial now: add state to the untrusted inputs in spec 12. Origin marking (G11) comes later with the state AEP.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#12-security-considerations">Spec 12</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#12-security-considerations">Spec 12</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
 </article>
 </section>
 <section class="chapter" id="models">
   <header class="chapter-head">
-    <p class="eyebrow"><span class="chip chip-concept">Proposal</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0008-model-provider-catalog.md">AEP-0008</a></p>
+    <p class="eyebrow"><span class="chip chip-concept">Proposal</span><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0008-model-provider-catalog.md">AEP-0008</a></p>
     <h2>Models: input to AEP-0008</h2>
     <p class="chapter-intro">AEP-0008 (Review) defines a <code>ModelCatalog</code> kind for prices, regions and limits. It names v1alpha3 as its target, written before D20; that now means after the current draft. G59 and G60 are offered as input to it, not as changes to the current draft.</p>
   </header>
@@ -1575,7 +1575,7 @@ main {
     <div><h4>Why: in the proof of concept</h4><p>A vLLM server rejected every request of the proof of concept until the runtime capped output tokens at the model limit. Its provider profiles confirm the split of AEP-0008: prices and limits in the catalog, endpoint, protocol and credentials in runtime configuration. Price 0 for local models counts as known (G35).</p></div>
     <div><h4>Status against the draft</h4><p>Input to AEP-0008, after the current draft. G34 (<code>model.parameters.maxOutputTokens</code>) could come earlier, in the current draft.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0008-model-provider-catalog.md">AEP-0008</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0008-model-provider-catalog.md">AEP-0008</a><a href="https://slauger.github.io/ai-agent-operations/awp-abgleich/">Concept comparison (German)</a></footer>
 </article>
 <article class="example gap" id="g60">
   <header class="example-head">
@@ -1596,10 +1596,10 @@ main {
 </figure>
   </div>
   <div class="explain">
-    <div><h4>Why: in the proof of concept</h4><p>A 0.6B local model in the proof of concept called <code>complete_step</code> without arguments or not at all; the failure showed only at run time. Since PR #23 also evidence from a coding agent engine: it needs context size, output limit and input types (image, document) from the catalog, otherwise it does not compact the context or rejects input.</p></div>
+    <div><h4>Why: in the proof of concept</h4><p>A 0.6B local model in the proof of concept called <code>complete_step</code> without arguments or not at all; the failure showed only at run time. Since PR #24 also evidence from a coding agent engine: it needs context size, output limit and input types (image, document) from the catalog, otherwise it does not compact the context or rejects input.</p></div>
     <div><h4>Status against the draft</h4><p>Input to AEP-0008, after the current draft.</p></div>
   </div>
-  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/aep/0008-model-provider-catalog.md">AEP-0008</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/v1alpha3-runtime-feedback/spec/v1alpha3/README.md#543-model-object">Spec 5.4.3</a></footer>
+  <footer class="refs"><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/aep/0008-model-provider-catalog.md">AEP-0008</a><a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/blob/docs/aep-0026-0027-sessions-engine/spec/v1alpha3/README.md#543-model-object">Spec 5.4.3</a></footer>
 </article>
 </section>
     <footer class="page-foot">
