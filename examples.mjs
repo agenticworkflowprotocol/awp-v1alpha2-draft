@@ -1,5 +1,6 @@
 // Side-by-side examples: v1alpha1 (left) and the v1alpha3 draft (right), plus chapters for the
-// proposals of spec pull request #19 and the planned AEP-0004 pull request (v1alpha3 left, proposal right).
+// proposals of spec pull request #23 (which supersedes #19 and #20) and the planned AEP-0004 pull
+// request (v1alpha3 left, proposal right).
 // The draft chapters were first written at b8a0ee8, when the draft of pull request #16 was called
 // v1alpha2; it was merged as v1alpha3 (decision D20). Everything is checked and linked at the
 // preview branch (spec-ref.mjs).
@@ -24,9 +25,16 @@ const RUN = aep('0019', 'workflow-run-and-status');
 const PIN = aep('0020', 'execution-pinning');
 const EXT = aep('0021', 'extension-model');
 const ITER = aep('0022', 'step-iteration');
-const ISOLATION = { label: 'AEP-0023 (PR #19)', href: `${SPEC}/aep/0023-step-isolation.md` };
-const TRIGGERS = { label: 'AEP-0024 (PR #19)', href: `${SPEC}/aep/0024-event-triggers.md` };
-const STATE = { label: 'AEP-0025 (PR #19)', href: `${SPEC}/aep/0025-state.md` };
+const ISOLATION = { label: 'AEP-0023 (PR #23)', href: `${SPEC}/aep/0023-step-isolation.md` };
+const TRIGGERS = { label: 'AEP-0024 (PR #23)', href: `${SPEC}/aep/0024-event-triggers.md` };
+const STATE = { label: 'AEP-0025 (PR #23)', href: `${SPEC}/aep/0025-state.md` };
+const SESSION = { label: 'AEP-0026 (PR #23)', href: `${SPEC}/aep/0026-interactive-execution.md` };
+const ENGINE = { label: 'AEP-0027 (PR #23)', href: `${SPEC}/aep/0027-agent-engine.md` };
+const MCP = { label: 'AEP-0007 (PR #23)', href: `${SPEC}/aep/0007-mcp-connection-catalog.md` };
+const CONSTRAINTS = { label: 'AEP-0002 (PR #23)', href: `${SPEC}/aep/0002-tool-argument-constraints.md` };
+const PROMPT = { label: 'AEP-0005 (PR #23)', href: `${SPEC}/aep/0005-prompt-kind.md` };
+const AUDIT = { label: 'AEP-0009 (PR #23)', href: `${SPEC}/aep/0009-audit-payload-levels.md` };
+const AMEND = { label: 'Amendments (PR #23)', href: `${SPEC}/CHANGELOG.md` };
 const EVENTS = { label: 'AEP-0004 (planned)', href: `${SPEC}/aep/0004-event-references.md` };
 
 export const chapters = [
@@ -37,9 +45,12 @@ export const chapters = [
   { id: 'run', title: 'WorkflowRun and status', aep: RUN, intro: 'A new kind for one execution, and a status shape that existing Kubernetes tools understand.' },
   { id: 'pinning', title: 'Execution pinning', aep: PIN, intro: 'An execution keeps the manifests it started with, even when GitOps changes them halfway.' },
   { id: 'iteration', title: 'Step iteration', aep: ITER, intro: 'A bounded fan-out over a list known when the step becomes ready: accepted for `v1alpha2` (D19) and part of v1alpha3 as section 5.6.5, combined with the step output interface.' },
-  { id: 'isolation', title: 'Step isolation (proposal)', aep: ISOLATION, proposal: 'pr19', intro: 'Proposed in spec pull request #19, not applied to the schema: a host syntax for `allowHosts`, the platform ceiling, enforce or reject, internal destinations and model credentials. Left is v1alpha3 today, right the proposal.' },
-  { id: 'event-triggers', title: 'Event triggers with CloudEvents (proposal)', aep: TRIGGERS, proposal: 'pr19', intro: 'Proposed in spec pull request #19: CloudEvents as the event model, equality filters, duplicates, concurrency, rate limits and the actor behind an event. Left is v1alpha3 today, right the proposal.' },
-  { id: 'state', title: 'State across executions (proposal)', aep: STATE, proposal: 'pr19', intro: 'Proposed in spec pull request #19: stores that survive executions, declared in the manifest with classification, retention and access mode. Left is v1alpha3 today, right the proposal.' },
+  { id: 'isolation', title: 'Step isolation (proposal)', aep: ISOLATION, proposal: 'pr23', intro: 'Proposed in spec pull request #23, not applied to the schema: a host syntax for `allowHosts`, the platform ceiling, enforce or reject, internal destinations and model credentials; since PR #23 also tool server credentials, approval authority outside the execution environment, a minimum isolation class and one rule for ceilings. Left is v1alpha3 today, right the proposal.' },
+  { id: 'event-triggers', title: 'Event triggers with CloudEvents (proposal)', aep: TRIGGERS, proposal: 'pr23', intro: 'Proposed in spec pull request #23: CloudEvents as the event model, equality filters, duplicates, concurrency, rate limits and the actor behind an event. Left is v1alpha3 today, right the proposal.' },
+  { id: 'state', title: 'State across executions (proposal)', aep: STATE, proposal: 'pr23', intro: 'Proposed in spec pull request #23: stores that survive executions, declared in the manifest with classification, retention and access mode. Left is v1alpha3 today, right the proposal.' },
+  { id: 'sessions', title: 'Interactive execution (proposal)', aep: SESSION, proposal: 'pr23', intro: 'New in PR #23, number to be confirmed: people use agents interactively for hours, confirm single tool calls and switch between read-only and autonomous work. AEP-0026 adds the kind `AgentSession`, an opt-in on `Agent`, autonomy levels with a ceiling set by the author, and `confirm` per action. Left is v1alpha3 today, right the proposal.' },
+  { id: 'engine', title: 'Agent engine (proposal)', aep: ENGINE, proposal: 'pr23', intro: 'New in PR #23, number to be confirmed: an agent step run by an existing coding agent with its own tool loop. AEP-0027 adds `agents[].engine`, keeps AWP permissions, budgets and audit in force, and keeps repository configuration off by default. Left is v1alpha3 today, right the proposal.' },
+  { id: 'amendments', title: 'Amendments to existing AEPs (proposal)', aep: AMEND, proposal: 'pr23', intro: 'PR #23 also amends AEPs that are already in Review or Draft, from what the proof of concept had to build itself: MCP prompts and resources (AEP-0007), shell resources (AEP-0002), prompts as session tasks (AEP-0005), the origin of audit events (AEP-0009), bindings for agents (AEP-0021). Left is the AEP or v1alpha3 before, right the amendment.' },
   { id: 'event-data', title: 'Event data in the run (planned)', aep: EVENTS, proposal: 'planned', intro: 'Planned, no draft text yet: a pull request that applies AEP-0004 to v1alpha3 and amends open question 1 of AEP-0019 (G41, G48, G57). The right side is a sketch of the intended result.' },
   { id: 'extensions', title: 'Extension model (concept)', aep: EXT, concept: true, intro: 'A proposal, not applied to the schema: replace `x-` fields with the extension model of the Kubernetes Gateway API. Left is the draft (now v1alpha3), right the proposal.' },
 ];
@@ -51,8 +62,8 @@ export const page = {
   title: 'AWP: v1alpha1, v1alpha3 and the Proposals Side by Side',
   description: 'What changes from AWP v1alpha1 to the v1alpha3 draft, and what the open spec pull requests propose on top: side-by-side examples with the reason for each change.',
   h1: 'From v1alpha1 to v1alpha3, and what is proposed next',
-  lede: '{{count}} examples of what changes in the Agentic Workflow Protocol, each with the old form on the left, the new form on the right, and the reason for the change: first what is in the v1alpha3 draft, then what pull request #19 proposes and what is planned.',
-  notice: 'New to AWP? Start with <a href="index.html">how it fits together</a>. <strong>What is shown.</strong> The draft chapters compare <code>v1alpha1</code> with the <code>v1alpha3</code> draft: the Kubernetes resource model of pull request #16, merged as <code>v1alpha3</code> by decision D20 on top of <code>v1alpha2</code> (<code>v1alpha1</code> plus step iteration, D19). They were first written when that draft was called <code>v1alpha2</code>. The <strong>proposal</strong> chapters put <code>v1alpha3</code> today next to what spec pull request #19 proposes (AEP-0023 to AEP-0025), the <strong>planned</strong> chapter next to a sketch of the AEP-0004 pull request that has no text yet, and the <strong>concept</strong> chapter next to AEP-0021. Everything is a <strong>Draft</strong> under review; nothing is accepted except step iteration. All links and checks use the spec branch <code>preview/pr19-pr20</code> (main plus the open pull requests #20 and #19, not merged text). Snippets marked <span class="verified">valid</span> or <span class="verified">rejected by checker</span> were run through the reference checker there; proposals are marked <span class="unchecked">not checked</span>.',
+  lede: '{{count}} examples of what changes in the Agentic Workflow Protocol, each with the old form on the left, the new form on the right, and the reason for the change: first what is in the v1alpha3 draft, then what pull request #23 proposes and what is planned.',
+  notice: 'New to AWP? Start with <a href="index.html">how it fits together</a>. <strong>What is shown.</strong> The draft chapters compare <code>v1alpha1</code> with the <code>v1alpha3</code> draft: the Kubernetes resource model of pull request #16, merged as <code>v1alpha3</code> by decision D20 on top of <code>v1alpha2</code> (<code>v1alpha1</code> plus step iteration, D19). They were first written when that draft was called <code>v1alpha2</code>. The <strong>proposal</strong> chapters put <code>v1alpha3</code> today next to what spec pull request #23 proposes (AEP-0023 to AEP-0027 and amendments to existing AEPs), the <strong>planned</strong> chapter next to a sketch of the AEP-0004 pull request that has no text yet, and the <strong>concept</strong> chapter next to AEP-0021. Everything is a <strong>Draft</strong> under review; nothing is accepted except step iteration. All links and checks use the spec branch <code>docs/v1alpha3-runtime-feedback</code> (main plus spec pull request #23, which supersedes #19 and #20; not merged text). Snippets marked <span class="verified">valid</span> or <span class="verified">rejected by checker</span> were run through the reference checker there; proposals are marked <span class="unchecked">not checked</span>.',
   navExtra: '<li class="nav-chapter"><a href="#try">Try it: Helm chart</a></li>',
   after: `    <section class="chapter" id="try">
       <header class="chapter-head">
@@ -71,7 +82,7 @@ export const page = {
     </section>
 `,
   footer: `Source of every example: the AEPs, the specification draft and the conformance suite in
-      <a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/tree/preview/pr19-pr20">agenticworkflowprotocol.org</a>, branch <code>preview/pr19-pr20</code>.
+      <a href="https://github.com/agenticworkflowprotocol/agenticworkflowprotocol.org/tree/docs/v1alpha3-runtime-feedback">agenticworkflowprotocol.org</a>, branch <code>docs/v1alpha3-runtime-feedback</code>.
       This page is generated from <a href="https://github.com/agenticworkflowprotocol/awp-v1alpha2-draft">awp-v1alpha2-draft</a>; corrections are welcome as issues or pull requests.`,
 };
 
@@ -1136,7 +1147,7 @@ spec:
     refs: [ITER, spec('5.6.5', '565-iteration')],
   },
 
-  // ---------------------------------------------------------------- AEP-0023 (PR #19)
+  // ---------------------------------------------------------------- AEP-0023 (PR #23)
   {
     id: 'allow-hosts', chapter: 'isolation', title: 'One syntax for allowed hosts',
     left: { check: 'v2', code: `apiVersion: ${V2}
@@ -1290,7 +1301,7 @@ $ env   # inside an agent step
     refs: [ISOLATION, spec('7.9', '79-secrets')],
   },
 
-  // ---------------------------------------------------------------- AEP-0024 (PR #19)
+  // ---------------------------------------------------------------- AEP-0024 (PR #23)
   {
     id: 'event-filter', chapter: 'event-triggers', title: 'Filters match CloudEvents attributes',
     left: { check: 'v2', code: `apiVersion: ${V2}
@@ -1431,7 +1442,7 @@ data:
     refs: [TRIGGERS, spec('7.8', '78-separation-of-duties'), spec('10.3', '103-event-envelope')],
   },
 
-  // ---------------------------------------------------------------- AEP-0025 (PR #19)
+  // ---------------------------------------------------------------- AEP-0025 (PR #23)
   {
     id: 'state-declared', chapter: 'state', title: 'State is declared in the manifest',
     left: { check: 'v2', code: `apiVersion: ${V2}
@@ -1630,5 +1641,585 @@ spec:
     what: 'The run object carries the event: `origin: ingress` when a trusted router creates it, `origin: replay` for a test or replay, where the actor is the creator and the data is validated against `dataSchema`. Field names are a sketch of the planned amendment.',
     why: 'Event runs created by an external router fit neither role of spec 10.8 (G48), and event-only workflows cannot be tested conformingly (G57). This is open question 1 of AEP-0019.',
     refs: [{ label: 'AEP-0019', href: `${SPEC}/aep/0019-workflow-run-and-status.md` }, EVENTS, spec('10.8', '108-kind-workflowrun')],
+  },
+  // ---------------------------------------------------------------- AEP-0023 extensions (PR #23)
+  {
+    id: 'isolation-class', chapter: 'isolation', title: 'An agent can require stronger isolation than a container',
+    left: { check: 'v2', code: `apiVersion: ${V2}
+kind: Agent
+metadata:
+  name: repo-fixer
+spec:
+  version: 0.1.0
+  owner:
+    team: appsec
+  classification: internal
+  model:
+    provider: example-provider
+    name: example-model
+  instructions: Fix the failing tests in the repository.
+  permissions:
+    default: deny
+    tools:
+      shell.execute:
+        allow: true
+# Where the commands run (container, gVisor, a VM)
+# is decided in a runtime binding that reviewers
+# never see.` },
+    right: { code: `apiVersion: ${V2}
+kind: Agent
+metadata:
+  name: repo-fixer
+spec:
+  version: 0.1.0
+  owner:
+    team: appsec
+  classification: internal
+  isolation: sandbox        # process < container < sandbox < vm
+  model:
+    provider: example-provider
+    name: example-model
+  instructions: Fix the failing tests in the repository.
+  permissions:
+    default: deny
+    tools:
+      shell.execute:
+        allow: true
+# A runtime with containers only rejects this agent
+# before any step runs. Which mechanism provides
+# "sandbox" (gVisor, Kata) is platform configuration.` },
+    what: '`isolation` is a minimum. The runtime runs the agent with at least that class or rejects the manifest; a platform ceiling may require a higher minimum, and the stricter one applies. The conformance statement lists which classes a runtime provides and by which mechanism.',
+    why: 'An agent that runs `make` or a test runner on an untrusted repository executes whatever the repository contains; a command allow list does not stop that. In the proof of concept the runtime class sat in a sandbox profile of the binding, invisible in the reviewed manifest (G67).',
+    refs: [ISOLATION, spec('5.4', '54-agents')],
+  },
+  {
+    id: 'tool-credentials', chapter: 'isolation', profiles: 'core,mcp', title: 'Tool server credentials stay out of steps',
+    left: { check: 'v2', profiles: 'core,mcp', code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: code-scan
+spec:
+  version: 0.1.0
+  owner:
+    team: appsec
+  classification: internal
+  secrets:
+    - name: SCANNER_TOKEN
+      source: kubernetes
+      scope: [scanner]
+  mcpServers:
+    - name: scanner
+      transport: streamable-http
+      url: https://mcp.example.com/scanner
+      auth:
+        secretRef: SCANNER_TOKEN
+  agents:
+    - id: reviewer
+      model:
+        provider: example-provider
+        name: example-model
+      tools:
+        - type: mcp
+          server: scanner
+          tools: [scan]
+  workflow:
+    - id: scan
+      agent: reviewer
+      task: Scan the repository.` },
+    right: { code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: code-scan
+spec:
+  version: 0.1.0
+  owner:
+    team: appsec
+  classification: internal
+  mcpServers:
+    - name: scanner             # resolved by the runtime;
+      transport: streamable-http  # no auth.secretRef needed
+      url: https://mcp.example.com/scanner
+  agents:
+    - id: reviewer
+      model:
+        provider: example-provider
+        name: example-model
+      tools:
+        - type: mcp
+          server: scanner
+          tools: [scan]
+  workflow:
+    - id: scan
+      agent: reviewer
+      task: Scan the repository.
+# Under security: the step reaches "scanner" through a
+# component outside the step that adds the credential,
+# authenticates the step with a ticket for this attempt
+# and enforces the tool permissions.` },
+    what: 'The same rule as for model credentials: under the `security` profile a tool server credential MUST NOT be visible to the step. `auth` may be satisfied by the runtime, and the component that holds the credential also enforces which tools are listed and called.',
+    why: 'When the MCP client is a coding agent inside the step, `auth.secretRef` hands the token to the agent and every command it runs (G69). The proof of concept routes MCP through a gateway with a session or step ticket; shown with a static analysis server.',
+    refs: [ISOLATION, spec('5.5.1', '551-mcp-servers'), spec('7.9', '79-secrets')],
+  },
+  {
+    id: 'approval-authority', chapter: 'isolation', title: 'Who may approve: outside the execution environment',
+    left: { check: null, lang: 'text', label: 'Spec 7.6 (v1alpha3 draft)', code: `Approvals gate actions or steps; approvers
+are people matched by role or user.
+
+(Nothing says where the component runs that
+asks for and records an approval.)` },
+    right: { lang: 'text', code: `AEP-0023 section 7.6.1 (proposed):
+
+- Under security, the component that decides
+  and records an approval or confirmation runs
+  OUTSIDE the execution environment.
+- It accepts decisions only from an
+  authenticated identity, over a channel the
+  environment cannot reach.
+- Nothing that carries a decision (passwords of
+  an approval endpoint, signing keys, pending
+  requests) is readable or writable inside.
+- A permission system inside the step (an
+  engine's own) MAY add checks, never be the
+  only enforcement.` },
+    what: 'Applies to approvals, to confirmations of single actions in interactive sessions (AEP-0026) and to answers a runtime treats as a decision. Separation of duties is checked against the authenticated identity, never one the step asserts.',
+    why: 'Shown in the proof of concept: the coding agent and its commands ran under one user ID; a command read the agent\'s local server password from `/proc`, sent a prompt in autonomous mode and answered every permission request itself. It failed only after decisions moved to a separate container with signed grants; through the console the same command asked once and ran after "allow once" (G64).',
+    refs: [ISOLATION, spec('7.6', '76-human-approval'), spec('7.8', '78-separation-of-duties')],
+  },
+  {
+    id: 'ceilings', chapter: 'isolation', title: 'Ceilings reject, budgets cap',
+    left: { check: null, lang: 'text', label: 'AEP-0023 before PR #23', code: `7.5.6: the effective network is the
+intersection of the manifest and the ceiling;
+reject if the ceiling is narrower.
+
+(Silent on ceilings for models, tool servers,
+autonomy, isolation and cost.)` },
+    right: { lang: 'text', code: `AEP-0023 section 7.5.7 (proposed):
+
+Platform ceiling (tenant)    Manifest asks     Result
+models: [small, large]       model: huge       rejected
+mcpServers: [scanner]        server: tickets   rejected
+maxAutonomy: ask             auto              capped to ask*
+isolation minimum: sandbox   container         rejected
+maxCostUsd: 5                maxCostUsd: 20    effective 5
+maxCostUsd: 5                (none)            effective 5
+
+* autonomy is a level the person picks
+  (AEP-0026); the agent's own maxAutonomy and the
+  ceiling cap it.` },
+    what: 'Permissions, models, tool servers and isolation intersect: if the manifest needs more than the ceiling allows, the runtime rejects before any step runs and says which rule. Budgets are capped instead: a manifest without a limit gets the ceiling, and a higher limit is lowered, never rejected.',
+    why: 'The proof of concept has tenant ceilings for models, hosts, MCP servers, modes and cost; it rejected the first and capped cost, and the spec said neither (G68). Rejecting a manifest only because its budget is higher would make one manifest unusable in a smaller tenant.',
+    refs: [ISOLATION],
+  },
+
+  // ---------------------------------------------------------------- AEP-0026 (PR #23)
+  {
+    id: 'session-opt-in', chapter: 'sessions', title: 'An agent opts in to interactive use',
+    left: { check: 'v2', code: `apiVersion: ${V2}
+kind: Agent
+metadata:
+  name: security-reviewer
+spec:
+  version: 0.3.0
+  owner:
+    team: appsec
+  classification: internal
+  model:
+    provider: example-provider
+    name: example-model
+  permissions:
+    default: deny
+    tools:
+      shell.execute:
+        allow: true
+# Spec 6: "Runtimes MAY offer a way to run a single
+# agent; they MUST then treat it as a workflow with
+# one agent step." No way to say whether the agent
+# may be used interactively, or how autonomously.` },
+    right: { code: `apiVersion: ${V2}
+kind: Agent
+metadata:
+  name: security-reviewer
+spec:
+  version: 0.3.0
+  owner:
+    team: appsec
+  classification: internal
+  model:
+    provider: example-provider
+    name: example-model
+  sessions:                  # absent: no AgentSession
+    maxAutonomy: ask         # readOnly | ask | auto
+    models:                  # alternatives a session may pick
+      - provider: example-provider
+        name: example-model-large
+    idleTimeout: 30m
+  permissions:
+    default: deny
+    tools:
+      shell.execute:
+        allow: true` },
+    what: 'Interactive use needs the author\'s opt-in. `maxAutonomy` caps the level a person can select; `models` lists the only alternatives to `model`; after `idleTimeout` the runtime pauses the session.',
+    why: 'In the proof of concept the binding, not the manifest, decided whether autonomous mode existed for an agent, so a platform could grant autonomy the author never intended (G62, G63, G82).',
+    refs: [SESSION, spec('6', '6-kind-agent')],
+  },
+  {
+    id: 'session-object', chapter: 'sessions', title: 'AgentSession next to WorkflowRun',
+    left: { check: null, label: 'Workaround today: a one-step workflow', code: `apiVersion: ${V2}
+kind: WorkflowRun
+metadata:
+  generateName: security-review-
+  namespace: team-a
+spec:
+  workflowRef:
+    name: security-reviewer-as-workflow
+  inputs:
+    prompt: Review the repository for injection flaws.
+# A run has one task and ends. No further prompts,
+# no pause, no confirmation of single calls, no
+# autonomy level, no choice of model or tool sources.` },
+    right: { code: `apiVersion: ${V2}
+kind: AgentSession
+metadata:
+  generateName: security-review-
+  namespace: team-a
+spec:
+  agentRef:
+    name: security-reviewer
+    version: 0.3.0
+  autonomy: ask                # capped by maxAutonomy and ceiling
+  model:                       # model or one of sessions.models
+    provider: example-provider
+    name: example-model-large
+  toolSources: [code-scanner]  # narrow, never widen
+  initialPrompt: Review the repository for injection flaws.
+status:
+  phase: waiting               # a confirmation is pending
+  executionId: awp-exec-01JD8Z...
+  autonomy: ask
+  pendingConfirmations: 1
+  usage: {costUsd: "0.54", modelCalls: 9}` },
+    what: 'One interactive execution of an `Agent` with one execution id for its whole life. The creator controls it (prompts, confirmations, level, model, pause, stop); others only if the runtime documents it. Budgets are summed across pauses. Status never contains prompts, answers or tool arguments.',
+    why: 'A session has no task and no outputs, runs for hours, pauses when idle and resumes. The proof of concept built its own session object; another runtime would build a different one (G62). Spec fields under other names ran on the test installation with real models.',
+    refs: [SESSION, spec('10.8', '108-kind-workflowrun')],
+  },
+  {
+    id: 'confirm', chapter: 'sessions', title: 'Confirmation per action: confirm always or never',
+    left: { check: 'v2', code: `apiVersion: ${V2}
+kind: Agent
+metadata:
+  name: security-reviewer
+spec:
+  version: 0.3.0
+  owner:
+    team: appsec
+  classification: internal
+  model:
+    provider: example-provider
+    name: example-model
+  permissions:
+    default: deny
+    tools:
+      shell.execute:
+        allow: true
+        resources: ["git *", "ls *"]
+      git.push:
+        allow: true` },
+    right: { code: `apiVersion: ${V2}
+kind: Agent
+metadata:
+  name: security-reviewer
+spec:
+  version: 0.3.0
+  owner:
+    team: appsec
+  classification: internal
+  model:
+    provider: example-provider
+    name: example-model
+  sessions:
+    maxAutonomy: auto
+  permissions:
+    default: deny
+    tools:
+      shell.execute:
+        allow: true
+        resources: ["git *", "ls *"]
+      code-scanner.scan:
+        allow: true
+        confirm: never        # no question at ask or auto
+      git.push:
+        allow: true
+        confirm: always       # asks even at auto;
+                              # denied in workflow runs` },
+    what: 'Levels: `readOnly` denies changing actions and asks for the rest, `ask` asks for every allowed action except `confirm: never`, `auto` asks only for `confirm: always`. Permissions decide first; no level allows a denied action. The strictest `confirm` wins across permission objects.',
+    why: 'Permissions are allow or deny; a person in a session confirms single calls, and an author could not say "never push without asking" (G63). Confirmations are decided outside the sandbox (AEP-0023 7.6.1) and are no approvals: `requireApproval` still applies.',
+    refs: [SESSION, spec('7.5', '75-tool-governance-permissions')],
+  },
+
+  // ---------------------------------------------------------------- AEP-0027 (PR #23)
+  {
+    id: 'engine-field', chapter: 'engine', title: 'A coding agent as the engine of an agent step',
+    left: { check: 'v2', code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: security-scan
+spec:
+  version: 0.1.0
+  owner:
+    team: appsec
+  classification: internal
+  agents:
+    - id: scanner
+      model:
+        provider: example-provider
+        name: example-model
+      extensions:
+        x-example-engine:
+          type: opencode
+          repositories:
+            - url: https://git.example.com/app.git
+  workflow:
+    - id: scan
+      agent: scanner
+      task: Scan the repository and report the findings.
+# A runtime that ignores the extension runs its own
+# loop with other tools and still reports success.` },
+    right: { code: `apiVersion: ${V2}
+kind: Workflow
+metadata:
+  name: security-scan
+spec:
+  version: 0.1.0
+  owner:
+    team: appsec
+  classification: internal
+  agents:
+    - id: scanner
+      isolation: sandbox
+      engine:
+        type: opencode            # unknown type: reject
+        workspace:
+          repositories:
+            - url: https://git.example.com/app.git
+              ref: main
+              path: app
+          trustRepositoryConfig: []   # default: no AGENTS.md,
+                                      # skills, commands, toolchain env
+      model:
+        provider: example-provider
+        name: example-model
+  workflow:
+    - id: scan
+      agent: scanner
+      task: Scan the repository and report the findings.` },
+    what: 'The runtime maps AWP permissions to the engine: allow or deny only when unattended, a refused call fails the step, subagents share budget and permissions, model calls are metered outside the engine. Clone and push credentials stay out of the engine. Workspace configuration (instruction files, skills, commands, tool manager environment) is not loaded unless listed.',
+    why: 'Coding agents bring their own tool loop, and the proof of concept used an extension field for it (G65). Repositories bring instructions and code that run at start, before any permission applies (G81). The engine ran a scan workflow on the test installation, started by hand and by a CloudEvent.',
+    refs: [ENGINE, spec('5.4', '54-agents'), spec('12', '12-security-considerations')],
+  },
+  {
+    id: 'engine-outputs', chapter: 'engine', title: 'Engine steps stop being dead ends',
+    left: { check: null, label: 'Proof of concept today', code: `workflow:
+  - id: scan
+    agent: scanner             # engine step
+    task: Scan and report.
+    outputs:
+      - name: summary          # only summary and diff
+      - name: critical         # rejected by validation:
+                               # the engine cannot fill it
+# repositories are fixed in the manifest, so a push
+# event cannot say which repository to scan.` },
+    right: { code: `triggers:
+  - type: event
+    eventType: com.example.security-scan.requested
+agents:
+  - id: scanner
+    engine:
+      type: opencode
+      workspace:
+        repositories:
+          - url: \${{ event.data.repository }}   # AEP-0004
+            ref: \${{ event.data.ref }}
+workflow:
+  - id: scan
+    agent: scanner
+    task: Scan and report. Do not change files.
+    outputs:
+      - name: summary
+      - name: critical
+        type: integer          # AEP-0003, filled through
+      - name: high             # complete_step (AEP-0018)
+        type: integer
+  - id: escalate
+    if: \${{ steps.scan.outputs.critical > 0 }}   # AEP-0001
+    dependsOn: [scan]
+    agent: notifier
+    task: Open a ticket.` },
+    what: 'The engine fills declared outputs through the completion mechanism of AEP-0018 with the types of AEP-0003; `summary` and `diff` remain available. `repositories` is expression-enabled with `inputs.*` and `event.*`; a resolved URL is still subject to the effective network.',
+    why: 'In the proof of concept a step with `critical` and `high` was rejected and the repository was fixed, so the following step could not branch on findings (G66).',
+    refs: [ENGINE, aep('0018', 'step-outputs'), aep('0003', 'typed-handoffs'), aep('0001', 'conditional-steps')],
+  },
+
+  // ---------------------------------------------------------------- amendments (PR #23)
+  {
+    id: 'mcp-prompts', chapter: 'amendments', title: 'MCP prompts and resources: allow lists, default none',
+    left: { check: null, label: 'AEP-0007 before PR #23', code: `catalog:
+  tools:
+    scan:
+      access: read
+      definitionDigest: sha256:3f1c...
+  resources:                 # only if listed: then
+    - uriTemplate: rules://{id}  # other URIs are denied;
+                             # without the list?
+# Open question 3: should a catalog list server
+# prompts? Sampling and roots requests of a server
+# are not covered.` },
+    right: { code: `catalog:
+  tools:
+    scan:
+      access: read
+      definitionDigest: sha256:3f1c...
+  resources:                 # absent: no resource readable
+    - uriTemplate: rules://{id}
+      classification: public
+  prompts:                   # absent: no prompt offered
+    security-check:
+      definitionDigest: sha256:9a07...
+# rule 9: prompts/list filtered, prompts/get of
+#   anything else denied; prompt content is untrusted
+# rule 10: no sampling or roots relay unless allowed,
+#   elicitation declined without humanInput
+# rule 11: resolve declaration, binding, catalog` },
+    what: 'Prompts and resources are allow lists with default none; the runtime filters the list operations and refuses everything else. A server prompt is untrusted content of the server operator, not a `Prompt` manifest. Requests of the server are answered by the runtime, not passed to an engine.',
+    why: 'A coding agent shows every server prompt as a command, and a server can ask the client for model calls (sampling) or local paths (roots). The proof of concept filters all of this at its MCP gateway; shown with a server whose two extra tools are neither listed nor callable (G70 to G72).',
+    refs: [MCP],
+  },
+  {
+    id: 'shell-resources', chapter: 'amendments', title: 'What a resource of shell.execute is',
+    left: { check: 'v2', code: `apiVersion: ${V2}
+kind: Agent
+metadata:
+  name: repo-helper
+spec:
+  version: 0.1.0
+  owner:
+    team: appsec
+  model:
+    provider: example-provider
+    name: example-model
+  permissions:
+    default: deny
+    tools:
+      shell.execute:
+        allow: true
+        resources: ["git *", "ls *", "echo *"]
+# 7.5.2: "The runtime MUST document how it derives
+# the target resource of a call." For a shell line?` },
+    right: { lang: 'text', code: `AEP-0002 section 7.5.7 (proposed), same manifest:
+
+echo hello              allowed  (echo *)
+git --version           allowed  (git *)
+ls -la | wc -l          denied   (wc not listed)
+echo a; id              denied   (id not listed)
+echo $(id)              denied   (substitution:
+                                  cannot be split)
+FOO=1 git status        denied   (leading assignment)
+curl https://x.example  denied
+
+Each simple command must match; lines that cannot
+be split are denied. An allow list does not limit
+what an allowed program runs (make, npm test).` },
+    what: 'The resources of a command line are its simple commands; every one must match a glob entry. Substitutions, subshells, compound commands and leading assignments are denied. `resources` on a group or wildcard key applies to every matched action.',
+    why: 'Shown in the proof of concept with exactly this list: `echo` and `git --version` ran, `curl`, `echo a; id` and `echo $(id)` were refused with a reason the model sees (G74).',
+    refs: [CONSTRAINTS, spec('7.5', '75-tool-governance-permissions')],
+  },
+  {
+    id: 'prompt-task', chapter: 'amendments', title: 'A Prompt as a task of a session',
+    left: { check: null, label: 'AEP-0005 before PR #23', code: `apiVersion: ${V2}
+kind: Prompt
+metadata:
+  name: extraction-instructions
+spec:
+  version: 1.0.0
+  role: system
+  template: Extract {{ fields }} from the document.
+# Only for promptRef of instructions; nothing for a
+# library of requests people start in a session.` },
+    right: { code: `apiVersion: ${V2}
+kind: Prompt
+metadata:
+  name: security-review
+spec:
+  version: 1.0.0
+  role: user
+  title: Security review
+  agents: [security-reviewer]
+  suggestedAutonomy: readOnly   # a suggestion, capped
+  variables:
+    - name: focus
+      type: string
+  template: Review the repository for {{ focus }}.
+    Report findings with severity and file.` },
+    what: 'A `Prompt` with `role: user` can be a reusable task of an interactive execution. It is plain user input: it runs with the permissions, budget and level of the session and grants nothing; a suggested level is capped like any level the person selects.',
+    why: 'People repeat the same requests (a security review, writing tests). The proof of concept offers a prompt library as commands of the coding agent, with tenant entries overriding platform entries (G75).',
+    refs: [PROMPT],
+  },
+  {
+    id: 'audit-origin', chapter: 'amendments', title: 'Where an audit event comes from',
+    left: { check: null, lang: 'json', label: 'Event envelope (spec 10.3)', code: `{
+  "type": "tool.called",
+  "executionId": "awp-exec-01JD8Z...",
+  "actor": {"type": "agent", "id": "reviewer"},
+  "data": {"tool": "scanner.scan"}
+}
+// Recorded by the engine inside the sandbox, the
+// UI, or a gateway outside? The event cannot say.` },
+    right: { lang: 'json', code: `{
+  "type": "tool.called",
+  "executionId": "awp-exec-01JD8Z...",
+  "actor": {"type": "agent", "id": "reviewer"},
+  "origin": "runtime",
+  "data": {
+    "tool": "scanner.scan",
+    "argumentsSize": 4211,
+    "argumentsDigest": "sha256:7c2e..."
+  }
+}
+// Under security, model calls, tool calls and
+// confirmations come from outside the execution
+// environment (origin runtime). Arguments sent to a
+// tool source are content with contentRetention.` },
+    what: 'Every event carries `origin` (`runtime` or `executionEnvironment`). Events from inside may be recorded too and joined by tool call id; disagreements should be flagged. Tool arguments and session history are content under the retention of AEP-0009; at `metadata`, size and digest keep it verifiable what was sent where.',
+    why: 'The agent can influence what an engine inside the sandbox records. The proof of concept audits at its model and MCP gateways, with a hash chain per conversation, and joins the engine\'s events by tool call id. A scan tool received the whole source file as argument (G76, G77).',
+    refs: [AUDIT, spec('10.3', '103-event-envelope')],
+  },
+  {
+    id: 'agent-binding', chapter: 'amendments', title: 'Bindings for agents, and which objects stay with the runtime',
+    left: { check: null, label: 'AEP-0021 B6 before PR #23', code: `apiVersion: runtime.example.com/v1
+kind: WorkflowBinding
+spec:
+  targetRefs:
+    - group: awp.agenticworkflowprotocol.org
+      kind: Workflow
+      name: invoice-processing
+  runnerImage: registry.example.com/runner@sha256:...
+# Only workflows; an agent used on its own (a
+# session) has nothing to bind to.` },
+    right: { code: `apiVersion: runtime.example.com/v1
+kind: AgentBinding
+spec:
+  targetRefs:
+    - group: awp.agenticworkflowprotocol.org
+      kind: Agent
+      name: security-reviewer
+  sandboxProfile: gvisor-small   # maps isolation: sandbox
+  modelEndpoints: [eu-gateway]   # governance-relevant: operator
+                                 # constraints apply (B6)
+# Stays implementation-specific: bindings, tenants,
+# sandbox profiles, gateways.
+# Becomes or stays AWP: AgentSession (AEP-0026),
+# WorkflowRun, Prompt, McpCatalog, ModelCatalog.` },
+    what: 'A binding may target a `Workflow` or an `Agent`. For an agent inside a workflow, the workflow\'s binding applies. The rule for kinds from runtime feedback section 10: an object becomes an AWP kind if a reviewer governs it and it must mean the same on every runtime; it stays with the runtime if it says how a platform realises something.',
+    why: 'The proof of concept needed nine custom resources; three map to AWP kinds, two split between an AWP catalog and runtime configuration, and four stay its own (question 11 of the runtime feedback).',
+    refs: [EXT, { label: 'runtime-feedback.md section 10 (PR #23)', href: `${SPEC}/docs/runtime-feedback.md#10-from-interactive-sessions-and-a-coding-agent-engine` }],
   },
 ];

@@ -72,7 +72,7 @@ const proposalChapters = new Set(comparison.chapters.filter((c) => c.proposal).m
 const marked = [
   ...feedback.gaps.filter((gap) => gap.right.check).map((gap) => gap.id),
   ...comparison.examples.filter((e) => proposalChapters.has(e.chapter) && e.right.check).map((e) => e.id),
-  ...guide.examples.flatMap((e) => panesOf(e).filter(([, p]) => p.check && /PR #19|[Pp]lanned|[Pp]roposal/.test(p.label)).map(([side]) => `${e.id} ${side}`)),
+  ...guide.examples.flatMap((e) => panesOf(e).filter(([, p]) => p.check && /PR #23|[Pp]lanned|[Pp]roposal/.test(p.label)).map(([side]) => `${e.id} ${side}`)),
 ];
 if (marked.length) { failures++; console.log(`FAIL  proposals must not be marked check: ${marked.join(', ')}`); }
 console.log(failures ? `${failures} failed` : 'all checked snippets behave as expected');
